@@ -2,6 +2,7 @@ NAME = webserv
 CC = clang++
 CFLAGS = -Wall -Wextra -Werror -std=c++98 #-fsanitize=address
 SRC_NAME = main.cpp \
+			fdmanager/FileDiscriptorManager.cpp \
 			socket/Socket.cpp
 
 SRC_DIR = ./srcs/
