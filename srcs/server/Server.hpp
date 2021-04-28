@@ -1,0 +1,44 @@
+#ifndef SERVER_HPP
+# define SERVER_HPP
+
+# include "ServerComponent.hpp"
+# include "fdmanager/FileDiscriptorListener.hpp"
+# include "socket/Socket.hpp"
+# include "Config.hpp"
+
+class Server : public ServerComponent
+{
+	private:
+		class ServerAction : public FileDiscriptorListener
+		{
+			private:
+				Server &mServer;
+				ServerAction();
+				ServerAction(ServerAction & copy);
+				ServerAction &operator=(ServerAction & copy);
+			public:
+				ServerAction(Server &mServer);
+				virtual ~ServerAction();
+
+				void onReadSet();
+				void onWriteSet();
+				void onExceptSet();
+		};
+	private:
+		Config mConfig;
+		Socket mSocket;
+		ServerAction mFDListener;
+
+		Server();
+		Server(Server const & copy);
+		Server &operator=(Server const & copy);
+		Server(ServerManager &serverManager, Config config);
+	public:
+		static Server *create(ServerManager &serverManager, Config config);
+		virtual ~Server();
+
+		const Config &getConfig() const;
+		virtual void onRepeat();
+};
+
+#endif

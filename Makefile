@@ -4,6 +4,8 @@ CFLAGS = -Wall -Wextra -Werror -std=c++98 -I./srcs #-fsanitize=address
 SRC_NAME = main.cpp \
 			ServerManager.cpp \
 			fdmanager/FileDiscriptorManager.cpp \
+			server/Config.cpp \
+			server/Server.cpp \
 			server/ServerComponent.cpp \
 			socket/Socket.cpp
 

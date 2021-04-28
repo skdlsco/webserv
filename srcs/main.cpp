@@ -1,6 +1,13 @@
-#include <iostream>
+#include "ServerManager.hpp"
+#include "server/Server.hpp"
+#include "server/Config.hpp"
 
 int main(void)
 {
-	std::cout << "Hello webserv" << std::endl;
+	ServerManager serverManager;
+
+	Server::create(serverManager, Config(3000));
+	Server::create(serverManager, Config(8000));
+
+	serverManager.run();
 }
