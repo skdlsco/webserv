@@ -1,7 +1,13 @@
 NAME = webserv
 CC = clang++
-CFLAGS = -Wall -Wextra -Werror -std=c++98 #-fsanitize=address
-SRC_NAME = main.cpp
+CFLAGS = -Wall -Wextra -Werror -std=c++98 -I./srcs #-fsanitize=address
+SRC_NAME = main.cpp \
+			ServerManager.cpp \
+			fdmanager/FileDiscriptorManager.cpp \
+			config/Config.cpp \
+			server/Server.cpp \
+			server/ServerComponent.cpp \
+			socket/Socket.cpp
 
 SRC_DIR = ./srcs/
 SRC = $(addprefix $(SRC_DIR), $(SRC_NAME))
