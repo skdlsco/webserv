@@ -14,8 +14,8 @@ class Server : public ServerComponent
 			private:
 				Server &mServer;
 				ServerAction();
-				ServerAction(ServerAction & copy);
-				ServerAction &operator=(ServerAction & copy);
+				ServerAction(ServerAction const & copy);
+				ServerAction &operator=(ServerAction const & copy);
 			public:
 				ServerAction(Server &mServer);
 				virtual ~ServerAction();
