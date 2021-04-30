@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include "FileDiscriptorListener.hpp"
 #include <vector>

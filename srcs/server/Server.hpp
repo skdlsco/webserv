@@ -1,10 +1,11 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-# include "ServerComponent.hpp"
+# include "server/ServerComponent.hpp"
 # include "fdmanager/FileDiscriptorListener.hpp"
 # include "socket/Socket.hpp"
-# include "Config.hpp"
+# include "config/Config.hpp"
+# include "server/Connection.hpp"
 
 class Server : public ServerComponent
 {
