@@ -41,11 +41,8 @@ Server::ServerAction::~ServerAction()
 void Server::ServerAction::onReadSet()
 {
 	struct sockaddr_in clientAddr;
-	int clientfd = mServer.mSocket.accept(clientAddr);
-	std::cout << "client fd = " << clientfd << std::endl;
-	char content[] = "HTTP/1.1 200 OK\r\nContent-Length:2\r\n\r\nabc";
-	write(clientfd, content, strlen(content));
-	close(clientfd);
+	int clientFD = mServer.mSocket.accept(clientAddr);
+	Connection::create(mServer.getServerManager(), mServer.mConfig, clientAddr, clientFD);
 }
 
 void Server::ServerAction::onWriteSet()

@@ -6,6 +6,7 @@ SRC_NAME = main.cpp \
 			fdmanager/FileDiscriptorManager.cpp \
 			config/Config.cpp \
 			server/Server.cpp \
+			server/Connection.cpp \
 			server/ServerComponent.cpp \
 			socket/Socket.cpp
 

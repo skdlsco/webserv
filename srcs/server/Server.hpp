@@ -1,10 +1,11 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-# include "ServerComponent.hpp"
+# include "server/ServerComponent.hpp"
 # include "fdmanager/FileDiscriptorListener.hpp"
 # include "socket/Socket.hpp"
-# include "Config.hpp"
+# include "config/Config.hpp"
+# include "server/Connection.hpp"
 
 class Server : public ServerComponent
 {
@@ -14,8 +15,8 @@ class Server : public ServerComponent
 			private:
 				Server &mServer;
 				ServerAction();
-				ServerAction(ServerAction & copy);
-				ServerAction &operator=(ServerAction & copy);
+				ServerAction(ServerAction const & copy);
+				ServerAction &operator=(ServerAction const & copy);
 			public:
 				ServerAction(Server &mServer);
 				virtual ~ServerAction();

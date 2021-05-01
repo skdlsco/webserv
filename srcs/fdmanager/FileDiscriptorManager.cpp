@@ -17,12 +17,14 @@ void FileDiscriptorManager::add(int fd, FileDiscriptorListener &listener)
 {
 	FD_SET(fd, &mFDSet); // TODO FD_SET
 	mListenerVec[fd] = &listener;
+	fcntl(fd, F_SETFL, O_NONBLOCK);
 }
 
 void FileDiscriptorManager::remove(int fd)
 {
 	FD_CLR(fd, &mFDSet); // TODO FD_CLR
 	mListenerVec[fd] = NULL;
+	close(fd);
 }
 
 bool FileDiscriptorManager::select()
