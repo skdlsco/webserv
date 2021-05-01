@@ -2,8 +2,7 @@
 
 static bool isLeapYear(int year)
 {
-	//before 1900 + year. recheck please.
-	int now = 1970 + year;
+	int now = year;
 
 	return ((!(now % 4) && (now % 100)) || !(now % 400));
 }
