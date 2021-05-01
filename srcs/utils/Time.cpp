@@ -2,9 +2,10 @@
 
 static bool isLeapYear(int year)
 {
-	int now = 1900 + year;
+	//before 1900 + year. recheck please.
+	int now = 1970 + year;
 
-	return ((!((now) % 4) && (now % 100)) || !((now) % 400));
+	return ((!(now % 4) && (now % 100)) || !(now % 400));
 }
 
 static int getYearLength(int year)
@@ -35,6 +36,8 @@ struct tm utils::timavalToTm(struct timeval time)
 	time.tv_sec /= 60;
 	result.tm_min = time.tv_sec % 60;
 	time.tv_sec /= 60;
+	
+	//for UTC+9
 	time.tv_sec += 9;
 	result.tm_hour = time.tv_sec % 24;
 	time.tv_sec /= 24;
