@@ -3,12 +3,14 @@ CC = clang++
 CFLAGS = -Wall -Wextra -Werror -std=c++98 -I./srcs #-fsanitize=address
 SRC_NAME = main.cpp \
 			ServerManager.cpp \
-			fdmanager/FileDiscriptorManager.cpp \
 			config/Config.cpp \
+			fdmanager/FileDiscriptorManager.cpp \
+			logger/Logger.cpp \
 			server/Server.cpp \
 			server/Connection.cpp \
 			server/ServerComponent.cpp \
-			socket/Socket.cpp
+			socket/Socket.cpp \
+			utils/Time.cpp
 
 SRC_DIR = ./srcs/
 SRC = $(addprefix $(SRC_DIR), $(SRC_NAME))
