@@ -24,7 +24,7 @@ static int getMonthLength(int month, int year)
 		return (29);
 	return (monthDays[month]);
 }
-#include <iostream>
+
 struct tm utils::timavalToTm(struct timeval time)
 {
 	struct tm result;
