@@ -13,14 +13,20 @@
 class FileDiscriptorManager
 {
 	private:
-		fd_set mFDSet;
+		struct fd_set mFDSet;
 		std::vector<FileDiscriptorListener *> mListenerVec;
 
 		FileDiscriptorManager(FileDiscriptorManager const & copy);
 		FileDiscriptorManager & operator=(FileDiscriptorManager const & copy);
+
+		void fdZero();
+		void fdSet(int fd);
+		void fdClr(int fd);
+		bool isFDSet(int fd, struct fd_set * fdSet);
+		bool isFDOverflow(int fd);
 	public:
 		static const std::string TAG;
-		static const int FD_MAX = 1024;
+		static const int FD_MAX = __DARWIN_FD_SETSIZE;
 
 		FileDiscriptorManager();
 		virtual ~FileDiscriptorManager();
