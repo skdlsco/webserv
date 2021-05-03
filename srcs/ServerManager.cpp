@@ -1,6 +1,6 @@
 #include "ServerManager.hpp"
 
-const std::string ServerManager::TAG = "ServerManager";
+std::string const ServerManager::TAG = "ServerManager";
 
 ServerManager::ServerManager()
 {

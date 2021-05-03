@@ -1,6 +1,6 @@
 #include "FileDiscriptorManager.hpp"
 
-const std::string FileDiscriptorManager::TAG = "FileDiscriptorManager";
+std::string const FileDiscriptorManager::TAG = "FileDiscriptorManager";
 
 FileDiscriptorManager::FileDiscriptorManager()
 {

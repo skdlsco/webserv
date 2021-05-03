@@ -16,7 +16,7 @@ class Socket
 		Socket(Socket const & copy);
 		Socket &operator=(Socket const & copy);
 	public:
-		static const std::string TAG;
+		static std::string const TAG;
 
 		Socket();
 		~Socket();

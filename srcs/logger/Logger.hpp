@@ -10,9 +10,9 @@
 
 namespace logger
 {
-	void println(const std::string tag, const std::string msg);
-	void println(const std::string tag, const char * msg);
-	std::ostream &print(const std::string tag);
+	void println(std::string const tag, std::string const msg);
+	void println(std::string const tag, const char * msg);
+	std::ostream &print(std::string const tag);
 };
 
 #endif

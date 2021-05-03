@@ -40,7 +40,7 @@ class Server : public ServerComponent
 		static Server *create(ServerManager &serverManager, Config config);
 		virtual ~Server();
 
-		const Config &getConfig() const;
+		Config const &getConfig() const;
 		virtual void onRepeat();
 };
 

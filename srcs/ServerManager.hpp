@@ -20,7 +20,7 @@ class ServerManager
 		ServerManager(ServerManager const & copy);
 		ServerManager & operator=(ServerManager const & copy);
 	public:
-		static const std::string TAG;
+		static std::string const TAG;
 
 		ServerManager();
 		virtual ~ServerManager();

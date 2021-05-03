@@ -1,6 +1,6 @@
 #include "Socket.hpp"
 
-const std::string Socket::TAG = "Socket";
+std::string const Socket::TAG = "Socket";
 
 Socket::Socket()
 {

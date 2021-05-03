@@ -1,6 +1,6 @@
 #include "Server.hpp"
 
-const std::string Server::TAG = "Server";
+std::string const Server::TAG = "Server";
 
 Server::Server(ServerManager &serverManager, Config config)
 : ServerComponent(serverManager), mConfig(config), mFDListener(*this)
@@ -17,7 +17,7 @@ Server *Server::create(ServerManager &serverManager, Config config)
 	{
 		return (new Server(serverManager, config));
 	}
-	catch(const std::exception& e)
+	catch(std::exception const &e)
 	{
 		std::cerr << e.what() << '\n';
 	}
@@ -29,7 +29,7 @@ Server::~Server()
 	getServerManager().removeFD(mSocket.getSocketFD());
 }
 
-const Config &Server::getConfig() const
+Config const &Server::getConfig() const
 {
 	return (mConfig);
 }
@@ -39,7 +39,8 @@ void Server::onRepeat()
 
 }
 
-Server::ServerAction::ServerAction(Server &server) : mServer(server)
+Server::ServerAction::ServerAction(Server &server)
+: mServer(server)
 {
 
 }
