@@ -8,7 +8,7 @@
 # include "fdmanager/FileDiscriptorListener.hpp"
 #include "config/Config.hpp"
 
-class Connection : ServerComponent
+class Connection : public ServerComponent
 {
 	private:
 		class ConnectionAction : public FileDiscriptorListener

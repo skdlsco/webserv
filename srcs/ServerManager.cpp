@@ -11,7 +11,8 @@ ServerManager::~ServerManager()
 {
 	for (componentIter it = mServerComponentVec.begin(); it < mServerComponentVec.end(); it++)
 	{
-		(*it)->finish();
+		if (*it)
+			(*it)->finish();
 	}
 }
 
@@ -22,9 +23,12 @@ void ServerManager::run()
 		mFDManager.select();
 		for (componentIter it = mServerComponentVec.begin(); it < mServerComponentVec.end(); it++)
 		{
-			(*it)->onRepeat();
+			if (*it)
+				(*it)->onRepeat();
 		}
-		std::remove(mServerComponentVec.begin(), mServerComponentVec.end(), (void *)NULL);
+		componentIter it = std::remove(mServerComponentVec.begin(), mServerComponentVec.end(), (void *)NULL);
+		if (it != mServerComponentVec.end())
+			mServerComponentVec.erase(it);
 	}
 }
 
@@ -35,10 +39,11 @@ void ServerManager::addComponent(ServerComponent *component)
 
 void ServerManager::removeComponent(ServerComponent *component)
 {
-	std::vector<ServerComponent *>::iterator it = std::find(mServerComponentVec.begin(),
-													mServerComponentVec.end(),
-													component);
-	*it = NULL;
+	for (componentIter it = mServerComponentVec.begin(); it < mServerComponentVec.end(); it++)
+	{
+		if (*it == component)
+			*it = NULL;
+	}
 }
 
 void ServerManager::addFD(int fd, FileDiscriptorListener &listener)

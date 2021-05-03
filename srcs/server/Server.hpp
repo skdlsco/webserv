@@ -6,6 +6,7 @@
 # include "socket/Socket.hpp"
 # include "config/Config.hpp"
 # include "server/Connection.hpp"
+# include "logger/Logger.hpp"
 
 class Server : public ServerComponent
 {
@@ -35,6 +36,7 @@ class Server : public ServerComponent
 		Server &operator=(Server const & copy);
 		Server(ServerManager &serverManager, Config config);
 	public:
+		static const std::string TAG;
 		static Server *create(ServerManager &serverManager, Config config);
 		virtual ~Server();
 
