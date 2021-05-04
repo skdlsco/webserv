@@ -1,8 +1,9 @@
 #include "ServerComponent.hpp"
 
-const std::string ServerComponent::TAG = "ServerComponent";
+std::string const ServerComponent::TAG = "ServerComponent";
 
-ServerComponent::ServerComponent(ServerManager &serverManager) : mServerManager(serverManager)
+ServerComponent::ServerComponent(ServerManager &serverManager)
+: mServerManager(serverManager)
 {
 	mServerManager.addComponent(this);
 }

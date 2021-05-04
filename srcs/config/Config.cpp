@@ -1,6 +1,7 @@
 #include "Config.hpp"
 
-Config::Config(int port) : mPort(port)
+Config::Config(int port)
+: mPort(port)
 {
 
 }

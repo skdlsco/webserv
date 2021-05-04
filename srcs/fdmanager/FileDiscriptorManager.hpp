@@ -25,7 +25,7 @@ class FileDiscriptorManager
 		bool isFDSet(int fd, struct fd_set * fdSet);
 		bool isFDOverflow(int fd);
 	public:
-		static const std::string TAG;
+		static std::string const TAG;
 		static const int FD_MAX = __DARWIN_FD_SETSIZE;
 
 		FileDiscriptorManager();
