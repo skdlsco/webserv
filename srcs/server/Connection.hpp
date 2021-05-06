@@ -8,7 +8,7 @@
 # include "fdmanager/FileDiscriptorListener.hpp"
 #include "config/Config.hpp"
 
-class Connection : ServerComponent
+class Connection : public ServerComponent
 {
 	private:
 		class ConnectionAction : public FileDiscriptorListener
@@ -28,23 +28,23 @@ class Connection : ServerComponent
 		};
 	private:
 		ConnectionAction mFDListener;
-		const Config &mConfig;
+		Config const &mConfig;
 		struct sockaddr_in mAddr; // TODO convert type to int, string
 		int mFD;
 
 		Connection();
-		Connection(ServerManager &serverManager, const Config &config, struct sockaddr_in addr, int fd);
+		Connection(ServerManager &serverManager, Config const &config, struct sockaddr_in addr, int fd);
 		Connection(Connection const & copy);
 		Connection &operator=(Connection const & copy);
 	public:
-		static const std::string TAG;
+		static std::string const TAG;
 
 		virtual ~Connection();
 		static Connection *create(ServerManager &serverManager,
-									const Config &config, struct sockaddr_in addr, int fd);
+									Config const &config, struct sockaddr_in addr, int fd);
 
 		virtual void onRepeat();
-		const Config &getConfig() const;
+		Config const &getConfig() const;
 };
 
 #endif

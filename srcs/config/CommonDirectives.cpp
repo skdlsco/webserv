@@ -1,18 +1,17 @@
 #include "CommonDirectives.hpp"
 
-const std::string CommonDirectives::TAG = "CommonDirectives";
+std::string const CommonDirectives::TAG = "CommonDirectives";
 
 CommonDirectives::CommonDirectives()
-: mRoot(""), mClientMaxBodySize(""), mAutoIndex(false)
+: mIndexFile(""), mRoot("/"), mAutoIndex(false)
 {
 
 }
 
 CommonDirectives::CommonDirectives(CommonDirectives const & copy)
 {
-	this->mIndexList = copy.mIndexList;
+	this->mIndexFile = copy.mIndexFile;
 	this->mRoot = copy.mRoot;
-	this->mClientMaxBodySize = copy.mClientMaxBodySize;
 	this->mAutoIndex = copy.mAutoIndex;
 }
 
@@ -30,9 +29,9 @@ CommonDirectives::~CommonDirectives()
 
 }
 
-std::vector<std::string> CommonDirectives::getIndexList() const
+std::string CommonDirectives::getIndexFile() const
 {
-	return (mIndexList);
+	return (mIndexFile);
 }
 
 std::string CommonDirectives::getRoot() const
@@ -40,19 +39,15 @@ std::string CommonDirectives::getRoot() const
 	return (mRoot);
 }
 
-std::string CommonDirectives::getClientMaxBodySize() const
-{
-	return (mClientMaxBodySize);
-}
 
 bool CommonDirectives::isAutoIndex() const
 {
 	return (mAutoIndex);
 }
 
-void CommonDirectives::addIndex(std::string index)
+void CommonDirectives::setIndexFile(std::string indexFile)
 {
-	mIndexList.push_back(index);
+	mIndexFile = indexFile;
 }
 
 void CommonDirectives::setRoot(std::string root)
@@ -60,14 +55,7 @@ void CommonDirectives::setRoot(std::string root)
 	mRoot = root;
 }
 
-void CommonDirectives::setClientMaxBodySize(std::string clientMaxBodySize)
+void CommonDirectives::setAutoIndex(bool autoIndex)
 {
-	mClientMaxBodySize = clientMaxBodySize;
+	mAutoIndex = autoIndex;
 }
-
-
-
-
-
-
-

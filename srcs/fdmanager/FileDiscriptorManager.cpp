@@ -1,6 +1,6 @@
 #include "FileDiscriptorManager.hpp"
 
-const std::string FileDiscriptorManager::TAG = "FileDiscriptorManager";
+std::string const FileDiscriptorManager::TAG = "FileDiscriptorManager";
 
 FileDiscriptorManager::FileDiscriptorManager()
 {
@@ -62,11 +62,14 @@ void FileDiscriptorManager::remove(int fd)
 
 bool FileDiscriptorManager::select()
 {
+	struct timeval time;
 	struct fd_set readset = mFDSet;
 	struct fd_set writeset = mFDSet;
 	struct fd_set exceptset = mFDSet;
 
-	if (::select(FD_MAX, &readset, &writeset, &exceptset, NULL))
+	time.tv_sec = 0;
+	time.tv_usec = 0;
+	if (::select(FD_MAX, &readset, &writeset, &exceptset, &time))
 	{
 		for (int i = 0; i < FD_MAX; i++)
 		{

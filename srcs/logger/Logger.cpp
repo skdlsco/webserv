@@ -13,19 +13,19 @@ static void printTime()
 	std::cout << buffer;
 }
 
-void logger::println(const std::string tag, const std::string msg)
+void logger::println(std::string const tag, std::string const msg)
 {
 	printTime();
 	std::cout << " [" << tag << "]" << ": " << msg << std::endl;
 }
 
-void logger::println(const std::string tag, const char *msg)
+void logger::println(std::string const tag, const char *msg)
 {
 	printTime();
 	std::cout << " [" << tag << "]" << ": " << msg << std::endl;
 }
 
-std::ostream &logger::print(const std::string tag)
+std::ostream &logger::print(std::string const tag)
 {
 	printTime();
 	return (std::cout << " [" << tag << "]" << ": ");

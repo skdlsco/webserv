@@ -14,7 +14,7 @@ class ServerComponent
 		ServerComponent(ServerComponent const & copy);
 		ServerComponent &operator=(ServerComponent const & copy);
 	public:
-		static const std::string TAG;
+		static std::string const TAG;
 
 		ServerComponent(ServerManager &serverManager);
 		virtual ~ServerComponent();

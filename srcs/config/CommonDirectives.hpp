@@ -1,34 +1,30 @@
-#ifndef COMMONDIRECTIVES_HPP
-# define COMMONDIRECTIVES_HPP
+#ifndef COMMON_DIRECTIVES_HPP
+# define COMMON_DIRECTIVES_HPP
 
 #include <iostream>
 #include <string>
 #include <vector>
-#include <algorithm>
 
 class CommonDirectives
 {
 	private:
-		std::vector<std::string> mIndexList;
+		std::string mIndexFile;
 		std::string mRoot;
-		std::string mClientMaxBodySize;
 		bool mAutoIndex;
 		
 	public:
-		static const std::string TAG;
+		static std::string const TAG;
 		CommonDirectives();
 		CommonDirectives(CommonDirectives const & copy);
 		CommonDirectives &operator=(CommonDirectives const & rhs);
 		virtual ~CommonDirectives();
 
-		std::vector<std::string> getIndexList() const;
+		std::string getIndexFile() const;
 		std::string getRoot() const;
-		std::string getClientMaxBodySize() const;
 		bool isAutoIndex() const;
 
-		void addIndex(std::string index);
+		void setIndexFile(std::string indexFile);
 		void setRoot(std::string root);
-		void setClientMaxBodySize(std::string clientMaxBodySize);
 		void setAutoIndex(bool autoIndex);
 };
 
