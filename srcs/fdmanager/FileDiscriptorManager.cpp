@@ -73,11 +73,11 @@ bool FileDiscriptorManager::select()
 	{
 		for (int i = 0; i < FD_MAX; i++)
 		{
-			if (isFDSet(i, &readset))
+			if (isFDSet(i, &readset) && mListenerVec[i])
 				mListenerVec[i]->onReadSet();
-			if (isFDSet(i, &writeset))
+			if (isFDSet(i, &writeset) && mListenerVec[i])
 				mListenerVec[i]->onWriteSet();
-			if (isFDSet(i, &exceptset))
+			if (isFDSet(i, &exceptset) && mListenerVec[i])
 				mListenerVec[i]->onExceptSet();
 		}
 	}
