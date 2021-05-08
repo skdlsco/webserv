@@ -3,7 +3,7 @@
 std::string const LocationConfig::TAG = "LocationConfig";
 
 LocationConfig::LocationConfig()
-: mCommonDirectives(), mAllowMethodList({"GET", "HEAD", "OPTIONS"}), mCGIExtensionList(),
+: mCommonDirective(), mAllowMethodList({"GET", "HEAD", "OPTIONS"}), mCGIExtensionList(),
 	mCGIPath("")
 {
 
@@ -11,17 +11,17 @@ LocationConfig::LocationConfig()
 
 LocationConfig::LocationConfig(LocationConfig const & copy)
 {
-	mCommonDirectives = copy.mCommonDirectives;
-	mAllowMethodList = copy.mAllowMethodList;
-	mCGIExtensionList = copy.mCGIExtensionList;
-	mCGIPath = copy.mCGIPath;
+	*this = copy;
 }
 
 LocationConfig &LocationConfig::operator=(LocationConfig const & rhs)
 {
 	if (this != &rhs)
 	{
-		LocationConfig(rhs);
+		mCommonDirective = rhs.mCommonDirective;
+		mAllowMethodList = rhs.mAllowMethodList;
+		mCGIExtensionList = rhs.mCGIExtensionList;
+		mCGIPath = rhs.mCGIPath;
 	}
 	return (*this);
 }

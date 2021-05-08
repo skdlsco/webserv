@@ -4,13 +4,12 @@
 #include <iostream>
 #include <string>
 #include <set>
-#include <algorithm>
-# include "CommonDirectives.hpp"
+# include "CommonDirective.hpp"
 
 class LocationConfig
 {
 	private:
-		CommonDirectives		mCommonDirectives;
+		CommonDirective			mCommonDirective;
 		std::set<std::string>	mAllowMethodList;
 		std::set<std::string>	mCGIExtensionList;
 		std::string				mCGIPath;

@@ -4,16 +4,17 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 # include "ServerConfig.hpp"
 # include "LocationConfig.hpp"
-# include "CommonDirectives.hpp"
+# include "CommonDirective.hpp"
 
 class ConfigParser
 {
 	private:
-		std::vector<ServerConfig> mServers;
-		std::vector<LocationConfig> mLocations;
-		CommonDirectives			mCommonDirectives;
+		std::vector<ServerConfig> mServerList;
+		std::map<std::string, LocationConfig> mLocationList;
+		CommonDirective mCommonDirective;
 		ConfigParser();
 
 	public:

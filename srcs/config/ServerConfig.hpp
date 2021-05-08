@@ -4,23 +4,22 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <algorithm>
 # include "LocationConfig.hpp"
 # include "ConfigParser.hpp"
-# include "CommonDirectives.hpp"
+# include "CommonDirective.hpp"
 
 class ServerConfig
 {
 	typedef std::vector<LocationConfig>::iterator LocationIter;
 	
 	private:
-		CommonDirectives		mCommonDirectives;
+		CommonDirective		mCommonDirective;
 
 		/* below attributes have default value */
 		std::string				mIP;
 		size_t					mPort;
 		std::string				mServerName;
-		bool					mDefaultServer;
+		bool					mIsDefaultServer;
 		size_t 					mClientMaxBodySize;
 
 		/* below attributes haven't default value */
@@ -46,7 +45,7 @@ class ServerConfig
 		void setIP(std::string ip);
 		void setPort(size_t port);
 		void setServerName(std::string const & serverName);
-		void setDefaultServer(bool defaultServer);
+		void setDefaultServer(bool isDefaultServer);
 		void setClientMaxBodySize(size_t clientMaxBodySize);
 		void setDefaultErrorPagePath(std::string const & defaultErrorPagePath);
 

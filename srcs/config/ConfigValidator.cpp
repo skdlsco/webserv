@@ -10,14 +10,14 @@ ConfigValidator::ConfigValidator(std::string FilePath)
 
 ConfigValidator::ConfigValidator(ConfigValidator const & copy)
 {
-	mFilePath = copy.mFilePath;
+	*this = copy;
 }
 
 ConfigValidator &ConfigValidator::operator=(ConfigValidator const & rhs)
 {
 	if (this != &rhs)
 	{
-		ConfigValidator(rhs);
+		mFilePath = rhs.mFilePath;
 	}
 	return (*this);
 }
