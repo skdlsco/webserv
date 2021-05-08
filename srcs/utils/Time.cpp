@@ -1,4 +1,4 @@
-#include "Utils.hpp"
+#include "Time.hpp"
 
 static bool isLeapYear(int year)
 {
@@ -25,7 +25,7 @@ static int getMonthLength(int month, int year)
 	return (monthDays[month]);
 }
 
-struct tm utils::timavalToTm(struct timeval time)
+struct tm web::timevalToTm(struct timeval time)
 {
 	struct tm result;
 	int year = 0;
@@ -35,7 +35,7 @@ struct tm utils::timavalToTm(struct timeval time)
 	time.tv_sec /= 60;
 	result.tm_min = time.tv_sec % 60;
 	time.tv_sec /= 60;
-	
+
 	//for UTC+9
 	time.tv_sec += 9;
 	result.tm_hour = time.tv_sec % 24;
