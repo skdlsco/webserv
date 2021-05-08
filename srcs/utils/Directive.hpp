@@ -1,15 +1,15 @@
 #ifndef DIRECTIVE_HPP
 # define DIRECTIVE_HPP
 
-# define NUM_SERVER_DIRECTIVES 8
-# define NUM_LOCATION_DIRECTIVES 6
+# define NUM_SERVER_DIRECTIVE 8
+# define NUM_LOCATION_DIRECTIVE 6
 
 # include <iostream>
 # include <string>
 
 namespace web
 {
-	std::string serverDirectives[NUM_SERVER_DIRECTIVES] = 
+	std::string serverDirective[NUM_SERVER_DIRECTIVE] = 
 	{
 		"index",
 		"root",
@@ -21,7 +21,7 @@ namespace web
 		"default_error_page"
 	};
 
-	std::string locationDirectives[NUM_LOCATION_DIRECTIVES] = 
+	std::string locationDirective[NUM_LOCATION_DIRECTIVE] = 
 	{
 		"index",
 		"root",
@@ -31,7 +31,7 @@ namespace web
 		"cgi_path"
 	};
 
-	enum ServerDirectives
+	enum ServerDirective
 	{
 		INDEX,
 		ROOT,
@@ -43,7 +43,7 @@ namespace web
 		DEFAULT_ERROR_PAGE
 	};
 
-	enum LocationDirectives
+	enum LocationDirective
 	{
 		INDEX,
 		ROOT,
