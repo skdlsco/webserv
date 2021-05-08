@@ -47,7 +47,7 @@ void ConfigValidator::configSplitByEnter()
 
 	configFile.open(mFilePath);
 	if (!configFile.is_open())
-		throw ConfigValidator::ConfigValidatorException("The config file not opened.");
+		throw ConfigValidator::ConfigValidatorException("The config file can't opened.");
 
 	while (getline(configFile, line))
 	{
