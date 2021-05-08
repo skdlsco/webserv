@@ -59,7 +59,7 @@ int Socket::getSocketFD() const
 
 Socket::SocketException::SocketException(std::string message) throw()
 {
-	mMessage = "SOCKET ERROR" + message;
+	mMessage = "SOCKET ERROR: " + message;
 }
 
 Socket::SocketException::~SocketException() throw()

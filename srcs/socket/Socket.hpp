@@ -35,7 +35,7 @@ class Socket
 				std::string mMessage;
 			public:
 				virtual ~SocketException() throw();
-				SocketException(std::string mMessage) throw();
+				SocketException(std::string message) throw();
 				virtual const char* what() const throw();
 		};
 };

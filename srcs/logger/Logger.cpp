@@ -7,7 +7,7 @@ static void printTime()
 	struct tm t;
 
 	gettimeofday(&time, NULL);
-	t = utils::timavalToTm(time);
+	t = web::timevalToTm(time);
 	strftime(buffer, 18, "%x %X", &t);
 	buffer[17] = '\0';
 	std::cout << buffer;
