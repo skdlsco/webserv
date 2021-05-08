@@ -4,7 +4,7 @@ std::string const ServerConfig::TAG = "ServerConfig";
 
 ServerConfig::ServerConfig() 
 : mCommonDirective(), mIP("0.0.0.0"), mPort(8080), 
-	mServerName(mIP), mClientMaxBodySize(0), mDefaultErrorPagePath(""), 
+	mServerName(mIP), mClientMaxBodySize(100000), mDefaultErrorPagePath(""), 
 	mLocationList()
 {
 

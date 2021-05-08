@@ -58,21 +58,26 @@ void ConfigValidator::configSplitByEnter()
 
 std::vector<std::string> split(std::string target, std::string token)
 {
-	std::vector<std::string> splitResult;
 	std::string splitLine;
+	std::vector<std::string> splitResult;
 	size_t startIdx = 0;
-	size_t findTokenIdx = target.find(token);
+	size_t findTokenIdx = target.find_first_of(token, startIdx);
 
 	while (findTokenIdx != std::string::npos)
 	{
 		splitLine = target.substr(startIdx, findTokenIdx - startIdx);
-		splitResult.push_back(splitLine);
+		if (splitLine != "")
+			splitResult.push_back(splitLine);
 		startIdx = findTokenIdx + 1;
-		findTokenIdx = target.find(token);
+		findTokenIdx = target.find_first_of(token, startIdx);
 	}
+	splitLine = target.substr(startIdx, findTokenIdx - startIdx);
+	if (splitLine != "")
+		splitResult.push_back(splitLine);
 
 	return (splitResult);
 }
+
 
 
 /* scope pair check */
@@ -106,7 +111,7 @@ bool ConfigValidator::isScopeMatched()
 bool ConfigValidator::isConfigSequenceMatched()
 {
 	mLineIndex = 0;
-	int countNotFoundDirective = 0;
+	int countFoundDirective = 0;
 	std::vector<std::string> splitResult;
 
 	std::string tempLine;
@@ -126,16 +131,18 @@ bool ConfigValidator::isConfigSequenceMatched()
 			{
 				/* set map value zero to initialize */
 				initializeCountServerDirective();
-				countNotFoundDirective = 0;
+				countFoundDirective = 0;
 				for (size_t idx = 0; idx < NUM_SERVER_DIRECTIVE; idx++)
 				{
-					countNotFoundDirective++;
 					if (mEachConfigLine[mLineIndex].find(web::serverDirective[idx]) != std::string::npos)
+					{
+						countFoundDirective++;
 						mCountServerDirective[web::serverDirective[idx]]++;
+					}
 				}
 
 				/* not matched any directive? (to find weird directive) */
-				if (countNotFoundDirective == NUM_SERVER_DIRECTIVE)
+				if (countFoundDirective != NUM_SERVER_DIRECTIVE)
 					return (false);
 				mLineIndex++;
 			}
@@ -160,24 +167,24 @@ bool ConfigValidator::isConfigSequenceMatched()
 			{
 				/* set map value zero to initialize */
 				initializeCountLocationDirective();
-				countNotFoundDirective = 0;
+				countFoundDirective = 0;
 				for (size_t idx = 0; idx < NUM_LOCATION_DIRECTIVE; idx++)
 				{
-					countNotFoundDirective++;
 					if (mEachConfigLine[mLineIndex].find(web::locationDirective[idx]) != std::string::npos)
+					{
+						countFoundDirective++;
 						mCountLocationDirective[web::locationDirective[idx]]++;
+					}
 				}
 
 				/* not found location inner directive? */
-				if (countNotFoundDirective == NUM_LOCATION_DIRECTIVE)
+				if (countFoundDirective != NUM_LOCATION_DIRECTIVE)
 					return (false);
 				mLineIndex++;
 			}
 
 			/* is mandatory directive not existed? */
-			if (!mCountLocationDirective[web::locationDirective[web::LocationDirective::INDEX]] ||
-				!mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_EXTENSION]] ||
-				!mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_PATH]])
+			if (!mCountLocationDirective[web::locationDirective[web::LocationDirective::INDEX]])
 				return (false);
 
 			/* is server directive already existed? */
