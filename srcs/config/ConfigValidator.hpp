@@ -12,7 +12,6 @@
 class ConfigValidator
 {
 	private:
-		size_t mLineIndex;
 		std::string mFilePath;
 		std::map<std::string, size_t> mCountServerDirective;
 		std::map<std::string, size_t> mCountLocationDirective;
@@ -26,15 +25,26 @@ class ConfigValidator
 		ConfigValidator &operator=(ConfigValidator const & rhs);
 		virtual ~ConfigValidator();
 
+
+
 		bool isConfigValidate();
-		void configSplitByEnter();
+
 		bool isScopeMatched();
 		bool isConfigSequenceMatched();
-		bool isHostAndPortPairAlreadyExisted();
+		bool isServerInfoAlreadyExisted();
 		bool isLocationURIAlreadyExisted();
+
+
+		bool isValidateServerDirective(size_t & lineIndex);
+		bool isValidateLocationDirective(size_t & lineIndex);
+		bool hasMandatoryDirective(size_t flag);
+		bool hasEachDirectiveOnlyOne(size_t flag);
 
 		void initializeCountServerDirective();
 		void initializeCountLocationDirective();
+
+		void readConfigFileByLine();
+		std::vector<std::string> split(std::string target, std::string token);
 
 		class ConfigValidatorException : public std::exception
 		{
