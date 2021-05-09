@@ -218,10 +218,8 @@ bool ConfigValidator::isHostAndPortPairAlreadyExisted()
 	std::string serverName;
 
 	/* I don't have a good idea for below variable names */
-	/* key: ip, value: port */
-	std::map<std::string, std::string> serverIpPortPair;
-	/* key: ip, value: server_name */
-	std::map<std::string, std::string> serverIpHostPair;
+	std::string serverInfoLine;
+	std::vector<std::string> serverInfoList;
 
 	while (mLineIndex < mEachConfigLine.size())
 	{
@@ -243,18 +241,17 @@ bool ConfigValidator::isHostAndPortPairAlreadyExisted()
 				if (mEachConfigLine[mLineIndex].find(web::serverDirective[web::ServerDirective::SERVER_NAME]) != std::string::npos)
 					serverName = split(mEachConfigLine[mLineIndex], " ").back();
 			}
+
+			serverInfoLine = ip + port + serverName;
 			break;
 		}
 
-		for (size_t idx = 0; idx < serverIpPortPair.size(); idx++)
+		for (size_t idx = 0; idx < serverInfoList.size(); idx++)
 		{
-			if (serverIpPortPair.count(ip) && serverIpPortPair[ip] == port && serverIpHostPair[ip] == serverName)
+			if (serverInfoList[idx] == serverInfoLine)
 				return (false);
 			else
-			{
-				serverIpPortPair.insert({ip, port});
-				serverIpHostPair.insert({ip, serverName});
-			}
+				serverInfoList.push_back(serverInfoLine);
 		}
 		mLineIndex++;
 	}
