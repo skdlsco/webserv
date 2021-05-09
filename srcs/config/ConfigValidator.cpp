@@ -187,6 +187,12 @@ bool ConfigValidator::isConfigSequenceMatched()
 			if (!mCountLocationDirective[web::locationDirective[web::LocationDirective::INDEX]])
 				return (false);
 
+			/* is CGI path & extension are existed or non-existed */
+			/*********************************/
+			if (!mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_EXTENSION]] && mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_PATH]]
+				|| mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_EXTENSION]] && !mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_PATH]])
+				return (false);
+
 			/* is server directive already existed? */
 			for (size_t idx = 0; idx < NUM_LOCATION_DIRECTIVE; idx++)
 			{
@@ -274,7 +280,6 @@ bool ConfigValidator::isLocationURIAlreadyExisted()
 		}
 	}
 	return (true);
-
 }
 
 void ConfigValidator::initializeCountServerDirective()
