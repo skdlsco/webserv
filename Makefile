@@ -10,7 +10,8 @@ SRC_NAME = main.cpp \
 			server/Connection.cpp \
 			server/ServerComponent.cpp \
 			socket/Socket.cpp \
-			utils/Time.cpp
+			utils/Time.cpp \
+			utils/Split.cpp
 
 SRC_DIR = ./srcs/
 SRC = $(addprefix $(SRC_DIR), $(SRC_NAME))
