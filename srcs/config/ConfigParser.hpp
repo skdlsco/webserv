@@ -3,11 +3,12 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <map>
-# include "../utils/Split.hpp"
 # include "../utils/Directive.hpp"
+# include "../utils/String.hpp"
 # include "ServerConfig.hpp"
 # include "LocationConfig.hpp"
 
@@ -30,6 +31,7 @@ class ConfigParser
 		ServerConfig *parseServerDirective(size_t & lineIndex);
 		LocationConfig *parseLocationDirective(size_t & lineIndex);
 
+		void setDefaultServer(std::vector<ServerConfig *> & serverList);
 		void setLocationConfigCommonDirective(LocationConfig * locationConfig);
 		void readConfigFileByLine();
 

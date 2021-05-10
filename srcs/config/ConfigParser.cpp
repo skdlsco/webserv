@@ -55,8 +55,8 @@ std::vector<ServerConfig *> ConfigParser::parseConfigFile()
 		}
 		lineIndex++;
 	}
-
-	//default server checker
+	/* default server checker */
+	setDefaultServer(serverList);
 	return (serverList);
 }
 
@@ -88,11 +88,11 @@ ServerConfig *ConfigParser::parseServerDirective(size_t & lineIndex)
 		if (currentLine.find(web::serverDirective[web::ServerDirective::IP]) != std::string::npos)
 			serverConfig->setIP(splitResult.back());
 		if (currentLine.find(web::serverDirective[web::ServerDirective::PORT]) != std::string::npos)
-			serverConfig->setPort(atoi(splitResult.back().c_str()));
+			serverConfig->setPort(web::stoi(splitResult.back()));
 		if (currentLine.find(web::serverDirective[web::ServerDirective::SERVER_NAME]) != std::string::npos)
 			serverConfig->setServerName(splitResult.back());
 		if (currentLine.find(web::serverDirective[web::ServerDirective::CLIENT_MAX_BODY_SIZE]) != std::string::npos)
-			serverConfig->setClientMaxBodySize(atoi(splitResult.back().c_str()));
+			serverConfig->setClientMaxBodySize(web::stoi(splitResult.back()));
 		if (currentLine.find(web::serverDirective[web::ServerDirective::DEFAULT_ERROR_PAGE]) != std::string::npos)
 			serverConfig->setDefaultErrorPagePath(splitResult.back());
 
@@ -148,6 +148,30 @@ LocationConfig *ConfigParser::parseLocationDirective(size_t & lineIndex)
 		lineIndex++;
 	}
 	return (locationConfig);
+}
+
+void ConfigParser::setDefaultServer(std::vector<ServerConfig *> & serverList)
+{
+	bool isDefaultServer;
+	std::string key;
+	std::map<std::string, std::string> defaultServer;
+
+	for (int serverIdx = 0; serverIdx < serverList.size(); serverIdx++)
+	{
+		isDefaultServer = true;
+
+		/* will be make function itos() */ 
+		key = serverList[serverIdx]->getIP() + web::toString(serverList[serverIdx]->getPort());
+		for (int mapIdx = 0; mapIdx < defaultServer.size(); mapIdx++)
+		{
+			if (defaultServer.count(key))
+			{
+				isDefaultServer = false;
+				break;
+			}
+		}
+		serverList[serverIdx]->setDefaultServer(isDefaultServer);
+	}
 }
 
 void ConfigParser::setLocationConfigCommonDirective(LocationConfig * locationConfig)

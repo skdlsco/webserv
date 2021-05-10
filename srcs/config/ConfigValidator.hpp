@@ -8,7 +8,7 @@
 # include <vector>
 # include <exception>
 # include "../utils/Directive.hpp"
-# include "../utils/Split.hpp"
+# include "../utils/String.hpp"
 
 class ConfigValidator
 {
