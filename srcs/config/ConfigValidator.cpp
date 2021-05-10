@@ -2,7 +2,7 @@
 
 std::string const ConfigValidator::TAG = "ConfigValidator";
 
-ConfigValidator::ConfigValidator(std::string FilePath)
+ConfigValidator::ConfigValidator(std::string const & FilePath)
 : mFilePath(FilePath)
 {
 	readConfigFileByLine();

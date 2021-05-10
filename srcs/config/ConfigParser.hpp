@@ -10,7 +10,6 @@
 # include "../utils/Directive.hpp"
 # include "ServerConfig.hpp"
 # include "LocationConfig.hpp"
-# include "CommonDirective.hpp"
 
 class ConfigParser
 {

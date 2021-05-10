@@ -55,6 +55,8 @@ std::vector<ServerConfig *> ConfigParser::parseConfigFile()
 		}
 		lineIndex++;
 	}
+
+	//default server checker
 	return (serverList);
 }
 

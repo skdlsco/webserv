@@ -26,8 +26,8 @@ class LocationConfig
 		std::set<std::string> getCGIExtensionList() const;
 		std::string getCGIPath() const;
 
-		void addAllowMethod(std::string allowMethod);
-		void addCGIExtension(std::string CGIExtension);
+		void addAllowMethod(std::string const & allowMethod);
+		void addCGIExtension(std::string const & CGIExtension);
 		void setCGIPath(std::string CGIPath);
 };
 

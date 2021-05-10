@@ -21,7 +21,7 @@ class ConfigValidator
 
 	public:
 		static std::string const TAG;
-		ConfigValidator(std::string filePath);
+		ConfigValidator(std::string const & filePath);
 		ConfigValidator(ConfigValidator const & copy);
 		ConfigValidator &operator=(ConfigValidator const & rhs);
 		virtual ~ConfigValidator();

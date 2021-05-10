@@ -41,7 +41,7 @@ CommonDirective ServerConfig::getCommonDirective() const
 	return (mCommonDirective);
 }
 
-std::string ServerConfig::getIP() const
+std::string const & ServerConfig::getIP() const
 {
 	return (mIP);
 }
@@ -51,7 +51,7 @@ size_t ServerConfig::getPort() const
 	return (mPort);
 }
 
-std::string ServerConfig::getServerName() const
+std::string const & ServerConfig::getServerName() const
 {
 	return (mServerName);
 }
@@ -66,7 +66,7 @@ size_t ServerConfig::getClientMaxBodySize() const
 	return (mClientMaxBodySize);
 }
 
-std::string ServerConfig::getDefaultErrorPagePath() const
+std::string const & ServerConfig::getDefaultErrorPagePath() const
 {
 	return (mDefaultErrorPagePath);
 }
@@ -76,7 +76,7 @@ std::map<std::string, LocationConfig *> ServerConfig::getLocationList() const
 	return (mLocationList);
 }
 
-void ServerConfig::setIP(std::string ip)
+void ServerConfig::setIP(std::string const & ip)
 {
 	mIP = ip;
 }
