@@ -36,6 +36,11 @@ ServerConfig &ServerConfig::operator=(ServerConfig const & rhs)
 	return (*this);
 }
 
+CommonDirective ServerConfig::getCommonDirective() const
+{
+	return (mCommonDirective);
+}
+
 std::string ServerConfig::getIP() const
 {
 	return (mIP);

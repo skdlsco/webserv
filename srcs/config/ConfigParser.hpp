@@ -2,9 +2,12 @@
 # define CONFIG_PARSER_HPP
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <map>
+# include "../utils/Split.hpp"
+# include "../utils/Directive.hpp"
 # include "ServerConfig.hpp"
 # include "LocationConfig.hpp"
 # include "CommonDirective.hpp"
@@ -12,6 +15,8 @@
 class ConfigParser
 {
 	private:
+		std::string mFilePath;
+		std::vector<std::string> mEachConfigLine;
 		std::vector<ServerConfig> mServerList;
 		std::map<std::string, LocationConfig> mLocationList;
 		CommonDirective mCommonDirective;
@@ -19,34 +24,36 @@ class ConfigParser
 
 	public:
 		static std::string const TAG;
-		ConfigParser(std::string configPath);
+		ConfigParser(std::string filePath);
 		ConfigParser(ConfigParser const & copy);
 		ConfigParser &operator=(ConfigParser const & rhs);
 		virtual ~ConfigParser();
 
-		void readConfigLineByLine(std::string configPath);
-		
+		void readConfigFileByLine();
 
-		void addServer(ServerConfig Server);
-		void addLocation(LocationConfig Location);
+		size_t getServerBlockNum();
+		size_t getLocationBlockNum(ServerConfig const & server);
 
-		void clearLocation();
-		
-		/* CommonDirectives */
-		void parseIndexFileList();
-		void parseRoot();
-		void parseAutoIndex();
+		void addServer(ServerConfig const & server);
+		void addLocation(std::string URI, LocationConfig const & location);
 
-		/* ServerConfig */
-		void parseListen();
-		void parseServerName();
-		void parseDefaultErrorPage();
-		void parseClientMaxBodySize();
+		void parseConfigFile();
+		void parseServerDirective(size_t & lineIndex);
+		void parseLocationDirective(size_t & lineIndex, std::string const & URI);
 
-		/* LocationConfig*/
-		void parseAllowMethodList();
-		void parseCGIExtensionList();
-		void parseCGIPath();
+		void clearServerList();
+		void clearLocationList();
+
+		class ConfigParserException : public std::exception
+		{
+			private:
+				std::string mMessage;
+
+			public:
+				virtual ~ConfigParserException() throw();
+				ConfigParserException(std::string message) throw();
+				virtual const char* what() const throw();
+		};
 };
 
 #endif

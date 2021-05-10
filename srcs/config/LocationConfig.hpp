@@ -21,6 +21,7 @@ class LocationConfig
 		LocationConfig &operator=(LocationConfig const & rhs);
 		virtual ~LocationConfig();
 
+		CommonDirective getCommonDirective() const;
 		std::set<std::string> getAllowMethodList() const;
 		std::set<std::string> getCGIExtensionList() const;
 		std::string getCGIPath() const;

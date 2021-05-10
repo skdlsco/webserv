@@ -32,6 +32,11 @@ LocationConfig::~LocationConfig()
 	mCGIExtensionList.clear();
 }
 
+CommonDirective LocationConfig::getCommonDirective() const
+{
+	return (mCommonDirective);
+}
+
 std::set<std::string> LocationConfig::getAllowMethodList() const
 {
 	return (mAllowMethodList);

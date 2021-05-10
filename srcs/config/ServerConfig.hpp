@@ -33,6 +33,7 @@ class ServerConfig
 		ServerConfig &operator=(ServerConfig const & rhs);
 		virtual ~ServerConfig();
 
+		CommonDirective getCommonDirective() const;
 		std::string	getIP() const;
 		size_t		getPort() const;
 		std::string getServerName() const;

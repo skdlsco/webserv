@@ -8,6 +8,7 @@
 # include <vector>
 # include <exception>
 # include "../utils/Directive.hpp"
+# include "../utils/Split.hpp"
 
 class ConfigValidator
 {
@@ -25,15 +26,12 @@ class ConfigValidator
 		ConfigValidator &operator=(ConfigValidator const & rhs);
 		virtual ~ConfigValidator();
 
-
-
 		bool isConfigValidate();
 
 		bool isScopeMatched();
 		bool isConfigSequenceMatched();
 		bool isServerInfoAlreadyExisted();
 		bool isLocationURIAlreadyExisted();
-
 
 		bool isValidateServerDirective(size_t & lineIndex);
 		bool isValidateLocationDirective(size_t & lineIndex);
@@ -44,7 +42,6 @@ class ConfigValidator
 		void initializeCountLocationDirective();
 
 		void readConfigFileByLine();
-		std::vector<std::string> split(std::string target, std::string token);
 
 		class ConfigValidatorException : public std::exception
 		{
