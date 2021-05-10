@@ -1,6 +1,6 @@
 #include "Split.hpp"
 
-std::vector<std::string> split(std::string target, std::string token)
+std::vector<std::string> web::split(std::string target, std::string token)
 {
 	std::string splitLine;
 	std::vector<std::string> splitResult;
@@ -10,7 +10,7 @@ std::vector<std::string> split(std::string target, std::string token)
 	while (findTokenIdx != std::string::npos)
 	{
 		splitLine = target.substr(startIdx, findTokenIdx - startIdx);
-		if (splitLine != "") 
+		if (splitLine != "")
 			splitResult.push_back(splitLine);
 		startIdx = findTokenIdx + 1;
 		findTokenIdx = target.find_first_of(token, startIdx);
