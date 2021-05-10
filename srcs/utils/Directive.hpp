@@ -1,6 +1,9 @@
 #ifndef DIRECTIVE_HPP
 # define DIRECTIVE_HPP
 
+# define FLAG_SERVER 1
+# define FLAG_LOCATION 2
+
 # define NUM_SERVER_DIRECTIVE 8
 # define NUM_LOCATION_DIRECTIVE 6
 
