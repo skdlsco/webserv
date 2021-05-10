@@ -71,7 +71,7 @@ std::string ServerConfig::getDefaultErrorPagePath() const
 	return (mDefaultErrorPagePath);
 }
 
-std::vector<LocationConfig> ServerConfig::getLocationList() const
+std::map<std::string, LocationConfig *> ServerConfig::getLocationList() const
 {
 	return (mLocationList);
 }
@@ -106,8 +106,8 @@ void ServerConfig::setDefaultErrorPagePath(std::string const & defaultErrorPageP
 	mDefaultErrorPagePath = defaultErrorPagePath;
 }
 
-void ServerConfig::addLocation(LocationConfig const & location)
+void ServerConfig::addLocation(std::string URI, LocationConfig *location)
 {
-	mLocationList.push_back(location);
+	mLocationList.insert({URI, location});
 }
 

@@ -18,145 +18,141 @@ ConfigParser &ConfigParser::operator=(ConfigParser const & rhs)
 	if (this != &rhs)
 	{
 		this->mFilePath = rhs.mFilePath;
-		this->mServerList = rhs.mServerList;
-		this->mLocationList = rhs.mLocationList;
-		this->mCommonDirective = rhs.mCommonDirective;
+		this->mEachConfigLine = rhs.mEachConfigLine;
 	}
 	return (*this);
 }
 
 ConfigParser::~ConfigParser()
 {
-	mServerList.clear();
-	mLocationList.clear();
+
 }
 
-void ConfigParser::parseConfigFile()
+std::vector<ServerConfig *> ConfigParser::parseConfigFile()
 {
 	size_t lineIndex = 0;
-	std::vector <std::string> splitResult;
+	size_t currentServerIndex = 0;
+
 	std::string URI;
+	std::vector<std::string> splitResult;
+	std::vector<ServerConfig *> serverList;
+	std::map<std::string, LocationConfig *> locationList;
 
 	while (lineIndex < mEachConfigLine.size())
 	{
 		splitResult = web::split(mEachConfigLine[lineIndex], " {");
 		if (splitResult.front() == "server")
 		{
-  			parseServerDirective(lineIndex);
+			locationList.clear();
+			serverList.push_back(parseServerDirective(lineIndex));
+			mCurrentServerConfig = serverList[currentServerIndex];
+			currentServerIndex++;
 		}
 		if (splitResult.front() == "location")
 		{
 			URI = splitResult.back();
-			parseLocationDirective(lineIndex, URI);
+			mCurrentServerConfig->addLocation(URI, parseLocationDirective(lineIndex));
 		}
 		lineIndex++;
 	}
+	return (serverList);
 }
 
-void ConfigParser::parseServerDirective(size_t & lineIndex)
+ServerConfig *ConfigParser::parseServerDirective(size_t & lineIndex)
 {
-	ServerConfig serverConfig;
+	std::string currentLine;
 	std::vector<std::string> splitResult;
-	std::string currLine;
+
+	ServerConfig *serverConfig = new ServerConfig();
+	if (!serverConfig)
+		throw ConfigParserException("serverConfig cannot allocate memory.");
 
 	while (lineIndex < mEachConfigLine.size() &&
 			mEachConfigLine[lineIndex].find("location") == std::string::npos &&
 			mEachConfigLine[lineIndex].find("}") == std::string::npos)
 	{
-		currLine = mEachConfigLine[lineIndex];
-		splitResult = web::split(currLine, " ");
+		currentLine = mEachConfigLine[lineIndex];
+		splitResult = web::split(currentLine, " ");
 
-		if (currLine.find(web::serverDirective[web::ServerDirective::INDEX]) != std::string::npos)
-			serverConfig.getCommonDirective().setIndexFile(splitResult.back());
-		if (currLine.find(web::serverDirective[web::ServerDirective::ROOT]) != std::string::npos)
-			serverConfig.getCommonDirective().setRoot(splitResult.back());
-		if (currLine.find(web::serverDirective[web::ServerDirective::AUTOINDEX]) != std::string::npos && splitResult.back() == "on")
-			serverConfig.getCommonDirective().setAutoIndex(true);
+		/* find common directive */
+		if (currentLine.find(web::serverDirective[web::ServerDirective::INDEX]) != std::string::npos)
+			serverConfig->getCommonDirective().setIndexFile(splitResult.back());
+		if (currentLine.find(web::serverDirective[web::ServerDirective::ROOT]) != std::string::npos)
+			serverConfig->getCommonDirective().setRoot(splitResult.back());
+		if (currentLine.find(web::serverDirective[web::ServerDirective::AUTOINDEX]) != std::string::npos && splitResult.back() == "on")
+			serverConfig->getCommonDirective().setAutoIndex(true);
 
-		if (currLine.find(web::serverDirective[web::ServerDirective::IP]) != std::string::npos)
-			serverConfig.setIP(splitResult.back());
-		if (currLine.find(web::serverDirective[web::ServerDirective::PORT]) != std::string::npos)
-			serverConfig.setPort(atoi(splitResult.back()));
-		if (currLine.find(web::serverDirective[web::ServerDirective::SERVER_NAME]) != std::string::npos)
-			serverConfig.setServerName(splitResult.back());
-		if (currLine.find(web::serverDirective[web::ServerDirective::CLIENT_MAX_BODY_SIZE]) != std::string::npos)
-			serverConfig.setClientMaxBodySize(atoi(splitResult.back()));
-		if (currLine.find(web::serverDirective[web::ServerDirective::DEFAULT_ERROR_PAGE]) != std::string::npos)
-			serverConfig.setDefaultErrorPagePath(splitResult.back());
+		/* find server directive */
+		if (currentLine.find(web::serverDirective[web::ServerDirective::IP]) != std::string::npos)
+			serverConfig->setIP(splitResult.back());
+		if (currentLine.find(web::serverDirective[web::ServerDirective::PORT]) != std::string::npos)
+			serverConfig->setPort(atoi(splitResult.back().c_str()));
+		if (currentLine.find(web::serverDirective[web::ServerDirective::SERVER_NAME]) != std::string::npos)
+			serverConfig->setServerName(splitResult.back());
+		if (currentLine.find(web::serverDirective[web::ServerDirective::CLIENT_MAX_BODY_SIZE]) != std::string::npos)
+			serverConfig->setClientMaxBodySize(atoi(splitResult.back().c_str()));
+		if (currentLine.find(web::serverDirective[web::ServerDirective::DEFAULT_ERROR_PAGE]) != std::string::npos)
+			serverConfig->setDefaultErrorPagePath(splitResult.back());
 
 		lineIndex++;
 	}
-
+	return (serverConfig);
 }
 
-void ConfigParser::parseLocationDirective(size_t & lineIndex, std::string const & URI)
+LocationConfig *ConfigParser::parseLocationDirective(size_t & lineIndex)
 {
-	LocationConfig locationConfig;
+	std::string currentLine;
 	std::vector<std::string> splitResult;
-	std::string currLine;
 
+	LocationConfig *locationConfig = new LocationConfig();
+	if (!locationConfig)
+		throw ConfigParserException("locationConfig cannot allocate memory.");
+
+	/* setting common directive use server block's value */
+	setLocationConfigCommonDirective(locationConfig);
+	
 	while (lineIndex < mEachConfigLine.size() &&
 		mEachConfigLine[lineIndex].find("}") != std::string::npos)
 	{
-		currLine = mEachConfigLine[lineIndex];
-		splitResult = web::split(currLine, " ");
+		currentLine = mEachConfigLine[lineIndex];
+		splitResult = web::split(currentLine, " ");
 
-		if (currLine.find(web::locationDirective[web::LocationDirective::INDEX]) != std::string::npos)
-			locationConfig.getCommonDirective().setIndexFile(splitResult.back());
-		if (currLine.find(web::locationDirective[web::LocationDirective::ROOT]) != std::string::npos)
-			locationConfig.getCommonDirective().setRoot(splitResult.back());
-		if (currLine.find(web::locationDirective[web::LocationDirective::AUTOINDEX]) != std::string::npos && splitResult.back() == "on")
-			locationConfig.getCommonDirective().setAutoIndex(true);
+		/* find common directive */
+		if (currentLine.find(web::locationDirective[web::LocationDirective::INDEX]) != std::string::npos)
+			locationConfig->getCommonDirective().setIndexFile(splitResult.back());
+		if (currentLine.find(web::locationDirective[web::LocationDirective::ROOT]) != std::string::npos)
+			locationConfig->getCommonDirective().setRoot(splitResult.back());
+		if (currentLine.find(web::locationDirective[web::LocationDirective::AUTOINDEX]) != std::string::npos && splitResult.back() == "on")
+			locationConfig->getCommonDirective().setAutoIndex(true);
 
-		if (currLine.find(web::locationDirective[web::LocationDirective::ALLOW_METHOD]) != std::string::npos)
+		/* find location directive */
+		if (currentLine.find(web::locationDirective[web::LocationDirective::ALLOW_METHOD]) != std::string::npos)
 		{
 			for (size_t idx = 1; idx < splitResult.size(); idx++)
 			{
-				locationConfig.addAllowMethod(splitResult[idx]);
+				locationConfig->addAllowMethod(splitResult[idx]);
 			}
 		}
-		if (currLine.find(web::locationDirective[web::LocationDirective::CGI_EXTENSION]) != std::string::npos)
+		if (currentLine.find(web::locationDirective[web::LocationDirective::CGI_EXTENSION]) != std::string::npos)
 		{
 			for (size_t idx = 1; idx < splitResult.size(); idx++)
 			{
-				locationConfig.addCGIExtension(splitResult[idx]);
+				locationConfig->addCGIExtension(splitResult[idx]);
 			}
 		}
-		if (currLine.find(web::locationDirective[web::LocationDirective::CGI_PATH]) != std::string::npos)
-			locationConfig.setCGIPath(splitResult.back());
+		if (currentLine.find(web::locationDirective[web::LocationDirective::CGI_PATH]) != std::string::npos)
+			locationConfig->setCGIPath(splitResult.back());
+
 		lineIndex++;
 	}
-	addLocation({URI, locationConfig});
+	return (locationConfig);
 }
 
-size_t ConfigParser::getServerBlockNum()
+void ConfigParser::setLocationConfigCommonDirective(LocationConfig * locationConfig)
 {
-	return (mServerList.size());
-}
-
-size_t ConfigParser::getLocationBlockNum(ServerConfig const & server)
-{
-	return (server.getLocationList().size());
-}
-
-void ConfigParser::addServer(ServerConfig const & server)
-{
-	mServerList.push_back(server);
-}
-
-void ConfigParser::addLocation(std::string URI, LocationConfig const & location)
-{
-	mLocationList.insert({URI, location});
-}
-
-void ConfigParser::clearServerList()
-{
-	mServerList.clear();
-}
-
-void ConfigParser::clearLocationList()
-{
-	mLocationList.clear();
+	locationConfig->getCommonDirective().setIndexFile(mCurrentServerConfig->getCommonDirective().getIndexFile());
+	locationConfig->getCommonDirective().setRoot(mCurrentServerConfig->getCommonDirective().getRoot());
+	locationConfig->getCommonDirective().setAutoIndex(mCurrentServerConfig->getCommonDirective().isAutoIndex());
 }
 
 void ConfigParser::readConfigFileByLine()

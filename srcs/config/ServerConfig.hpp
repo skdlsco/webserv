@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 # include "LocationConfig.hpp"
 # include "ConfigParser.hpp"
 # include "CommonDirective.hpp"
@@ -24,7 +25,7 @@ class ServerConfig
 
 		/* below attributes haven't default value */
 		std::string				mDefaultErrorPagePath;
-		std::vector<LocationConfig>	mLocationList;
+		std::map<std::string, LocationConfig *>	mLocationList;
 	
 	public:
 		static std::string const TAG;
@@ -40,7 +41,7 @@ class ServerConfig
 		bool		isDefaultServer() const;
 		size_t		getClientMaxBodySize() const;
 		std::string	getDefaultErrorPagePath() const;
-		std::vector<LocationConfig> getLocationList() const;
+		std::map<std::string, LocationConfig *> getLocationList() const;
 		// LocationConfig getLocationByIndex(size_t idx) const;
 	
 		void setIP(std::string ip);
@@ -50,7 +51,7 @@ class ServerConfig
 		void setClientMaxBodySize(size_t clientMaxBodySize);
 		void setDefaultErrorPagePath(std::string const & defaultErrorPagePath);
 
-		void addLocation(LocationConfig const & location);
+		void addLocation(std::string URI, LocationConfig *location);
 		// void removeLocation(LocationConfig & location);
 
 };

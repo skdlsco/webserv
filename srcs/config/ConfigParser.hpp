@@ -17,9 +17,7 @@ class ConfigParser
 	private:
 		std::string mFilePath;
 		std::vector<std::string> mEachConfigLine;
-		std::vector<ServerConfig> mServerList;
-		std::map<std::string, LocationConfig> mLocationList;
-		CommonDirective mCommonDirective;
+		ServerConfig *mCurrentServerConfig;
 		ConfigParser();
 
 	public:
@@ -29,20 +27,12 @@ class ConfigParser
 		ConfigParser &operator=(ConfigParser const & rhs);
 		virtual ~ConfigParser();
 
+		std::vector<ServerConfig *> parseConfigFile();
+		ServerConfig *parseServerDirective(size_t & lineIndex);
+		LocationConfig *parseLocationDirective(size_t & lineIndex);
+
+		void setLocationConfigCommonDirective(LocationConfig * locationConfig);
 		void readConfigFileByLine();
-
-		size_t getServerBlockNum();
-		size_t getLocationBlockNum(ServerConfig const & server);
-
-		void addServer(ServerConfig const & server);
-		void addLocation(std::string URI, LocationConfig const & location);
-
-		void parseConfigFile();
-		void parseServerDirective(size_t & lineIndex);
-		void parseLocationDirective(size_t & lineIndex, std::string const & URI);
-
-		void clearServerList();
-		void clearLocationList();
 
 		class ConfigParserException : public std::exception
 		{
