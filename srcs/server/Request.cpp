@@ -77,7 +77,9 @@ void Request::analyzeHeaderField(std::string line)
 
 	if (colonIndex == std::string::npos)
 	{
-		// error
+		mAnalyzeLevel = DONE;
+		mErrorCode = 400;
+		return ;
 	}
 	std::string key = line.substr(0, colonIndex);
 	std::string value = line.substr(colonIndex + 1);
@@ -85,7 +87,9 @@ void Request::analyzeHeaderField(std::string line)
 
 	if (mField.find(key) != mField.end())
 	{
-		// Duplicated keys;
+		mAnalyzeLevel = DONE;
+		mErrorCode = 400;
+		return ;
 	}
 	mField.insert(std::pair<std::string, std::string>(key, value));
 }
