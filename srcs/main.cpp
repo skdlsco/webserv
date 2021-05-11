@@ -1,13 +1,31 @@
-#include "ServerManager.hpp"
-#include "server/Server.hpp"
+// #include "ServerManager.hpp"
+// #include "server/Server.hpp"
 #include "config/ConfigManager.hpp"
 
 int main(void)
 {
-	ServerManager serverManager;
+	std::string filePath;
+	std::vector<ServerConfig *>configList;
+	// ServerManager serverManager;
 
-	Server::create(serverManager, Config(3000));
-	Server::create(serverManager, Config(8000));
+	try
+	{
+		std::cin >> filePath;
+		ConfigManager configManager(filePath);
+		if (configManager.isConfigValidate())
+			configList = configManager.parseConfigFile();
 
-	serverManager.run();
+		for (size_t idx = 0; idx < configList.size(); idx++)
+		{
+			// Server::create(serverManager, configList[idx]);
+		}
+
+		// serverManager.run();
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+	}
+	
+	return (0);
 }
