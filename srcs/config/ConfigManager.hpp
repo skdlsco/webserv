@@ -6,22 +6,23 @@
 
 class ConfigManager
 {
-    private:
-        std::string mFilePath;
-        ConfigValidator mValidator;
-        ConfigParser mParser;
+	private:
+		std::string mFilePath;
+		ConfigValidator mValidator;
+		ConfigParser mParser;
+		ConfigManager();
 
-        ConfigManager();
+	public:
+		static std::string const TAG;
+		ConfigManager(std::string filePath);
+		ConfigManager(ConfigManager const & copy);
+		ConfigManager &operator=(ConfigManager const & rhs);
+		virtual ~ConfigManager();
 
-    public:
-        static std::string const TAG;
-        ConfigManager(ConfigManager const & copy);
-        ConfigManager(std::string filePath);
-        ConfigManager &operator=(ConfigManager const & rhs);
-        virtual ~ConfigManager();
+		bool isConfigValidate();
+		std::vector<ServerConfig *> parseConfigFile();
 
-        bool isConfigValidate();
-        std::vector<ServerConfig *> parseConfigFile();
+		void setConfigFile(std::string filePath);
 };
 
 #endif
