@@ -1,6 +1,6 @@
 #include "String.hpp"
 
-static int		isOverLLMax(const char *str)
+static int isOverLLMax(const char *str)
 {
 	const char	LLMax[] = "9223372036854775807";
 	int			idx;
@@ -15,7 +15,7 @@ static int		isOverLLMax(const char *str)
 	return (0);
 }
 
-int		atoi(const char *str)
+int web::atoi(const char *str)
 {
 	int idx = 0;
 	int num = 0;
@@ -42,13 +42,13 @@ int		atoi(const char *str)
 	return (num);
 }
 
-int stoi(std::string const & str)
+int web::stoi(std::string const & str)
 {
 	return (atoi(str.c_str()));
 }
 
 /* itoa */
-static int		getSize(int n)
+static int getSize(int n)
 {
 	int size;
 
@@ -63,12 +63,12 @@ static int		getSize(int n)
 	return (size);
 }
 
-static int		abs(int n)
+static int abs(int n)
 {
 	return (n < 0 ? -n : n);
 }
 
-char			*itoa(int val)
+char *web::itoa(int val)
 {
 	int		idx;
 	int		size = getSize(val);
@@ -91,7 +91,7 @@ char			*itoa(int val)
 }
 
 /* toString */
-std::string toString(int val)
+std::string web::toString(int val)
 {
 	char *CStr = itoa(val);
 	std::string str(CStr);
@@ -102,7 +102,7 @@ std::string toString(int val)
 }
 
 /* split */
-std::vector<std::string> split(std::string target, std::string token)
+std::vector<std::string> web::split(std::string target, std::string token)
 {
 	std::string splitLine;
 	std::vector<std::string> splitResult;
