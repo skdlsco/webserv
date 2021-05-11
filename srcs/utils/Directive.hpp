@@ -14,7 +14,7 @@
 namespace web
 {
 
-	std::string commonDirective[NUM_COMMON_DIRECTIVE] = 
+	std::string const commonDirective[NUM_COMMON_DIRECTIVE] = 
 	{
 		"index",
 		"root",
