@@ -36,7 +36,12 @@ ServerConfig &ServerConfig::operator=(ServerConfig const & rhs)
 	return (*this);
 }
 
-std::string ServerConfig::getIP() const
+CommonDirective ServerConfig::getCommonDirective() const
+{
+	return (mCommonDirective);
+}
+
+std::string const & ServerConfig::getIP() const
 {
 	return (mIP);
 }
@@ -46,7 +51,7 @@ size_t ServerConfig::getPort() const
 	return (mPort);
 }
 
-std::string ServerConfig::getServerName() const
+std::string const & ServerConfig::getServerName() const
 {
 	return (mServerName);
 }
@@ -61,17 +66,17 @@ size_t ServerConfig::getClientMaxBodySize() const
 	return (mClientMaxBodySize);
 }
 
-std::string ServerConfig::getDefaultErrorPagePath() const
+std::string const & ServerConfig::getDefaultErrorPagePath() const
 {
 	return (mDefaultErrorPagePath);
 }
 
-std::vector<LocationConfig> ServerConfig::getLocationList() const
+std::map<std::string, LocationConfig *> ServerConfig::getLocationList() const
 {
 	return (mLocationList);
 }
 
-void ServerConfig::setIP(std::string ip)
+void ServerConfig::setIP(std::string const & ip)
 {
 	mIP = ip;
 }
@@ -101,8 +106,8 @@ void ServerConfig::setDefaultErrorPagePath(std::string const & defaultErrorPageP
 	mDefaultErrorPagePath = defaultErrorPagePath;
 }
 
-void ServerConfig::addLocation(LocationConfig const & location)
+void ServerConfig::addLocation(std::string URI, LocationConfig *location)
 {
-	mLocationList.push_back(location);
+	mLocationList.insert({URI, location});
 }
 

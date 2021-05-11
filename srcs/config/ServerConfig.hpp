@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 # include "LocationConfig.hpp"
 # include "ConfigParser.hpp"
 # include "CommonDirective.hpp"
@@ -15,16 +16,14 @@ class ServerConfig
 	private:
 		CommonDirective		mCommonDirective;
 
-		/* below attributes have default value */
 		std::string				mIP;
 		size_t					mPort;
 		std::string				mServerName;
 		bool					mIsDefaultServer;
 		size_t 					mClientMaxBodySize;
 
-		/* below attributes haven't default value */
 		std::string				mDefaultErrorPagePath;
-		std::vector<LocationConfig>	mLocationList;
+		std::map<std::string, LocationConfig *>	mLocationList;
 	
 	public:
 		static std::string const TAG;
@@ -33,25 +32,23 @@ class ServerConfig
 		ServerConfig &operator=(ServerConfig const & rhs);
 		virtual ~ServerConfig();
 
-		std::string	getIP() const;
-		size_t		getPort() const;
-		std::string getServerName() const;
-		bool		isDefaultServer() const;
-		size_t		getClientMaxBodySize() const;
-		std::string	getDefaultErrorPagePath() const;
-		std::vector<LocationConfig> getLocationList() const;
-		// LocationConfig getLocationByIndex(size_t idx) const;
-	
-		void setIP(std::string ip);
+		CommonDirective getCommonDirective() const;
+		std::string const & getIP() const;
+		size_t getPort() const;
+		std::string const & getServerName() const;
+		bool isDefaultServer() const;
+		size_t getClientMaxBodySize() const;
+		std::string const & getDefaultErrorPagePath() const;
+		std::map<std::string, LocationConfig *> getLocationList() const;
+
+		void setIP(std::string const & ip);
 		void setPort(size_t port);
 		void setServerName(std::string const & serverName);
 		void setDefaultServer(bool isDefaultServer);
 		void setClientMaxBodySize(size_t clientMaxBodySize);
 		void setDefaultErrorPagePath(std::string const & defaultErrorPagePath);
 
-		void addLocation(LocationConfig const & location);
-		// void removeLocation(LocationConfig & location);
-
+		void addLocation(std::string URI, LocationConfig *location);
 };
 
 #endif

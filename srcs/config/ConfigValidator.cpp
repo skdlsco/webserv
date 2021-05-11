@@ -2,10 +2,10 @@
 
 std::string const ConfigValidator::TAG = "ConfigValidator";
 
-ConfigValidator::ConfigValidator(std::string FilePath)
+ConfigValidator::ConfigValidator(std::string const & FilePath)
 : mFilePath(FilePath)
 {
-
+	readConfigFileByLine();
 }
 
 ConfigValidator::ConfigValidator(ConfigValidator const & copy)
@@ -18,6 +18,7 @@ ConfigValidator &ConfigValidator::operator=(ConfigValidator const & rhs)
 	if (this != &rhs)
 	{
 		mFilePath = rhs.mFilePath;
+		mEachConfigLine = rhs.mEachConfigLine;
 	}
 	return (*this);
 }
@@ -56,7 +57,7 @@ bool ConfigValidator::isScopeMatched()
 		if (currentLine.find('{') != std::string::npos || 
 			currentLine.find('}') != std::string::npos)
 		{
-			splitResult = split(currentLine, " ");
+			splitResult = web::split(currentLine, " ");
 			if ((splitResult.size() == 2 && (splitResult.front() == "server" && splitResult.back() == "{")) || //server {
 				(splitResult.size() == 3 && (splitResult.front() == "location" && splitResult.back() == "{"))) //location [URI] {
 				scopeValue++;
@@ -76,11 +77,10 @@ bool ConfigValidator::isConfigSequenceMatched()
 	size_t lineIndex = 0;
 	std::vector<std::string> splitResult;
 
-	std::string tempLine;
 	while (lineIndex < mEachConfigLine.size())
 	{
 		/* to find server/location and block end */
-		splitResult = split(mEachConfigLine[lineIndex], " {");
+		splitResult = web::split(mEachConfigLine[lineIndex], " {");
 
 		if (splitResult.front() == "server")
 		{
@@ -137,11 +137,11 @@ bool ConfigValidator::isServerInfoAlreadyExisted()
 			while (mEachConfigLine[lineIndex].find("location") == std::string::npos)
 			{
 				if (mEachConfigLine[lineIndex].find(web::serverDirective[web::ServerDirective::IP]) != std::string::npos)
-					ip = split(mEachConfigLine[lineIndex], " ").back();
+					ip = web::split(mEachConfigLine[lineIndex], " ").back();
 				if (mEachConfigLine[lineIndex].find(web::serverDirective[web::ServerDirective::PORT]) != std::string::npos)
-					port = split(mEachConfigLine[lineIndex], " ").back();
+					port = web::split(mEachConfigLine[lineIndex], " ").back();
 				if (mEachConfigLine[lineIndex].find(web::serverDirective[web::ServerDirective::SERVER_NAME]) != std::string::npos)
-					serverName = split(mEachConfigLine[lineIndex], " ").back();
+					serverName = web::split(mEachConfigLine[lineIndex], " ").back();
 				lineIndex++;
 			}
 			serverInfoLine = ip + port + serverName;
@@ -168,7 +168,7 @@ bool ConfigValidator::isLocationURIAlreadyExisted()
 	{
 		if (mEachConfigLine[lineIndex].find("location") != std::string::npos)
 		{
-			URI = split(mEachConfigLine[lineIndex], " {").back();
+			URI = web::split(mEachConfigLine[lineIndex], " {").back();
 			for (size_t idx = 0; idx < URIvector.size(); idx++)
 			{
 				if (URIvector[idx] == URI)
@@ -316,29 +316,6 @@ void ConfigValidator::readConfigFileByLine()
 		mEachConfigLine.push_back(line);
 	}
 	configFile.close();
-}
-
-
-std::vector<std::string> ConfigValidator::split(std::string target, std::string token)
-{
-	std::string splitLine;
-	std::vector<std::string> splitResult;
-	size_t startIdx = 0;
-	size_t findTokenIdx = target.find_first_of(token, startIdx);
-
-	while (findTokenIdx != std::string::npos)
-	{
-		splitLine = target.substr(startIdx, findTokenIdx - startIdx);
-		if (splitLine != "")
-			splitResult.push_back(splitLine);
-		startIdx = findTokenIdx + 1;
-		findTokenIdx = target.find_first_of(token, startIdx);
-	}
-	splitLine = target.substr(startIdx, findTokenIdx - startIdx);
-	if (splitLine != "")
-		splitResult.push_back(splitLine);
-
-	return (splitResult);
 }
 
 ConfigValidator::ConfigValidatorException::ConfigValidatorException(std::string message) throw()

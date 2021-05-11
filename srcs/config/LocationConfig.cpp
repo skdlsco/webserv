@@ -32,6 +32,11 @@ LocationConfig::~LocationConfig()
 	mCGIExtensionList.clear();
 }
 
+CommonDirective LocationConfig::getCommonDirective() const
+{
+	return (mCommonDirective);
+}
+
 std::set<std::string> LocationConfig::getAllowMethodList() const
 {
 	return (mAllowMethodList);
@@ -47,12 +52,12 @@ std::string LocationConfig::getCGIPath() const
 	return (mCGIPath);
 }
 
-void LocationConfig::addAllowMethod(std::string allowMethod)
+void LocationConfig::addAllowMethod(std::string const & allowMethod)
 {
 	mAllowMethodList.insert(allowMethod);
 }
 
-void LocationConfig::addCGIExtension(std::string CGIExtension)
+void LocationConfig::addCGIExtension(std::string const & CGIExtension)
 {
 	mCGIExtensionList.insert(CGIExtension);
 }

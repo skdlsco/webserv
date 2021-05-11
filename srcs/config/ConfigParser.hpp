@@ -2,51 +2,49 @@
 # define CONFIG_PARSER_HPP
 
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <map>
+# include "../utils/Directive.hpp"
+# include "../utils/String.hpp"
 # include "ServerConfig.hpp"
 # include "LocationConfig.hpp"
-# include "CommonDirective.hpp"
 
 class ConfigParser
 {
 	private:
-		std::vector<ServerConfig> mServerList;
-		std::map<std::string, LocationConfig> mLocationList;
-		CommonDirective mCommonDirective;
+		std::string mFilePath;
+		std::vector<std::string> mEachConfigLine;
+		ServerConfig *mCurrentServerConfig;
 		ConfigParser();
 
 	public:
 		static std::string const TAG;
-		ConfigParser(std::string configPath);
+		ConfigParser(std::string filePath);
 		ConfigParser(ConfigParser const & copy);
 		ConfigParser &operator=(ConfigParser const & rhs);
 		virtual ~ConfigParser();
 
-		void readConfigLineByLine(std::string configPath);
-		
+		std::vector<ServerConfig *> parseConfigFile();
+		ServerConfig *parseServerDirective(size_t & lineIndex);
+		LocationConfig *parseLocationDirective(size_t & lineIndex);
 
-		void addServer(ServerConfig Server);
-		void addLocation(LocationConfig Location);
+		void setDefaultServer(std::vector<ServerConfig *> & serverList);
+		void setLocationConfigCommonDirective(LocationConfig * locationConfig);
+		void readConfigFileByLine();
 
-		void clearLocation();
-		
-		/* CommonDirectives */
-		void parseIndexFileList();
-		void parseRoot();
-		void parseAutoIndex();
+		class ConfigParserException : public std::exception
+		{
+			private:
+				std::string mMessage;
 
-		/* ServerConfig */
-		void parseListen();
-		void parseServerName();
-		void parseDefaultErrorPage();
-		void parseClientMaxBodySize();
-
-		/* LocationConfig*/
-		void parseAllowMethodList();
-		void parseCGIExtensionList();
-		void parseCGIPath();
+			public:
+				virtual ~ConfigParserException() throw();
+				ConfigParserException(std::string message) throw();
+				virtual const char* what() const throw();
+		};
 };
 
 #endif
