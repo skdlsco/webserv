@@ -3,7 +3,7 @@
 std::string const ConfigManager::TAG = "ConfigManager";
 
 ConfigManager::ConfigManager(std::string filePath)
-: mFilePath(filePath), validator(mFilePath), parser(mFilePath)
+: mFilePath(filePath), mValidator(mFilePath), mParser(mFilePath)
 {
 
 }
@@ -18,8 +18,8 @@ ConfigManager &ConfigManager::operator=(ConfigManager const & rhs)
     if (this != &rhs)
     {
         this->mFilePath = rhs.mFilePath;
-        this->validator = rhs.validator;
-        this->parser = rhs.parser;
+        this->mValidator = rhs.mValidator;
+        this->mParser = rhs.mParser;
     }
     return (*this);
 }
@@ -31,12 +31,12 @@ ConfigManager::~ConfigManager()
 
 bool ConfigManager::isConfigValidate()
 {
-    if (!validator.isConfigValidate())
+    if (!mValidator.isConfigValidate())
         return (false);
     return (true);
 }
 
 std::vector<ServerConfig *> ConfigManager::parseConfigFile()
 {
-    return (parser.parseConfigFile());
+    return (mParser.parseConfigFile());
 }
