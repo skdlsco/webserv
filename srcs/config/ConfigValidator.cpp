@@ -5,6 +5,11 @@ std::string const ConfigValidator::DEFAULT_IP = "0.0.0.0";
 std::string const ConfigValidator::DEFAULT_PORT = "8080";
 std::string const ConfigValidator::DEFAULT_SERVER_NAME = "0.0.0.0";
 
+ConfigValidator::ConfigValidator()
+{
+
+}
+
 ConfigValidator::ConfigValidator(std::string const & FilePath)
 : mFilePath(FilePath)
 {
@@ -54,7 +59,7 @@ bool ConfigValidator::isScopeMatched()
 	std::string currentLine;
 	std::vector<std::string> splitResult;
 
-	for (int i = 0; i < mEachConfigLine.size(); i++)
+	for (size_t i = 0; i < mEachConfigLine.size(); i++)
 	{
 		currentLine = mEachConfigLine[i];
 		if (currentLine.find('{') != std::string::npos || 
@@ -159,6 +164,7 @@ bool ConfigValidator::isServerInfoAlreadyExisted()
 		}
 		lineIndex++;
 	}
+	return (true);
 }
 
 bool ConfigValidator::isLocationURIAlreadyExisted()
@@ -257,8 +263,8 @@ bool ConfigValidator::hasMandatoryDirective(size_t flag)
 			return (false);
 
 		/* is CGI path & extension are existed or non-existed */
-		if (!mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_EXTENSION]] && mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_PATH]]
-			|| mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_EXTENSION]] && !mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_PATH]])
+		if ((!mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_EXTENSION]] && mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_PATH]])
+			|| (mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_EXTENSION]] && !mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_PATH]]))
 			return (false);
 	}
 	return (true);
@@ -285,6 +291,8 @@ bool ConfigValidator::hasEachDirectiveOnlyOne(size_t flag)
 				return (false);
 		}
 	}
+
+	return (true);
 }
 
 void ConfigValidator::initializeCountServerDirective()
@@ -292,7 +300,7 @@ void ConfigValidator::initializeCountServerDirective()
 	mCountServerDirective.clear();
 	for (size_t i = 0; i < NUM_SERVER_DIRECTIVE; i++)
 	{
-		mCountServerDirective.insert({web::serverDirective[i], 0});
+		mCountServerDirective.insert(std::pair<std::string, int>(web::serverDirective[i], 0));
 	}
 }
 
@@ -301,7 +309,7 @@ void ConfigValidator::initializeCountLocationDirective()
 	mCountLocationDirective.clear();
 	for (size_t i = 0; i < NUM_LOCATION_DIRECTIVE; i++)
 	{
-		mCountLocationDirective.insert({web::locationDirective[i], 0});
+		mCountLocationDirective.insert(std::pair<std::string, int>(web::locationDirective[i], 0));
 	}
 }
 
@@ -310,7 +318,7 @@ void ConfigValidator::readConfigFileByLine()
 	std::ifstream configFile;
 	std::string line;
 
-	configFile.open(mFilePath);
+	configFile.open(mFilePath.c_str());
 	if (!configFile.is_open())
 		throw ConfigValidator::ConfigValidatorException("The config file can't opened.");
 

@@ -18,10 +18,12 @@ class ConfigParser
 		std::string mFilePath;
 		std::vector<std::string> mEachConfigLine;
 		ServerConfig *mCurrentServerConfig;
-		ConfigParser();
 
 	public:
 		static std::string const TAG;
+
+		/* to avoid inaccess error */
+		ConfigParser();
 		ConfigParser(std::string filePath);
 		ConfigParser(ConfigParser const & copy);
 		ConfigParser &operator=(ConfigParser const & rhs);

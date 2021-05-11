@@ -2,6 +2,11 @@
 
 std::string const ConfigParser::TAG = "ConfigParser";
 
+ConfigParser::ConfigParser()
+{
+
+}
+
 ConfigParser::ConfigParser(std::string filePath)
 : mFilePath(filePath)
 {
@@ -77,11 +82,11 @@ ServerConfig *ConfigParser::parseServerDirective(size_t & lineIndex)
 		splitResult = web::split(currentLine, " ");
 
 		/* find common directive */
-		if (currentLine.find(web::serverDirective[web::ServerDirective::INDEX]) != std::string::npos)
+		if (currentLine.find(web::commonDirective[web::CommonDirective::INDEX]) != std::string::npos)
 			serverConfig->getCommonDirective().setIndexFile(splitResult.back());
-		if (currentLine.find(web::serverDirective[web::ServerDirective::ROOT]) != std::string::npos)
+		if (currentLine.find(web::commonDirective[web::CommonDirective::ROOT]) != std::string::npos)
 			serverConfig->getCommonDirective().setRoot(splitResult.back());
-		if (currentLine.find(web::serverDirective[web::ServerDirective::AUTOINDEX]) != std::string::npos && splitResult.back() == "on")
+		if (currentLine.find(web::commonDirective[web::CommonDirective::AUTOINDEX]) != std::string::npos && splitResult.back() == "on")
 			serverConfig->getCommonDirective().setAutoIndex(true);
 
 		/* find server directive */
@@ -120,11 +125,11 @@ LocationConfig *ConfigParser::parseLocationDirective(size_t & lineIndex)
 		splitResult = web::split(currentLine, " ");
 
 		/* find common directive */
-		if (currentLine.find(web::locationDirective[web::LocationDirective::INDEX]) != std::string::npos)
+		if (currentLine.find(web::commonDirective[web::CommonDirective::INDEX]) != std::string::npos)
 			locationConfig->getCommonDirective().setIndexFile(splitResult.back());
-		if (currentLine.find(web::locationDirective[web::LocationDirective::ROOT]) != std::string::npos)
+		if (currentLine.find(web::commonDirective[web::CommonDirective::ROOT]) != std::string::npos)
 			locationConfig->getCommonDirective().setRoot(splitResult.back());
-		if (currentLine.find(web::locationDirective[web::LocationDirective::AUTOINDEX]) != std::string::npos && splitResult.back() == "on")
+		if (currentLine.find(web::commonDirective[web::CommonDirective::AUTOINDEX]) != std::string::npos && splitResult.back() == "on")
 			locationConfig->getCommonDirective().setAutoIndex(true);
 
 		/* find location directive */
@@ -156,13 +161,13 @@ void ConfigParser::setDefaultServer(std::vector<ServerConfig *> & serverList)
 	std::string key;
 	std::map<std::string, std::string> defaultServer;
 
-	for (int serverIdx = 0; serverIdx < serverList.size(); serverIdx++)
+	for (size_t serverIdx = 0; serverIdx < serverList.size(); serverIdx++)
 	{
 		isDefaultServer = true;
 
 		/* will be make function itos() */ 
 		key = serverList[serverIdx]->getIP() + web::toString(serverList[serverIdx]->getPort());
-		for (int mapIdx = 0; mapIdx < defaultServer.size(); mapIdx++)
+		for (size_t mapIdx = 0; mapIdx < defaultServer.size(); mapIdx++)
 		{
 			if (defaultServer.count(key))
 			{
@@ -186,7 +191,7 @@ void ConfigParser::readConfigFileByLine()
 	std::ifstream configFile;
 	std::string line;
 
-	configFile.open(mFilePath);
+	configFile.open(mFilePath.c_str());
 	if (!configFile.is_open())
 		throw ConfigParser::ConfigParserException("The config file can't opened.");
 
