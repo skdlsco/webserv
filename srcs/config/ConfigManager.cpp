@@ -1,19 +1,19 @@
-#include "Config.hpp"
+#include "ConfigManager.hpp"
 
-std::string const Config::TAG = "Config";
+std::string const ConfigManager::TAG = "ConfigManager";
 
-Config::Config(std::string filePath)
+ConfigManager::ConfigManager(std::string filePath)
 : mFilePath(filePath), validator(mFilePath), parser(mFilePath)
 {
 
 }
 
-Config::Config(Config const & copy)
+ConfigManager::ConfigManager(ConfigManager const & copy)
 {
     *this = copy;
 }
 
-Config &Config::operator=(Config const & rhs)
+ConfigManager &ConfigManager::operator=(ConfigManager const & rhs)
 {
     if (this != &rhs)
     {
@@ -24,19 +24,19 @@ Config &Config::operator=(Config const & rhs)
     return (*this);
 }
 
-Config::~Config()
+ConfigManager::~ConfigManager()
 {
 
 }
 
-bool Config::isConfigValidate()
+bool ConfigManager::isConfigValidate()
 {
     if (!validator.isConfigValidate())
         return (false);
     return (true);
 }
 
-std::vector<ServerConfig *> Config::parseConfigFile()
+std::vector<ServerConfig *> ConfigManager::parseConfigFile()
 {
     return (parser.parseConfigFile());
 }
