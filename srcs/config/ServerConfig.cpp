@@ -108,6 +108,6 @@ void ServerConfig::setDefaultErrorPagePath(std::string const & defaultErrorPageP
 
 void ServerConfig::addLocation(std::string URI, LocationConfig *location)
 {
-	mLocationList.insert({URI, location});
+	mLocationList.insert(std::pair<std::string, LocationConfig *>(URI, location));
 }
 

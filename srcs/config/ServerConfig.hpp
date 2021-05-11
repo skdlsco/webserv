@@ -6,7 +6,6 @@
 #include <vector>
 #include <map>
 # include "LocationConfig.hpp"
-# include "ConfigParser.hpp"
 # include "CommonDirective.hpp"
 
 class ServerConfig
