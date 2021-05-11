@@ -13,7 +13,6 @@
 
 namespace web
 {
-
 	std::string const commonDirective[NUM_COMMON_DIRECTIVE] = 
 	{
 		"index",
@@ -43,34 +42,43 @@ namespace web
 		"cgi_path"
 	};
 
-	enum CommonDirective
+	namespace CommonDirective
 	{
-		INDEX,
-		ROOT,
-		AUTOINDEX
-	};
+		enum List
+		{
+			INDEX,
+			ROOT,
+			AUTOINDEX
+		};
+	}
 
-	enum ServerDirective
+	namespace ServerDirective
 	{
-		INDEX,
-		ROOT,
-		AUTOINDEX,
-		IP,
-		PORT,
-		SERVER_NAME,
-		CLIENT_MAX_BODY_SIZE,
-		DEFAULT_ERROR_PAGE
-	};
+		enum List
+		{
+			INDEX,
+			ROOT,
+			AUTOINDEX,
+			IP,
+			PORT,
+			SERVER_NAME,
+			CLIENT_MAX_BODY_SIZE,
+			DEFAULT_ERROR_PAGE
+		};
+	}
 
-	enum LocationDirective
+	namespace LocationDirective
 	{
-		INDEX,
-		ROOT,
-		AUTOINDEX,
-		ALLOW_METHOD,
-		CGI_EXTENSION,
-		CGI_PATH
-	};
+		enum List
+		{
+			INDEX,
+			ROOT,
+			AUTOINDEX,
+			ALLOW_METHOD,
+			CGI_EXTENSION,
+			CGI_PATH
+		};
+	}
 }
 
 #endif
