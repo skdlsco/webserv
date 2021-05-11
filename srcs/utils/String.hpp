@@ -14,7 +14,6 @@ namespace web
 	std::string toString(int val);
 
 	std::vector<std::string> split(std::string target, std::string token);
-
 };
 
 #endif

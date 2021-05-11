@@ -6,7 +6,7 @@
 
 namespace web
 {
-	std::string method[NUM_METHOD_LIST] = 
+	std::string const method[NUM_METHOD_LIST] = 
 	{
 		"GET",
 		"HEAD",
