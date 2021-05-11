@@ -3,8 +3,8 @@
 std::string const LocationConfig::TAG = "LocationConfig";
 
 LocationConfig::LocationConfig()
-: mCommonDirective(), mAllowMethodList({"GET", "HEAD", "OPTIONS"}), mCGIExtensionList(),
-	mCGIPath("")
+: mCommonDirective(), mAllowMethodList({web::method[web::Method::GET], web::method[web::Method::HEAD], web::method[web::Method::OPTIONS]}), 
+	mCGIExtensionList(), mCGIPath("")
 {
 
 }

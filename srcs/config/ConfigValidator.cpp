@@ -1,6 +1,9 @@
 #include "ConfigValidator.hpp"
 
 std::string const ConfigValidator::TAG = "ConfigValidator";
+std::string const ConfigValidator::DEFAULT_IP = "0.0.0.0";
+std::string const ConfigValidator::DEFAULT_PORT = "8080";
+std::string const ConfigValidator::DEFAULT_SERVER_NAME = "0.0.0.0";
 
 ConfigValidator::ConfigValidator(std::string const & FilePath)
 : mFilePath(FilePath)
@@ -130,9 +133,9 @@ bool ConfigValidator::isServerInfoAlreadyExisted()
 				lineIndex++;
 
 			/* initalize to default value */
-			ip = "0.0.0.0";
-			port = "8080";
-			serverName = ip;
+			ip = DEFAULT_IP;
+			port = DEFAULT_PORT;
+			serverName = DEFAULT_SERVER_NAME;
 
 			while (mEachConfigLine[lineIndex].find("location") == std::string::npos)
 			{

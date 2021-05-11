@@ -21,6 +21,10 @@ class ConfigValidator
 
 	public:
 		static std::string const TAG;
+		static std::string const DEFAULT_IP;
+		static std::string const DEFAULT_PORT;
+		static std::string const DEFAULT_SERVER_NAME;
+		
 		ConfigValidator(std::string const & filePath);
 		ConfigValidator(ConfigValidator const & copy);
 		ConfigValidator &operator=(ConfigValidator const & rhs);
