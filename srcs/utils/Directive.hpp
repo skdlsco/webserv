@@ -4,6 +4,7 @@
 # define FLAG_SERVER 1
 # define FLAG_LOCATION 2
 
+# define NUM_COMMON_DIRECTIVE 3
 # define NUM_SERVER_DIRECTIVE 8
 # define NUM_LOCATION_DIRECTIVE 6
 
@@ -12,6 +13,13 @@
 
 namespace web
 {
+	std::string commonDirective[NUM_COMMON_DIRECTIVE] = 
+	{
+		"index",
+		"root",
+		"autoindex"
+	};
+
 	std::string serverDirective[NUM_SERVER_DIRECTIVE] = 
 	{
 		"index",
@@ -32,6 +40,13 @@ namespace web
 		"allow_method",
 		"cgi_extension",
 		"cgi_path"
+	};
+
+	enum CommonDirective
+	{
+		INDEX,
+		ROOT,
+		AUTOINDEX
 	};
 
 	enum ServerDirective
