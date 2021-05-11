@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include <set>
-# include "../utils/Method.hpp"
+# include "utils/Method.hpp"
 # include "CommonDirective.hpp"
 
 class LocationConfig

@@ -1,6 +1,6 @@
 #include "ServerManager.hpp"
 #include "server/Server.hpp"
-#include "config/Config.hpp"
+#include "config/ConfigManager.hpp"
 
 int main(void)
 {
