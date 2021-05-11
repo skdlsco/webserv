@@ -18,6 +18,7 @@ ConfigValidator &ConfigValidator::operator=(ConfigValidator const & rhs)
 	if (this != &rhs)
 	{
 		mFilePath = rhs.mFilePath;
+		mEachConfigLine = rhs.mEachConfigLine;
 	}
 	return (*this);
 }
