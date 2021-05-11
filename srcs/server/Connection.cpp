@@ -2,7 +2,7 @@
 
 std::string const Connection::TAG = "Connection";
 
-Connection::Connection(ServerManager &serverManager, Config const &config, struct sockaddr_in addr, int fd)
+Connection::Connection(ServerManager &serverManager, ServerConfig const &config, struct sockaddr_in addr, int fd)
 : ServerComponent(serverManager), mFDListener(*this), mConfig(config), mAddr(addr), mFD(fd)
 {
 	getServerManager().addFD(fd, mFDListener);
@@ -14,9 +14,17 @@ Connection::~Connection()
 }
 
 Connection *Connection::create(ServerManager &serverManager,
-							Config const &config, struct sockaddr_in addr, int fd)
+							ServerConfig const &config, struct sockaddr_in addr, int fd)
 {
-	return (new Connection(serverManager, config, addr, fd));
+	try
+	{
+		return (new Connection(serverManager, config, addr, fd));
+	}
+	catch(std::exception const &e)
+	{
+		std::cerr << e.what() << '\n';
+	}
+	return (NULL);
 }
 
 void Connection::onRepeat()
@@ -24,7 +32,7 @@ void Connection::onRepeat()
 
 }
 
-Config const &Connection::getConfig() const
+ServerConfig const &Connection::getConfig() const
 {
 	return (mConfig);
 }
@@ -42,18 +50,36 @@ Connection::ConnectionAction::~ConnectionAction()
 
 void Connection::ConnectionAction::onReadSet()
 {
+	char buffer[BUFFER_SIZE];
 
+	int n = recv(mConnection.mFD, buffer, BUFFER_SIZE - 1, 0);
+	if (n == -1)
+	{
+		mConnection.finish();
+		return ;
+	}
+	buffer[n] = '\0';
+	try
+	{
+		mConnection.mRequest.analyzeBuffer(buffer);
+		// if (mConnection.mRequest.getAnalyzeLevel() == DONE)
+			// mConnection.mResponse = ResponseFactory.create(mConnection.mRequest);
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+		mConnection.finish();
+		return ;
+	}
 }
 
 void Connection::ConnectionAction::onWriteSet()
 {
-	char content[] = "HTTP/1.1 200 OK\r\nContent-Length:2\r\n\r\nabc";
-	write(mConnection.mFD, content, strlen(content));
-	mConnection.finish();
+	// response writeBuffer check...
 }
 
 void Connection::ConnectionAction::onExceptSet()
 {
-
+	mConnection.finish();
 }
 
