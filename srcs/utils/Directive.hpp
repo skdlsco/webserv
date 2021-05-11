@@ -12,7 +12,7 @@
 
 namespace web
 {
-	std::string serverDirective[NUM_SERVER_DIRECTIVE] = 
+	std::string const serverDirective[NUM_SERVER_DIRECTIVE] = 
 	{
 		"index",
 		"root",
@@ -24,7 +24,7 @@ namespace web
 		"default_error_page"
 	};
 
-	std::string locationDirective[NUM_LOCATION_DIRECTIVE] = 
+	std::string const locationDirective[NUM_LOCATION_DIRECTIVE] = 
 	{
 		"index",
 		"root",
