@@ -21,6 +21,9 @@ namespace web
 	void rtrim(std::string &s);
 	void trim(std::string &s, std::string const set);
 	void trim(std::string &s);
+
+	void addPrefixToString(std::string &target, std::string const prefix);
+	void addSuffixToString(std::string &target, std::string const suffix);
 };
 
 #endif

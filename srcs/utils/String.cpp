@@ -156,3 +156,13 @@ void web::trim(std::string &s)
 	web::rtrim(s);
 	web::ltrim(s);
 }
+
+void web::addPrefixToString(std::string &target, std::string prefix)
+{
+	target = prefix + target;
+}
+
+void web::addSuffixToString(std::string &target, std::string suffix)
+{
+	target = target + suffix;
+}
