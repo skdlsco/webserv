@@ -1,4 +1,5 @@
 #include "ConfigValidator.hpp"
+#include "utils/String.hpp"
 
 std::string const ConfigValidator::TAG = "ConfigValidator";
 std::string const ConfigValidator::DEFAULT_IP = "0.0.0.0";
@@ -65,7 +66,7 @@ bool ConfigValidator::isScopeMatched()
 		if (currentLine.find('{') != std::string::npos || 
 			currentLine.find('}') != std::string::npos)
 		{
-			splitResult = web::split(currentLine, " ");
+			splitResult = web::split(currentLine, " \t");
 			if ((splitResult.size() == 2 && (splitResult.front() == "server" && splitResult.back() == "{")) || //server {
 				(splitResult.size() == 3 && (splitResult.front() == "location" && splitResult.back() == "{"))) //location [URI] {
 				scopeValue++;
@@ -88,29 +89,24 @@ bool ConfigValidator::isConfigSequenceMatched()
 	while (lineIndex < mEachConfigLine.size())
 	{
 		/* to find server/location and block end */
-		splitResult = web::split(mEachConfigLine[lineIndex], " {");
-
+		splitResult = web::split(mEachConfigLine[lineIndex], " \t{");
 		if (splitResult.front() == "server")
 		{
-			/* to avoid out of bound error */
-			if (lineIndex + 1 < mEachConfigLine.size())
-				lineIndex++;
-
+			lineIndex++;
 			if (!isValidateServerDirective(lineIndex))
 				return (false);
 			if (!hasMandatoryDirective(FLAG_SERVER) || !hasEachDirectiveOnlyOne(FLAG_SERVER))
 				return (false);
 		}
-
-		if (splitResult.front() == "location")
+		else if (splitResult.front() == "location")
 		{
+			lineIndex++;
 			if (!isValidateLocationDirective(lineIndex))
 				return (false);
 			if (!hasMandatoryDirective(FLAG_LOCATION) || !hasEachDirectiveOnlyOne(FLAG_LOCATION))
 				return (false);
 		}
-
-		if (splitResult.front() == "}")
+		else if (splitResult.front() == "}")
 			lineIndex++;
 		else
 			return (false);
@@ -127,15 +123,15 @@ bool ConfigValidator::isServerInfoAlreadyExisted()
 
 	/* I don't have a good idea for below variable names */
 	std::string serverInfoLine;
+
+	/* can't use set because subject..*/
 	std::vector<std::string> serverInfoList;
 
 	while (lineIndex < mEachConfigLine.size())
 	{
 		if (mEachConfigLine[lineIndex].find("server") != std::string::npos)
 		{
-			/* to avoid out of bound error */
-			if (lineIndex + 1 < mEachConfigLine.size())
-				lineIndex++;
+			lineIndex++;
 
 			/* initalize to default value */
 			ip = DEFAULT_IP;
@@ -145,26 +141,24 @@ bool ConfigValidator::isServerInfoAlreadyExisted()
 			while (mEachConfigLine[lineIndex].find("location") == std::string::npos)
 			{
 				if (mEachConfigLine[lineIndex].find(web::serverDirective[web::ServerDirective::IP]) != std::string::npos)
-					ip = web::split(mEachConfigLine[lineIndex], " ").back();
+					ip = web::split(mEachConfigLine[lineIndex], " \t").back();
 				if (mEachConfigLine[lineIndex].find(web::serverDirective[web::ServerDirective::PORT]) != std::string::npos)
-					port = web::split(mEachConfigLine[lineIndex], " ").back();
+					port = web::split(mEachConfigLine[lineIndex], " \t").back();
 				if (mEachConfigLine[lineIndex].find(web::serverDirective[web::ServerDirective::SERVER_NAME]) != std::string::npos)
-					serverName = web::split(mEachConfigLine[lineIndex], " ").back();
+					serverName = web::split(mEachConfigLine[lineIndex], " \t").back();
 				lineIndex++;
 			}
 			serverInfoLine = ip + port + serverName;
-		}
 
-		for (size_t idx = 0; idx < serverInfoList.size(); idx++)
-		{
-			if (serverInfoList[idx] == serverInfoLine)
-				return (false);
+			if (std::find(serverInfoList.begin(), serverInfoList.end(), serverInfoLine) != serverInfoList.end())
+				return (true);
 			else
 				serverInfoList.push_back(serverInfoLine);
 		}
-		lineIndex++;
+		else
+			lineIndex++;
 	}
-	return (true);
+	return (false);
 }
 
 bool ConfigValidator::isLocationURIAlreadyExisted()
@@ -175,46 +169,56 @@ bool ConfigValidator::isLocationURIAlreadyExisted()
 
 	while (lineIndex < mEachConfigLine.size())
 	{
-		if (mEachConfigLine[lineIndex].find("location") != std::string::npos)
+		if (mEachConfigLine[lineIndex].find("server") != std::string::npos)
 		{
-			URI = web::split(mEachConfigLine[lineIndex], " {").back();
-			for (size_t idx = 0; idx < URIvector.size(); idx++)
+			/* to meet the conditions of loop */
+			lineIndex++;
+			URIvector.clear();
+
+			while (lineIndex < mEachConfigLine.size() && mEachConfigLine[lineIndex].find("server") == std::string::npos)
 			{
-				if (URIvector[idx] == URI)
-					return (false);
+				if (mEachConfigLine[lineIndex].find("location") != std::string::npos)
+				{
+					URI = web::split(mEachConfigLine[lineIndex], " \t{").back();
+					if (std::find(URIvector.begin(), URIvector.end(), URI) != URIvector.end())
+						return (true);
+					else
+						URIvector.push_back(URI);
+				}
+				lineIndex++;
 			}
-			URIvector.push_back(URI);
 		}
-		lineIndex++;
 	}
-	return (true);
+	return (false);
 }
 
 /* inner function of isConfigSequenceMatched() */
 bool ConfigValidator::isValidateServerDirective(size_t & lineIndex)
 {
-	size_t countFoundDirective = 0;
+	bool foundDirective;
+
+	/* set map value zero to initialize */
+	initializeCountServerDirective();
 
 	/* loop until finding location block or server end */
 	while (lineIndex < mEachConfigLine.size() &&
 			mEachConfigLine[lineIndex].find("location") == std::string::npos &&
 			mEachConfigLine[lineIndex].find("}") == std::string::npos)
 	{
-		/* set map value zero to initialize */
-		initializeCountServerDirective();
+		foundDirective = false;
 		for (size_t idx = 0; idx < NUM_SERVER_DIRECTIVE; idx++)
 		{
-			if (mEachConfigLine[lineIndex].find(web::serverDirective[idx]) != std::string::npos)
+			if (web::split(mEachConfigLine[lineIndex], " \t").front() == web::serverDirective[idx])
 			{
-				countFoundDirective++;
+				foundDirective = true;
 				mCountServerDirective[web::serverDirective[idx]]++;
 			}
 		}
 
 		/* not matched any directive? (to find weird directive) */
-		if (countFoundDirective != NUM_SERVER_DIRECTIVE)
+		if (!foundDirective)
 			return (false);
-		
+
 		lineIndex++;
 	}
 	return (true);
@@ -222,24 +226,26 @@ bool ConfigValidator::isValidateServerDirective(size_t & lineIndex)
 
 bool ConfigValidator::isValidateLocationDirective(size_t & lineIndex)
 {
-	size_t countFoundDirective = 0;
+	bool foundDirective;
+
+	/* set map value zero to initialize */
+	initializeCountLocationDirective();
 
 	while (lineIndex < mEachConfigLine.size() &&
-		mEachConfigLine[lineIndex].find("}") != std::string::npos)
+		mEachConfigLine[lineIndex].find("}") == std::string::npos)
 	{
-		/* set map value zero to initialize */
-		initializeCountLocationDirective();
+		foundDirective = false;
 		for (size_t idx = 0; idx < NUM_LOCATION_DIRECTIVE; idx++)
 		{
-			if (mEachConfigLine[lineIndex].find(web::locationDirective[idx]) != std::string::npos)
+			if (web::split(mEachConfigLine[lineIndex], " \t").front() == web::locationDirective[idx])
 			{
-				countFoundDirective++;
+				foundDirective = true;
 				mCountLocationDirective[web::locationDirective[idx]]++;
 			}
 		}
 
 		/* not matched any directive? (to find weird directive) */
-		if (countFoundDirective != NUM_LOCATION_DIRECTIVE)
+		if (!foundDirective)
 			return (false);
 
 		lineIndex++;
@@ -324,7 +330,8 @@ void ConfigValidator::readConfigFileByLine()
 
 	while (getline(configFile, line))
 	{
-		mEachConfigLine.push_back(line);
+		if (line != "")
+			mEachConfigLine.push_back(line);
 	}
 	configFile.close();
 }

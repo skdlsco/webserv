@@ -6,6 +6,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <algorithm>
 #include <exception>
 # include "utils/Directive.hpp"
 # include "utils/String.hpp"
