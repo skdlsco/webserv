@@ -5,10 +5,10 @@ std::string const LocationConfig::TAG = "LocationConfig";
 LocationConfig::LocationConfig()
 : mCommonDirective(), mAllowMethodList(), mCGIExtensionList(), mCGIPath("")
 {
-	/* to avoid  nested name specifier */
-	mAllowMethodList.insert(web::method[web::GET]);
-	mAllowMethodList.insert(web::method[web::HEAD]);
-	mAllowMethodList.insert(web::method[web::OPTIONS]);
+	/* to avoid nested name specifier */
+	mAllowMethodList.push_back(web::method[web::GET]);
+	mAllowMethodList.push_back(web::method[web::HEAD]);
+	mAllowMethodList.push_back(web::method[web::OPTIONS]);
 }
 
 LocationConfig::LocationConfig(LocationConfig const & copy)
@@ -49,12 +49,12 @@ bool LocationConfig::isAutoIndex() const
 	return (mCommonDirective.isAutoIndex());
 }
 
-std::set<std::string> LocationConfig::getAllowMethodList() const
+std::vector<std::string> LocationConfig::getAllowMethodList() const
 {
 	return (mAllowMethodList);
 }
 
-std::set<std::string> LocationConfig::getCGIExtensionList() const
+std::vector<std::string> LocationConfig::getCGIExtensionList() const
 {
 	return (mCGIExtensionList);
 }
@@ -81,12 +81,12 @@ void LocationConfig::setAutoIndex(bool isAutoIndex)
 
 void LocationConfig::addAllowMethod(std::string const & allowMethod)
 {
-	mAllowMethodList.insert(allowMethod);
+	mAllowMethodList.push_back(allowMethod);
 }
 
 void LocationConfig::addCGIExtension(std::string const & CGIExtension)
 {
-	mCGIExtensionList.insert(CGIExtension);
+	mCGIExtensionList.push_back(CGIExtension);
 }
 
 void LocationConfig::setCGIPath(std::string CGIPath)

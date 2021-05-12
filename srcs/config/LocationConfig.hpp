@@ -11,8 +11,8 @@ class LocationConfig
 {
 	private:
 		CommonDirective			mCommonDirective;
-		std::set<std::string>	mAllowMethodList;
-		std::set<std::string>	mCGIExtensionList;
+		std::vector<std::string>	mAllowMethodList;
+		std::vector<std::string>	mCGIExtensionList;
 		std::string				mCGIPath;
 
 	public:
@@ -26,8 +26,8 @@ class LocationConfig
 		std::string const & getRoot() const;
 		bool isAutoIndex() const;
 
-		std::set<std::string> getAllowMethodList() const;
-		std::set<std::string> getCGIExtensionList() const;
+		std::vector<std::string> getAllowMethodList() const;
+		std::vector<std::string> getCGIExtensionList() const;
 		std::string getCGIPath() const;
 
 
