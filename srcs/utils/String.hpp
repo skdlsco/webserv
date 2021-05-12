@@ -15,6 +15,12 @@ namespace web
 
 	std::vector<std::string> split(std::string target, std::string token);
 
+	void ltrim(std::string &s, std::string const set);
+	void ltrim(std::string &s);
+	void rtrim(std::string &s, std::string const set);
+	void rtrim(std::string &s);
+	void trim(std::string &s, std::string const set);
+	void trim(std::string &s);
 };
 
 #endif
