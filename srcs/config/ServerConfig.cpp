@@ -36,9 +36,19 @@ ServerConfig &ServerConfig::operator=(ServerConfig const & rhs)
 	return (*this);
 }
 
-CommonDirective ServerConfig::getCommonDirective() const
+std::string const & ServerConfig::getIndexFile() const
 {
-	return (mCommonDirective);
+	return (mCommonDirective.getIndexFile());
+}
+
+std::string const & ServerConfig::getRoot() const
+{
+	return (mCommonDirective.getRoot());
+}
+
+bool ServerConfig::isAutoIndex() const
+{
+	return (mCommonDirective.isAutoIndex());
 }
 
 std::string const & ServerConfig::getIP() const
@@ -74,6 +84,21 @@ std::string const & ServerConfig::getDefaultErrorPagePath() const
 std::map<std::string, LocationConfig *> ServerConfig::getLocationList() const
 {
 	return (mLocationList);
+}
+
+void ServerConfig::setIndexFile(std::string const & indexFile)
+{
+	mCommonDirective.setIndexFile(indexFile);
+}
+
+void ServerConfig::setRoot(std::string const & root)
+{
+	mCommonDirective.setRoot(root);
+}
+
+void ServerConfig::setAutoIndex(bool isAutoIndex)
+{
+	mCommonDirective.setAutoIndex(isAutoIndex);
 }
 
 void ServerConfig::setIP(std::string const & ip)

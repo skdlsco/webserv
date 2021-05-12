@@ -34,9 +34,19 @@ LocationConfig::~LocationConfig()
 	mCGIExtensionList.clear();
 }
 
-CommonDirective LocationConfig::getCommonDirective() const
+std::string const & LocationConfig::getIndexFile() const
 {
-	return (mCommonDirective);
+	return (mCommonDirective.getIndexFile());
+}
+
+std::string const & LocationConfig::getRoot() const
+{
+	return (mCommonDirective.getRoot());
+}
+
+bool LocationConfig::isAutoIndex() const
+{
+	return (mCommonDirective.isAutoIndex());
 }
 
 std::set<std::string> LocationConfig::getAllowMethodList() const
@@ -52,6 +62,21 @@ std::set<std::string> LocationConfig::getCGIExtensionList() const
 std::string LocationConfig::getCGIPath() const
 {
 	return (mCGIPath);
+}
+
+void LocationConfig::setIndexFile(std::string const & indexFile)
+{
+	mCommonDirective.setIndexFile(indexFile);
+}
+
+void LocationConfig::setRoot(std::string const & root)
+{
+	mCommonDirective.setRoot(root);
+}
+
+void LocationConfig::setAutoIndex(bool isAutoIndex)
+{
+	mCommonDirective.setAutoIndex(isAutoIndex);
 }
 
 void LocationConfig::addAllowMethod(std::string const & allowMethod)
