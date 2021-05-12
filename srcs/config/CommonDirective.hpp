@@ -19,12 +19,12 @@ class CommonDirective
 		CommonDirective &operator=(CommonDirective const & rhs);
 		virtual ~CommonDirective();
 
-		std::string getIndexFile() const;
-		std::string getRoot() const;
+		std::string const & getIndexFile() const;
+		std::string const & getRoot() const;
 		bool isAutoIndex() const;
 
-		void setIndexFile(std::string indexFile);
-		void setRoot(std::string root);
+		void setIndexFile(std::string const & indexFile);
+		void setRoot(std::string const & root);
 		void setAutoIndex(bool isAutoIndex);
 };
 

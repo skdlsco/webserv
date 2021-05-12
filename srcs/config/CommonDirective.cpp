@@ -29,28 +29,27 @@ CommonDirective::~CommonDirective()
 
 }
 
-std::string CommonDirective::getIndexFile() const
+std::string const & CommonDirective::getIndexFile() const
 {
 	return (mIndexFile);
 }
 
-std::string CommonDirective::getRoot() const
+std::string const & CommonDirective::getRoot() const
 {
 	return (mRoot);
 }
-
 
 bool CommonDirective::isAutoIndex() const
 {
 	return (mIsAutoIndex);
 }
 
-void CommonDirective::setIndexFile(std::string indexFile)
+void CommonDirective::setIndexFile(std::string const & indexFile)
 {
 	mIndexFile = indexFile;
 }
 
-void CommonDirective::setRoot(std::string root)
+void CommonDirective::setRoot(std::string const & root)
 {
 	mRoot = root;
 }
