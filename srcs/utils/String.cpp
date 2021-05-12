@@ -112,7 +112,7 @@ std::vector<std::string> web::split(std::string target, std::string token)
 	while (findTokenIdx != std::string::npos)
 	{
 		splitLine = target.substr(startIdx, findTokenIdx - startIdx);
-		if (splitLine != "") 
+		if (splitLine != "")
 			splitResult.push_back(splitLine);
 		startIdx = findTokenIdx + 1;
 		findTokenIdx = target.find_first_of(token, startIdx);
@@ -122,4 +122,37 @@ std::vector<std::string> web::split(std::string target, std::string token)
 		splitResult.push_back(splitLine);
 
 	return (splitResult);
+}
+
+/* trim */
+void web::ltrim(std::string &s, std::string const set)
+{
+	s.erase(0, s.find_first_not_of(set));
+}
+
+void web::ltrim(std::string &s)
+{
+	web::ltrim(s, " ");
+}
+
+void web::rtrim(std::string &s, std::string const set)
+{
+	s.erase(s.find_last_not_of(set) + 1);
+}
+
+void web::rtrim(std::string &s)
+{
+	web::rtrim(s, " ");
+}
+
+void web::trim(std::string &s, std::string const set)
+{
+	web::rtrim(s, set);
+	web::ltrim(s, set);
+}
+
+void web::trim(std::string &s)
+{
+	web::rtrim(s);
+	web::ltrim(s);
 }

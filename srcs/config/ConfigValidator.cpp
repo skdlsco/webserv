@@ -152,6 +152,10 @@ bool ConfigValidator::isServerInfoAlreadyExisted()
 			}
 			serverInfoLine = ip + port + serverName;
 
+			/* port range check */
+			if (web::stoi(port) < 0 && web::stoi(port) > 65535)
+				return (true);
+
 			if (std::find(serverInfoList.begin(), serverInfoList.end(), serverInfoLine) != serverInfoList.end())
 				return (true);
 			else
