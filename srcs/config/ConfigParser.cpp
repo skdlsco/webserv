@@ -197,7 +197,8 @@ void ConfigParser::readConfigFileByLine()
 
 	while (getline(configFile, line))
 	{
-		mEachConfigLine.push_back(line);
+		if (line != "")
+			mEachConfigLine.push_back(line);
 	}
 	configFile.close();
 }
