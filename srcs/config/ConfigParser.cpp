@@ -208,7 +208,7 @@ void ConfigParser::readConfigFileByLine()
 	configFile.close();
 }
 
-std::string const & ConfigParser::addSlashToURI(std::string const & URI)
+std::string const ConfigParser::addSlashToURI(std::string const & URI)
 {
 	std::string newURI;
 

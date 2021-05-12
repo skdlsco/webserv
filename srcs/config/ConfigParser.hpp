@@ -36,7 +36,7 @@ class ConfigParser
 		void setDefaultServer(std::vector<ServerConfig *> & serverList);
 		void setLocationConfigCommonDirective(LocationConfig * locationConfig);
 		void readConfigFileByLine();
-		std::string const & addSlashToURI(std::string const & URI);
+		std::string const addSlashToURI(std::string const & URI);
 
 		class ConfigParserException : public std::exception
 		{
