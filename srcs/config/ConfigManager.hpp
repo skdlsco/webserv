@@ -21,8 +21,6 @@ class ConfigManager
 
 		bool isConfigValidate();
 		std::vector<ServerConfig *> parseConfigFile();
-
-		void setConfigFile(std::string filePath);
 };
 
 #endif
