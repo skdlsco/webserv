@@ -34,12 +34,12 @@ LocationConfig::~LocationConfig()
 	mCGIExtensionList.clear();
 }
 
-std::string const & LocationConfig::getIndexFile() const
+std::string const &LocationConfig::getIndexFile() const
 {
 	return (mCommonDirective.getIndexFile());
 }
 
-std::string const & LocationConfig::getRoot() const
+std::string const &LocationConfig::getRoot() const
 {
 	return (mCommonDirective.getRoot());
 }
@@ -59,7 +59,7 @@ std::vector<std::string> LocationConfig::getCGIExtensionList() const
 	return (mCGIExtensionList);
 }
 
-std::string LocationConfig::getCGIPath() const
+std::string const &LocationConfig::getCGIPath() const
 {
 	return (mCGIPath);
 }
@@ -74,9 +74,9 @@ void LocationConfig::setRoot(std::string const & root)
 	mCommonDirective.setRoot(root);
 }
 
-void LocationConfig::setAutoIndex(bool isAutoIndex)
+void LocationConfig::setAutoIndex(bool autoIndex)
 {
-	mCommonDirective.setAutoIndex(isAutoIndex);
+	mCommonDirective.setAutoIndex(autoIndex);
 }
 
 void LocationConfig::addAllowMethod(std::string const & allowMethod)

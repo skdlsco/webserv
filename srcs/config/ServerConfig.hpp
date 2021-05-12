@@ -13,15 +13,13 @@ class ServerConfig
 	typedef std::vector<LocationConfig>::iterator LocationIter;
 	
 	private:
-		CommonDirective			mCommonDirective;
-
-		std::string				mIP;
-		size_t					mPort;
-		std::string				mServerName;
-		bool					mIsDefaultServer;
-		size_t 					mClientMaxBodySize;
-
-		std::string				mDefaultErrorPagePath;
+		CommonDirective mCommonDirective;
+		std::string mIP;
+		size_t mPort;
+		std::string	mServerName;
+		bool mDefaultServer;
+		size_t mClientMaxBodySize;
+		std::string mDefaultErrorPagePath;
 		std::map<std::string, LocationConfig *>	mLocationList;
 	
 	public:
@@ -31,25 +29,26 @@ class ServerConfig
 		ServerConfig &operator=(ServerConfig const & rhs);
 		virtual ~ServerConfig();
 
-		std::string const & getIndexFile() const;
-		std::string const & getRoot() const;
+		std::string const &getIndexFile() const;
+		std::string const &getRoot() const;
 		bool isAutoIndex() const;
-		std::string const & getIP() const;
+
+		std::string const &getIP() const;
 		size_t getPort() const;
-		std::string const & getServerName() const;
+		std::string const &getServerName() const;
 		bool isDefaultServer() const;
 		size_t getClientMaxBodySize() const;
-		std::string const & getDefaultErrorPagePath() const;
+		std::string const &getDefaultErrorPagePath() const;
 		std::map<std::string, LocationConfig *> getLocationList() const;
 
 		void setIndexFile(std::string const & indexFile);
 		void setRoot(std::string const & root);
-		void setAutoIndex(bool isAutoIndex);
+		void setAutoIndex(bool autoIndex);
 
 		void setIP(std::string const & ip);
 		void setPort(size_t port);
 		void setServerName(std::string const & serverName);
-		void setDefaultServer(bool isDefaultServer);
+		void setDefaultServer(bool defaultServer);
 		void setClientMaxBodySize(size_t clientMaxBodySize);
 		void setDefaultErrorPagePath(std::string const & defaultErrorPagePath);
 

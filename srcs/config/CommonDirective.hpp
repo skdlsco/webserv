@@ -10,7 +10,7 @@ class CommonDirective
 	private:
 		std::string mIndexFile;
 		std::string mRoot;
-		bool mIsAutoIndex;
+		bool mAutoIndex;
 		
 	public:
 		static std::string const TAG;
@@ -19,13 +19,13 @@ class CommonDirective
 		CommonDirective &operator=(CommonDirective const & rhs);
 		virtual ~CommonDirective();
 
-		std::string const & getIndexFile() const;
-		std::string const & getRoot() const;
+		std::string const &getIndexFile() const;
+		std::string const &getRoot() const;
 		bool isAutoIndex() const;
 
 		void setIndexFile(std::string const & indexFile);
 		void setRoot(std::string const & root);
-		void setAutoIndex(bool isAutoIndex);
+		void setAutoIndex(bool autoIndex);
 };
 
 #endif

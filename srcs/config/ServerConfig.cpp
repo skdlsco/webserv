@@ -27,7 +27,7 @@ ServerConfig &ServerConfig::operator=(ServerConfig const & rhs)
 		this->mIP = rhs.mIP;
 		this->mPort = rhs.mPort;
 		this->mServerName = rhs.mServerName;
-		this->mIsDefaultServer = rhs.mIsDefaultServer;
+		this->mDefaultServer = rhs.mDefaultServer;
 		this->mCommonDirective = rhs.mCommonDirective;
 		this->mClientMaxBodySize = rhs.mClientMaxBodySize;
 		this->mDefaultErrorPagePath = rhs.mDefaultErrorPagePath;
@@ -36,12 +36,12 @@ ServerConfig &ServerConfig::operator=(ServerConfig const & rhs)
 	return (*this);
 }
 
-std::string const & ServerConfig::getIndexFile() const
+std::string const &ServerConfig::getIndexFile() const
 {
 	return (mCommonDirective.getIndexFile());
 }
 
-std::string const & ServerConfig::getRoot() const
+std::string const &ServerConfig::getRoot() const
 {
 	return (mCommonDirective.getRoot());
 }
@@ -51,7 +51,7 @@ bool ServerConfig::isAutoIndex() const
 	return (mCommonDirective.isAutoIndex());
 }
 
-std::string const & ServerConfig::getIP() const
+std::string const &ServerConfig::getIP() const
 {
 	return (mIP);
 }
@@ -61,14 +61,14 @@ size_t ServerConfig::getPort() const
 	return (mPort);
 }
 
-std::string const & ServerConfig::getServerName() const
+std::string const &ServerConfig::getServerName() const
 {
 	return (mServerName);
 }
 
 bool ServerConfig::isDefaultServer() const
 {
-	return (mIsDefaultServer);
+	return (mDefaultServer);
 }
 
 size_t ServerConfig::getClientMaxBodySize() const
@@ -76,7 +76,7 @@ size_t ServerConfig::getClientMaxBodySize() const
 	return (mClientMaxBodySize);
 }
 
-std::string const & ServerConfig::getDefaultErrorPagePath() const
+std::string const &ServerConfig::getDefaultErrorPagePath() const
 {
 	return (mDefaultErrorPagePath);
 }
@@ -96,9 +96,9 @@ void ServerConfig::setRoot(std::string const & root)
 	mCommonDirective.setRoot(root);
 }
 
-void ServerConfig::setAutoIndex(bool isAutoIndex)
+void ServerConfig::setAutoIndex(bool autoIndex)
 {
-	mCommonDirective.setAutoIndex(isAutoIndex);
+	mCommonDirective.setAutoIndex(autoIndex);
 }
 
 void ServerConfig::setIP(std::string const & ip)
@@ -116,9 +116,9 @@ void ServerConfig::setServerName(std::string const & serverName)
 	mServerName = serverName;
 }
 
-void ServerConfig::setDefaultServer(bool isDefaultServer)
+void ServerConfig::setDefaultServer(bool defaultServer)
 {
-	mIsDefaultServer = isDefaultServer;
+	mDefaultServer = defaultServer;
 }
 
 void ServerConfig::setClientMaxBodySize(size_t clientMaxBodySize)

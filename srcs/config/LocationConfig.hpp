@@ -10,10 +10,10 @@
 class LocationConfig
 {
 	private:
-		CommonDirective			mCommonDirective;
-		std::vector<std::string>	mAllowMethodList;
-		std::vector<std::string>	mCGIExtensionList;
-		std::string				mCGIPath;
+		CommonDirective mCommonDirective;
+		std::vector<std::string> mAllowMethodList;
+		std::vector<std::string> mCGIExtensionList;
+		std::string mCGIPath;
 
 	public:
 		static std::string const TAG;
@@ -22,18 +22,17 @@ class LocationConfig
 		LocationConfig &operator=(LocationConfig const & rhs);
 		virtual ~LocationConfig();
 
-		std::string const & getIndexFile() const;
-		std::string const & getRoot() const;
+		std::string const &getIndexFile() const;
+		std::string const &getRoot() const;
 		bool isAutoIndex() const;
 
 		std::vector<std::string> getAllowMethodList() const;
 		std::vector<std::string> getCGIExtensionList() const;
-		std::string getCGIPath() const;
-
+		std::string const &getCGIPath() const;
 
 		void setIndexFile(std::string const & indexFile);
 		void setRoot(std::string const & root);
-		void setAutoIndex(bool isAutoIndex);
+		void setAutoIndex(bool autoIndex);
 
 		void addAllowMethod(std::string const & allowMethod);
 		void addCGIExtension(std::string const & CGIExtension);
