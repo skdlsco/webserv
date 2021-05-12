@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <exception>
 # include "utils/Directive.hpp"
+# include "utils/Method.hpp"
 # include "utils/String.hpp"
 
 class ConfigValidator
@@ -41,6 +42,8 @@ class ConfigValidator
 
 		bool isValidateServerDirective(size_t & lineIndex);
 		bool isValidateLocationDirective(size_t & lineIndex);
+		bool isValidateMethodName();
+
 		bool hasMandatoryDirective(size_t flag);
 		bool hasEachDirectiveOnlyOne(size_t flag);
 

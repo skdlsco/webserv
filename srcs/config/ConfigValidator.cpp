@@ -51,6 +51,8 @@ bool ConfigValidator::isConfigValidate()
 		throw ConfigValidator::ConfigValidatorException("Two or more server blocks have same server_name, ports, and ip.");
 	if (isLocationURIAlreadyExisted())
 		throw ConfigValidator::ConfigValidatorException("The config file contains at least two identical URIs.");
+	if (!isValidateMethodName())
+		throw ConfigValidator::ConfigValidatorException("The config file contains weird method names.");
 	return (true);
 }
 
@@ -219,6 +221,37 @@ bool ConfigValidator::isValidateServerDirective(size_t & lineIndex)
 		if (!foundDirective)
 			return (false);
 
+		lineIndex++;
+	}
+	return (true);
+}
+
+bool ConfigValidator::isValidateMethodName()
+{
+	size_t lineIndex = 0;
+	bool foundDirective = false;
+	std::vector<std::string> methodVector;
+
+	while (lineIndex < mEachConfigLine.size())
+	{
+		if (mEachConfigLine[lineIndex].find("allow_method") != std::string::npos)
+		{
+			methodVector = web::split(mEachConfigLine[lineIndex], " \t");
+			
+			for (size_t splitIdx = 1; splitIdx < methodVector.size(); splitIdx++)
+			{
+				foundDirective = false;
+				for (size_t methodIdx = 0; methodIdx < NUM_METHOD_LIST; methodIdx++)
+				{
+					if (methodVector[splitIdx] == web::method[methodIdx])
+						foundDirective = true;
+				}
+
+				/* not matched any method? (to find weird method) */
+				if (!foundDirective)
+					return (false);
+			}
+		}
 		lineIndex++;
 	}
 	return (true);
