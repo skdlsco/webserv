@@ -2,9 +2,9 @@
 
 std::string const ServerConfig::TAG = "ServerConfig";
 
-ServerConfig::ServerConfig() 
-: mCommonDirective(), mIP("0.0.0.0"), mPort(8080), 
-	mServerName(mIP), mClientMaxBodySize(10000000), mDefaultErrorPagePath(""), 
+ServerConfig::ServerConfig()
+: mCommonDirective(), mIP("0.0.0.0"), mPort(8080),
+	mServerName(mIP), mClientMaxBodySize(10000000), mDefaultErrorPagePath(""),
 	mLocationList()
 {
 
@@ -39,7 +39,7 @@ ServerConfig &ServerConfig::operator=(ServerConfig const & rhs)
 		for (LocationConstIter iter = rhs.mLocationList.begin(); iter != rhs.mLocationList.end(); iter++)
 		{
 			LocationConfig *locationConfig = new LocationConfig(*iter->second);
-			
+
 			this->mLocationList.insert(std::pair<std::string, LocationConfig *>(iter->first, locationConfig));
 		}
 	}

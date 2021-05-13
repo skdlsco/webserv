@@ -12,7 +12,7 @@ class ServerConfig
 {
 	typedef std::map<std::string, LocationConfig *>::iterator LocationIter;
 	typedef std::map<std::string, LocationConfig *>::const_iterator LocationConstIter;
-	
+
 	private:
 		CommonDirective mCommonDirective;
 		std::string mIP;
