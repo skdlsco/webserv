@@ -220,9 +220,9 @@ std::string const ConfigParser::addSlashToURI(std::string const & URI)
 
 	/* will modify string.hpp (addPrefix/SuffixToString function) */
 	if (URI[0] != '/')
-		newURI = "/"  + URI;
+		web::addPrefixToString(newURI, "/");
 	if (URI[URI.length() - 1] != '/')
-		newURI = URI + "/";
+		web::addSuffixToString(newURI, "/");
 
 	return (newURI);
 }
