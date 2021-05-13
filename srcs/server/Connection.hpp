@@ -6,7 +6,7 @@
 #include <netinet/in.h>
 #include "ServerComponent.hpp"
 # include "fdmanager/FileDiscriptorListener.hpp"
-#include "config/Config.hpp"
+#include "config/ServerConfig.hpp"
 
 class Connection : public ServerComponent
 {
@@ -28,12 +28,12 @@ class Connection : public ServerComponent
 		};
 	private:
 		ConnectionAction mFDListener;
-		Config const &mConfig;
+		const ServerConfig *mConfig;
 		struct sockaddr_in mAddr; // TODO convert type to int, string
 		int mFD;
 
 		Connection();
-		Connection(ServerManager &serverManager, Config const &config, struct sockaddr_in addr, int fd);
+		Connection(ServerManager &serverManager, const ServerConfig *config, struct sockaddr_in addr, int fd);
 		Connection(Connection const & copy);
 		Connection &operator=(Connection const & copy);
 	public:
@@ -41,10 +41,10 @@ class Connection : public ServerComponent
 
 		virtual ~Connection();
 		static Connection *create(ServerManager &serverManager,
-									Config const &config, struct sockaddr_in addr, int fd);
+									const ServerConfig *config, struct sockaddr_in addr, int fd);
 
 		virtual void onRepeat();
-		Config const &getConfig() const;
+		const ServerConfig *getConfig() const;
 };
 
 #endif
