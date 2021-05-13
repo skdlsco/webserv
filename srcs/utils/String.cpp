@@ -63,7 +63,7 @@ static int getSize(int n)
 	return (size);
 }
 
-static int abs(int n)
+static int absolute(int n)
 {
 	return (n < 0 ? -n : n);
 }
@@ -82,7 +82,7 @@ char *web::itoa(int val)
 	idx = size - 1;
 	while (val)
 	{
-		result[idx] = '0' + abs(val % 10);
+		result[idx] = '0' + absolute(val % 10);
 		val /= 10;
 		idx--;
 	}
