@@ -12,7 +12,11 @@ ServerConfig::ServerConfig()
 
 ServerConfig::~ServerConfig()
 {
-
+	for (LocationIter iter = mLocationList.begin(); iter != mLocationList.end(); iter++)
+	{
+		delete (iter->second);
+	}
+	mLocationList.clear();
 }
 
 ServerConfig::ServerConfig(ServerConfig const & copy)
@@ -31,7 +35,14 @@ ServerConfig &ServerConfig::operator=(ServerConfig const & rhs)
 		this->mCommonDirective = rhs.mCommonDirective;
 		this->mClientMaxBodySize = rhs.mClientMaxBodySize;
 		this->mDefaultErrorPagePath = rhs.mDefaultErrorPagePath;
-		this->mLocationList = rhs.mLocationList;
+
+		for (LocationConstIter iter = rhs.mLocationList.begin(); iter != rhs.mLocationList.end(); iter++)
+		{
+			LocationConfig *locationConfig = new LocationConfig();
+			
+			locationConfig = iter->second;
+			this->mLocationList.insert(std::pair<std::string, LocationConfig *>(iter->first, locationConfig));
+		}
 	}
 	return (*this);
 }

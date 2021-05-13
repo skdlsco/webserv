@@ -10,7 +10,8 @@
 
 class ServerConfig
 {
-	typedef std::vector<LocationConfig>::iterator LocationIter;
+	typedef std::map<std::string, LocationConfig *>::iterator LocationIter;
+	typedef std::map<std::string, LocationConfig *>::const_iterator LocationConstIter;
 	
 	private:
 		CommonDirective mCommonDirective;
@@ -21,7 +22,7 @@ class ServerConfig
 		size_t mClientMaxBodySize;
 		std::string mDefaultErrorPagePath;
 		std::map<std::string, LocationConfig *>	mLocationList;
-	
+
 	public:
 		static std::string const TAG;
 		ServerConfig();
@@ -52,7 +53,6 @@ class ServerConfig
 		void setClientMaxBodySize(size_t clientMaxBodySize);
 		void setDefaultErrorPagePath(std::string const & defaultErrorPagePath);
 
-	
 		void addLocation(std::string URI, LocationConfig *location);
 };
 
