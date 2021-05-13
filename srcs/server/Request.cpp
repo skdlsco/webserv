@@ -1,6 +1,7 @@
 #include "Request.hpp"
 
 std::string const Request::TAG = "Request";
+std::string const Request::HTTP_VERSION = "HTTP/1.1";
 
 Request::Request() : mAnalyzeLevel(REQUEST_LINE), mErrorCode(0)
 {
@@ -60,7 +61,7 @@ void Request::analyzeRequestLine(std::string line)
 	std::vector<std::string> lineElements = web::split(line, std::string(" "));
 
 	if (lineElements.size() != 3 || isInvalidMethod(lineElements[0]) ||
-		lineElements[2] != "HTTP/1.1")
+		lineElements[2] != HTTP_VERSION)
 	{
 		mErrorCode = 400;
 		mAnalyzeLevel = DONE;
@@ -83,8 +84,8 @@ void Request::analyzeHeaderField(std::string line)
 	}
 	std::string key = line.substr(0, colonIndex);
 	std::string value = line.substr(colonIndex + 1);
-	// trim value;
 
+	web::trim(value);
 	if (mField.find(key) != mField.end())
 	{
 		mAnalyzeLevel = DONE;
