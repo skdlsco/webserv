@@ -3,7 +3,8 @@
 std::string const Request::TAG = "Request";
 std::string const Request::HTTP_VERSION = "HTTP/1.1";
 
-Request::Request() : mAnalyzeLevel(REQUEST_LINE), mErrorCode(0)
+Request::Request()
+: mAnalyzeLevel(REQUEST_LINE), mErrorCode(0)
 {
 
 }
@@ -45,7 +46,7 @@ void Request::analyzeBody()
 	mBuffer.clear();
 }
 
-static bool isInvalidMethod(std::string method)
+bool Request::isValidMethod(std::string method)
 {
 	for (size_t i = 0; i < NUM_METHOD_LIST; i++)
 	{
@@ -57,10 +58,9 @@ static bool isInvalidMethod(std::string method)
 
 void Request::analyzeRequestLine(std::string line)
 {
-	// origin-form 이외 form은 ...
 	std::vector<std::string> lineElements = web::split(line, std::string(" "));
 
-	if (lineElements.size() != 3 || isInvalidMethod(lineElements[0]) ||
+	if (lineElements.size() != 3 || !isValidMethod(lineElements[0]) ||
 		lineElements[2] != HTTP_VERSION)
 	{
 		mErrorCode = 400;

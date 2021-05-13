@@ -31,6 +31,7 @@ class Request
 		void analyzeRequestLine(std::string line);
 		void analyzeHeaderField(std::string line);
 		void analyzeBody();
+		bool isValidMethod(std::string method);
 	public:
 		static std::string const TAG;
 
@@ -40,11 +41,6 @@ class Request
 		Request &operator=(Request const & rhs);
 
 		void analyzeBuffer(char * buffer);
-
-		// request-line -> 형식만 체크. (method sp target sp http-version\r\n) error 있음. (형식.)
-		// header -> 대소문자 구분 x (fieldname:(sp)content\r\n) error 있음. (중복, 형식)
-		// body -> default string, chunked (읽는 방법이 변경된다.) body에서 헤더에 관한 정보가 필요하다. content length.. chunked..
-		// enum AnalyzeLevel. ready, requestline header, body, done xxx;
 
 		enum AnalyzeLevel getAnalyzeLevel() const;
 		std::string getBuffer() const;
