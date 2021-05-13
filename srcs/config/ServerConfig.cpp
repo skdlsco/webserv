@@ -38,9 +38,8 @@ ServerConfig &ServerConfig::operator=(ServerConfig const & rhs)
 
 		for (LocationConstIter iter = rhs.mLocationList.begin(); iter != rhs.mLocationList.end(); iter++)
 		{
-			LocationConfig *locationConfig = new LocationConfig();
+			LocationConfig *locationConfig = new LocationConfig(*iter->second);
 			
-			locationConfig = iter->second;
 			this->mLocationList.insert(std::pair<std::string, LocationConfig *>(iter->first, locationConfig));
 		}
 	}
