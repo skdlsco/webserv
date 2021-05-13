@@ -4,8 +4,9 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include "ServerComponent.hpp"
-# include "fdmanager/FileDiscriptorListener.hpp"
+#include "server/ServerComponent.hpp"
+#include "server/Request.hpp"
+#include "fdmanager/FileDiscriptorListener.hpp"
 #include "config/ServerConfig.hpp"
 
 class Connection : public ServerComponent
@@ -27,7 +28,9 @@ class Connection : public ServerComponent
 				void onExceptSet();
 		};
 	private:
+		static const int BUFFER_SIZE = 1024;
 		ConnectionAction mFDListener;
+		Request mRequest;
 		const ServerConfig *mConfig;
 		struct sockaddr_in mAddr; // TODO convert type to int, string
 		int mFD;

@@ -5,6 +5,7 @@ SRC_NAME = main.cpp \
 			ServerManager.cpp \
 			fdmanager/FileDiscriptorManager.cpp \
 			server/Connection.cpp \
+			server/Request.cpp \
 			server/Server.cpp \
 			server/ServerComponent.cpp \
 			socket/Socket.cpp \
