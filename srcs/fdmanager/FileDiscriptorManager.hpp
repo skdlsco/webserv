@@ -7,17 +7,12 @@
 #include <iostream>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <fcntl.h>
 #include <sys/select.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include "FileDiscriptorListener.hpp"
 #include <vector>
 #include <string>
-
-struct fd_set
-{
-	int fds_bits[NFDBITS];
-};
 
 class FileDiscriptorManager
 {
@@ -31,7 +26,7 @@ class FileDiscriptorManager
 		void fdZero();
 		void fdSet(int fd);
 		void fdClr(int fd);
-		bool isFDSet(int fd, struct fd_set * fdSet);
+		bool isFDSet(int fd, fd_set * fdSet);
 		bool isFDOverflow(int fd);
 	public:
 		static std::string const TAG;
