@@ -3,7 +3,7 @@
 std::string const ConfigManager::TAG = "ConfigManager";
 
 ConfigManager::ConfigManager(std::string filePath)
-: mFilePath(filePath), mValidator(filePath), mParser(filePath)
+: mValidator(filePath), mParser(filePath)
 {
 
 }
@@ -17,7 +17,6 @@ ConfigManager &ConfigManager::operator=(ConfigManager const & rhs)
 {
 	if (this != &rhs)
 	{
-		this->mFilePath = rhs.mFilePath;
 		this->mValidator = rhs.mValidator;
 		this->mParser = rhs.mParser;
 	}

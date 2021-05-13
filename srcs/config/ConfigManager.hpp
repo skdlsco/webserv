@@ -7,7 +7,6 @@
 class ConfigManager
 {
 	private:
-		std::string mFilePath;
 		ConfigValidator mValidator;
 		ConfigParser mParser;
 		ConfigManager();
