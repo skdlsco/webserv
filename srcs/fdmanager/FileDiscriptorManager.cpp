@@ -30,19 +30,19 @@ bool FileDiscriptorManager::isFDOverflow(int fd)
 void FileDiscriptorManager::fdSet(int fd)
 {
 	if (!isFDOverflow(fd))
-		mFDSet.fds_bits[(unsigned long)fd / __DARWIN_NFDBITS] |= ((__int32_t)(((unsigned long)1) << ((unsigned long)fd % __DARWIN_NFDBITS)));
+		mFDSet.fds_bits[(unsigned long)fd / NFDBITS] |= ((__int32_t)(((unsigned long)1) << ((unsigned long)fd % NFDBITS)));
 }
 
 void FileDiscriptorManager::fdClr(int fd)
 {
 	if (!isFDOverflow(fd))
-		mFDSet.fds_bits[(unsigned long)fd / __DARWIN_NFDBITS] &= ~((__int32_t)(((unsigned long)1) << ((unsigned long)fd % __DARWIN_NFDBITS)));
+		mFDSet.fds_bits[(unsigned long)fd / NFDBITS] &= ~((__int32_t)(((unsigned long)1) << ((unsigned long)fd % NFDBITS)));
 }
 
 bool FileDiscriptorManager::isFDSet(int fd, struct fd_set * fdSet)
 {
 	if (!isFDOverflow(fd))
-		return (fdSet->fds_bits[(unsigned long)fd / __DARWIN_NFDBITS] & ((__int32_t)(((unsigned long)1) << ((unsigned long)fd % __DARWIN_NFDBITS))));
+		return (fdSet->fds_bits[(unsigned long)fd / NFDBITS] & ((__int32_t)(((unsigned long)1) << ((unsigned long)fd % NFDBITS))));
 	return (false);
 }
 
