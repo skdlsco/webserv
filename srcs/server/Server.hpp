@@ -4,7 +4,7 @@
 # include "server/ServerComponent.hpp"
 # include "fdmanager/FileDiscriptorListener.hpp"
 # include "socket/Socket.hpp"
-# include "config/Config.hpp"
+# include "config/ServerConfig.hpp"
 # include "server/Connection.hpp"
 # include "logger/Logger.hpp"
 
@@ -27,20 +27,20 @@ class Server : public ServerComponent
 				void onExceptSet();
 		};
 	private:
-		Config mConfig;
+		const ServerConfig *mConfig;
 		Socket mSocket;
 		ServerAction mFDListener;
 
 		Server();
 		Server(Server const & copy);
 		Server &operator=(Server const & copy);
-		Server(ServerManager &serverManager, Config config);
+		Server(ServerManager &serverManager, const ServerConfig *config);
 	public:
 		static const std::string TAG;
-		static Server *create(ServerManager &serverManager, Config config);
+		static Server *create(ServerManager &serverManager, const ServerConfig *config);
 		virtual ~Server();
 
-		Config const &getConfig() const;
+		const ServerConfig *getConfig() const;
 		virtual void onRepeat();
 };
 

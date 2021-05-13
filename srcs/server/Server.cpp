@@ -2,16 +2,16 @@
 
 std::string const Server::TAG = "Server";
 
-Server::Server(ServerManager &serverManager, Config config)
+Server::Server(ServerManager &serverManager, const ServerConfig *config)
 : ServerComponent(serverManager), mConfig(config), mFDListener(*this)
 {
-	mSocket.bind(mConfig.getPort());
+	mSocket.bind(mConfig->getPort());
 	mSocket.listen(100);
 	getServerManager().addFD(mSocket.getSocketFD(), mFDListener);
-	logger::print(TAG) << "listening port = " << config.getPort() << std::endl;
+	logger::print(TAG) << "listening port = " << mConfig->getPort() << std::endl;
 }
 
-Server *Server::create(ServerManager &serverManager, Config config)
+Server *Server::create(ServerManager &serverManager, const ServerConfig *config)
 {
 	try
 	{
@@ -19,7 +19,7 @@ Server *Server::create(ServerManager &serverManager, Config config)
 	}
 	catch(std::exception const &e)
 	{
-		std::cerr << e.what() << '\n';
+		logger::println(TAG, e.what());
 	}
 	return (NULL);
 }
@@ -29,7 +29,7 @@ Server::~Server()
 	getServerManager().removeFD(mSocket.getSocketFD());
 }
 
-Config const &Server::getConfig() const
+const ServerConfig *Server::getConfig() const
 {
 	return (mConfig);
 }

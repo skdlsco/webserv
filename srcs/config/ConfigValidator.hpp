@@ -1,14 +1,16 @@
 #ifndef CONFIG_VALIDATOR_HPP
 # define CONFIG_VALIDATOR_HPP
 
-# include <iostream>
-# include <fstream>
-# include <string>
-# include <map>
-# include <vector>
-# include <exception>
-# include "../utils/Directive.hpp"
-# include "../utils/String.hpp"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <map>
+#include <vector>
+#include <algorithm>
+#include <exception>
+# include "utils/Directive.hpp"
+# include "utils/Method.hpp"
+# include "utils/String.hpp"
 
 class ConfigValidator
 {
@@ -17,10 +19,15 @@ class ConfigValidator
 		std::map<std::string, size_t> mCountServerDirective;
 		std::map<std::string, size_t> mCountLocationDirective;
 		std::vector<std::string> mEachConfigLine;
-		ConfigValidator();
 
 	public:
 		static std::string const TAG;
+		static std::string const DEFAULT_IP;
+		static std::string const DEFAULT_PORT;
+		static std::string const DEFAULT_SERVER_NAME;
+
+		/* to avoid inaccess error */
+		ConfigValidator();
 		ConfigValidator(std::string const & filePath);
 		ConfigValidator(ConfigValidator const & copy);
 		ConfigValidator &operator=(ConfigValidator const & rhs);
@@ -35,6 +42,8 @@ class ConfigValidator
 
 		bool isValidateServerDirective(size_t & lineIndex);
 		bool isValidateLocationDirective(size_t & lineIndex);
+		bool isValidateMethodName();
+
 		bool hasMandatoryDirective(size_t flag);
 		bool hasEachDirectiveOnlyOne(size_t flag);
 
