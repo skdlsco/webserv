@@ -180,6 +180,8 @@ void ConfigParser::setDefaultServer(std::vector<ServerConfig *> & serverList)
 		key = serverList[serverIdx]->getIP() + web::toString(serverList[serverIdx]->getPort());
 		if (defaultServer.count(key))
 			isDefaultServer = false;
+		else
+			defaultServer.insert(std::pair<std::string, std::string>(key, serverList[serverIdx]->getServerName()));
 		serverList[serverIdx]->setDefaultServer(isDefaultServer);
 	}
 }
