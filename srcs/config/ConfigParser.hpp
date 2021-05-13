@@ -7,8 +7,8 @@
 #include <string>
 #include <vector>
 #include <map>
-# include "../utils/Directive.hpp"
-# include "../utils/String.hpp"
+# include "utils/Directive.hpp"
+# include "utils/String.hpp"
 # include "ServerConfig.hpp"
 # include "LocationConfig.hpp"
 
@@ -18,10 +18,12 @@ class ConfigParser
 		std::string mFilePath;
 		std::vector<std::string> mEachConfigLine;
 		ServerConfig *mCurrentServerConfig;
-		ConfigParser();
 
 	public:
 		static std::string const TAG;
+
+		/* to avoid inaccess error */
+		ConfigParser();
 		ConfigParser(std::string filePath);
 		ConfigParser(ConfigParser const & copy);
 		ConfigParser &operator=(ConfigParser const & rhs);
@@ -34,6 +36,7 @@ class ConfigParser
 		void setDefaultServer(std::vector<ServerConfig *> & serverList);
 		void setLocationConfigCommonDirective(LocationConfig * locationConfig);
 		void readConfigFileByLine();
+		std::string const addSlashToURI(std::string const & URI);
 
 		class ConfigParserException : public std::exception
 		{
