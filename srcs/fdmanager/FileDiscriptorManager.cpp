@@ -30,19 +30,19 @@ bool FileDiscriptorManager::isFDOverflow(int fd)
 void FileDiscriptorManager::fdSet(int fd)
 {
 	if (!isFDOverflow(fd))
-		mFDSet.fds_bits[(unsigned long)fd / __DARWIN_NFDBITS] |= ((__int32_t)(((unsigned long)1) << ((unsigned long)fd % __DARWIN_NFDBITS)));
+		mFDSet.fds_bits[(unsigned long)fd / NFDBITS] |= ((__int32_t)(((unsigned long)1) << ((unsigned long)fd % NFDBITS)));
 }
 
 void FileDiscriptorManager::fdClr(int fd)
 {
 	if (!isFDOverflow(fd))
-		mFDSet.fds_bits[(unsigned long)fd / __DARWIN_NFDBITS] &= ~((__int32_t)(((unsigned long)1) << ((unsigned long)fd % __DARWIN_NFDBITS)));
+		mFDSet.fds_bits[(unsigned long)fd / NFDBITS] &= ~((__int32_t)(((unsigned long)1) << ((unsigned long)fd % NFDBITS)));
 }
 
-bool FileDiscriptorManager::isFDSet(int fd, struct fd_set * fdSet)
+bool FileDiscriptorManager::isFDSet(int fd, fd_set * fdSet)
 {
 	if (!isFDOverflow(fd))
-		return (fdSet->fds_bits[(unsigned long)fd / __DARWIN_NFDBITS] & ((__int32_t)(((unsigned long)1) << ((unsigned long)fd % __DARWIN_NFDBITS))));
+		return (fdSet->fds_bits[(unsigned long)fd / NFDBITS] & ((__int32_t)(((unsigned long)1) << ((unsigned long)fd % NFDBITS))));
 	return (false);
 }
 
@@ -63,9 +63,9 @@ void FileDiscriptorManager::remove(int fd)
 bool FileDiscriptorManager::select()
 {
 	struct timeval time;
-	struct fd_set readset = mFDSet;
-	struct fd_set writeset = mFDSet;
-	struct fd_set exceptset = mFDSet;
+	fd_set readset = mFDSet;
+	fd_set writeset = mFDSet;
+	fd_set exceptset = mFDSet;
 
 	time.tv_sec = 0;
 	time.tv_usec = 0;
