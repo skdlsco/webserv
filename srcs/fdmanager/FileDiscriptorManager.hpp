@@ -1,8 +1,13 @@
 #ifndef FILE_DISCRIPTOR_SET_HPP
 # define FILE_DISCRIPTOR_SET_HPP
 
+#ifndef FD_SETSIZE
 # define FD_SETSIZE 1024
+#endif
+#ifndef NFDBITS
 # define NFDBITS 32
+#endif
+
 
 #include <iostream>
 #include <sys/time.h>
