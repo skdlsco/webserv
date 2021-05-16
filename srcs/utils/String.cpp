@@ -30,10 +30,44 @@ int web::atoi(const char *str)
 		sign = (*str == '-' ? -1 : 1);
 		str++;
 	}
-	while (str[idx] && (str[idx] >= '0' && str[idx] <= '9'))
+	while (str[idx] && web::isNum(str[idx]))
 	{
 		num *= 10;
 		num += str[idx] - '0';
+		idx++;
+	}
+	num *= sign;
+	if (idx >= 19 && isOverLLMax(str))
+		return ((sign == -1) - 1);
+	return (num);
+}
+
+int web::axtoi(const char *str)
+{
+	int idx = 0;
+	int num = 0;
+	int sign = 1;
+
+	while (*str && *str == ' ')
+	{
+		str++;
+	}
+	if (*str == '+' || *str == '-')
+	{
+		sign = (*str == '-' ? -1 : 1);
+		str++;
+	}
+	while (str[idx] && web::isNum(str[idx]) ||
+			(str[idx] >= 'a' && str[idx] <= 'f') ||
+			(str[idx] >= 'A' && str[idx] <= 'F'))
+	{
+		num *= 16;
+		if (web::isNum(str[idx]))
+			num += str[idx] - '0';
+		if (str[idx] >= 'a' && str[idx] <= 'f')
+			num += str[idx] - 'a' + 10;
+		if (str[idx] >= 'A' && str[idx] <= 'F')
+			num += str[idx] - 'A' + 10;
 		idx++;
 	}
 	num *= sign;
@@ -165,4 +199,57 @@ void web::addPrefixToString(std::string &target, std::string prefix)
 void web::addSuffixToString(std::string &target, std::string suffix)
 {
 	target = target + suffix;
+}
+
+
+bool web::isNum(int ch)
+{
+	if (ch >= '0' && ch <= '9')
+		return (true);
+	return (false);
+}
+
+bool web::isLower(int ch)
+{
+	if (ch >= 'a' && ch <= 'z')
+		return (true);
+	return (false);
+}
+
+bool web::isUpper(int ch)
+{
+	if (ch >= 'A' && ch <= 'Z')
+		return (true);
+	return (false);
+}
+
+bool web::isAlpha(int ch)
+{
+	if (isLower(ch) || isUpper(ch))
+		return (true);
+	return (false);
+}
+
+std::string toUpper(std::string const &str)
+{
+	std::string upperResult;
+
+	upperResult = str;
+	for (int i = 0; i < str.length(); i++)
+	{
+		if (web::isLower(str[i]))
+			upperResult[i] = str[i] - 'a' + 'A';
+	}
+}
+
+std::string toLower(std::string const &str)
+{
+	std::string upperResult;
+
+	upperResult = str;
+	for (int i = 0; i < str.length(); i++)
+	{
+		if (web::isUpper(str[i]))
+			upperResult[i] = str[i] - 'A' + 'a';
+	}
 }

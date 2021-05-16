@@ -8,6 +8,7 @@
 namespace web
 {
 	int atoi(const char *str);
+	int axtoi(const char *str);
 	int stoi(std::string const & str);
 
 	char *itoa(int val);
@@ -24,6 +25,13 @@ namespace web
 
 	void addPrefixToString(std::string &target, std::string const prefix);
 	void addSuffixToString(std::string &target, std::string const suffix);
+
+	bool isNum(int ch);
+	bool isLower(int ch);
+	bool isUpper(int ch);
+	bool isAlpha(int ch);
+	std::string toUpper(std::string const &str);
+	std::string toLower(std::string const &str);
 };
 
 #endif
