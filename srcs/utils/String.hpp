@@ -30,8 +30,10 @@ namespace web
 	bool isLower(int ch);
 	bool isUpper(int ch);
 	bool isAlpha(int ch);
-	std::string toUpper(std::string const &str);
-	std::string toLower(std::string const &str);
+	std::string toUpper(std::string &str);
+	std::string toLower(std::string &str);
+	std::string copyToUpper(std::string const &str);
+	std::string copyToLower(std::string const &str);
 };
 
 #endif

@@ -57,9 +57,9 @@ int web::axtoi(const char *str)
 		sign = (*str == '-' ? -1 : 1);
 		str++;
 	}
-	while (str[idx] && web::isNum(str[idx]) ||
+	while (str[idx] && (web::isNum(str[idx]) ||
 			(str[idx] >= 'a' && str[idx] <= 'f') ||
-			(str[idx] >= 'A' && str[idx] <= 'F'))
+			(str[idx] >= 'A' && str[idx] <= 'F')))
 	{
 		num *= 16;
 		if (web::isNum(str[idx]))
@@ -230,26 +230,49 @@ bool web::isAlpha(int ch)
 	return (false);
 }
 
-std::string toUpper(std::string const &str)
+std::string web::toUpper(std::string &str)
+{
+	for (size_t i = 0; i < str.length(); i++)
+	{
+		if (web::isLower(str[i]))
+			str[i] = str[i] - 'a' + 'A';
+	}
+	return (str);
+}
+
+
+std::string web::toLower(std::string &str)
+{
+	for (size_t i = 0; i < str.length(); i++)
+	{
+		if (web::isUpper(str[i]))
+			str[i] = str[i] - 'A' + 'a';
+	}
+	return (str);
+}
+
+std::string web::copyToUpper(std::string const &str)
 {
 	std::string upperResult;
 
 	upperResult = str;
-	for (int i = 0; i < str.length(); i++)
+	for (size_t i = 0; i < str.length(); i++)
 	{
 		if (web::isLower(str[i]))
 			upperResult[i] = str[i] - 'a' + 'A';
 	}
+	return (upperResult);
 }
 
-std::string toLower(std::string const &str)
+std::string web::copyToLower(std::string const &str)
 {
-	std::string upperResult;
+	std::string lowerResult;
 
-	upperResult = str;
-	for (int i = 0; i < str.length(); i++)
+	lowerResult = str;
+	for (size_t i = 0; i < str.length(); i++)
 	{
 		if (web::isUpper(str[i]))
-			upperResult[i] = str[i] - 'A' + 'a';
+			lowerResult[i] = str[i] - 'A' + 'a';
 	}
+	return (lowerResult);
 }
