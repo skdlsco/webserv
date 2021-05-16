@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <cstring>
 #include "server/ServerComponent.hpp"
 #include "server/Request.hpp"
 #include "fdmanager/FileDiscriptorListener.hpp"
