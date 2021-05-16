@@ -1,7 +1,7 @@
 #include "File.hpp"
 
-File::File(std::string const & fileName)
-: mState(CONTENT_LEFT), mFileName(fileName)
+File::File(std::string const & filePath)
+: mState(CONTENT_LEFT), mFilePath(filePath)
 {
 
 }
@@ -17,14 +17,19 @@ File &File::operator=(File const & rhs)
 	{
 		this->mState = rhs.mState;
 		this->mFD = rhs.mFD;
-		this->mFileName = rhs.mFileName;
+		this->mFilePath = rhs.mFilePath;
 	}
 	return (*this);
 }
 
+File::~File()
+{
+	mBuffer.clear();
+}
+
 void File::openFile()
 {
-	mFD = open(mFileName.c_str(), O_RDONLY);
+	mFD = open(mFilePath.c_str(), O_RDONLY);
 	if (mFD < 0)
 		throw File::FileException("file can't open.");
 }
@@ -68,9 +73,24 @@ std::string File::getLine()
 	return (line);
 }
 
-File::~File()
+int File::getFD()
 {
-	mBuffer.clear();
+	return (mFD);
+}
+
+enum File::State File::getState()
+{
+	return (mState);
+}
+
+std::string const &File::getFilePath()
+{
+	return (mFilePath);
+}
+
+bool File::isStateDone()
+{
+	return (mState == DONE);
 }
 
 File::FileException::~FileException() throw()

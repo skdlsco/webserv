@@ -18,12 +18,12 @@ class File
 	private:
 		int mFD;
 		enum State mState;
-		std::string mFileName;
+		std::string mFilePath;
 		std::string mBuffer;
 		File();
 
 	public:
-		File(std::string const & fileName);
+		File(std::string const & filePath);
 		File(File const & copy);
 		File &operator=(File const & rhs);
 		virtual ~File();
@@ -31,7 +31,13 @@ class File
 		void openFile();
 		void closeFile();
 		void readFile();
+		//void writeFile();
 		std::string getLine();
+
+		int getFD();
+		enum State getState();
+		std::string const &getFilePath();
+		bool isStateDone();
 
 		class FileException : public std::exception
 		{
