@@ -25,6 +25,7 @@ File &File::operator=(File const & rhs)
 File::~File()
 {
 	mBuffer.clear();
+	closeFile();
 }
 
 void File::openFile()
