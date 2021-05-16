@@ -6,6 +6,7 @@
 #include "logger/Logger.hpp"
 #include "utils/String.hpp"
 #include "utils/Method.hpp"
+#include "config/ServerConfig.hpp"
 
 enum AnalyzeLevel
 {
@@ -14,19 +15,31 @@ enum AnalyzeLevel
 
 class Request
 {
+	typedef std::map<std::string, std::string>::iterator FieldIter;
+
 	private:
 		static std::string const HTTP_VERSION;
 
+		const ServerConfig *mConfig;
 		enum AnalyzeLevel mAnalyzeLevel;
 		std::string mBuffer;
 		std::string mBody;
 		std::string mMethod;
 		std::string mTarget;
 		std::map<std::string, std::string> mField;
-		// ischunked?
-		// contentlength?
+
+		bool mHasBody;
+		bool mIsChunked;
+		bool mIsReadData;
+		int mContentLength;
 		int mErrorCode;
 
+		void badRequest();
+		void appendChunkedBody();
+		void appendContentBody();
+		void checkContentLength();
+		void checkTransferEncoding();
+		void checkHeaderForBody();
 		void analyzeHeader();
 		void analyzeRequestLine(std::string line);
 		void analyzeHeaderField(std::string line);
@@ -42,6 +55,8 @@ class Request
 
 		void analyzeBuffer(char * buffer);
 
+		const ServerConfig *getConfig() const;
+		void setConfig(const ServerConfig *config);
 		enum AnalyzeLevel getAnalyzeLevel() const;
 		std::string getBuffer() const;
 		std::string getBody() const;
