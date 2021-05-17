@@ -27,7 +27,7 @@ Connection *Connection::create(ServerManager &serverManager,
 	return (NULL);
 }
 
-void Connection::onRepeat(struct timeval timeOut)
+void Connection::onRepeat()
 {
 
 }

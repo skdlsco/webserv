@@ -41,7 +41,7 @@ class Server : public ServerComponent
 		virtual ~Server();
 
 		const ServerConfig *getConfig() const;
-		virtual void onRepeat(struct timeval timeOut);
+		virtual void onRepeat();
 };
 
 #endif

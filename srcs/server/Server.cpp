@@ -34,7 +34,7 @@ const ServerConfig *Server::getConfig() const
 	return (mConfig);
 }
 
-void Server::onRepeat(struct timeval timeOut)
+void Server::onRepeat()
 {
 
 }

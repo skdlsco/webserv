@@ -15,10 +15,10 @@ class ServerComponent
 		ServerComponent &operator=(ServerComponent const & copy);
 	public:
 		static std::string const TAG;
-
+		static long const TIMEOUT = 10;
 		ServerComponent(ServerManager &serverManager);
 		virtual ~ServerComponent();
-		virtual void onRepeat(struct timeval timeOut) = 0;
+		virtual void onRepeat() = 0;
 		void finish();
 
 		ServerManager &getServerManager();

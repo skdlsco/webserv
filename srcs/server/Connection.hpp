@@ -47,7 +47,7 @@ class Connection : public ServerComponent
 		static Connection *create(ServerManager &serverManager,
 									const ServerConfig *config, struct sockaddr_in addr, int fd);
 
-		virtual void onRepeat(struct timeval timeOut);
+		virtual void onRepeat();
 		const ServerConfig *getConfig() const;
 };
 
