@@ -30,6 +30,7 @@ class ServerManager
 		void removeComponent(ServerComponent *component);
 		void addFD(int fd, FileDiscriptorListener &fdListener);
 		void removeFD(int fd);
+		struct timeval makeTimeOut();
 };
 
 #endif

@@ -24,7 +24,7 @@ void ServerManager::run()
 		for (componentIter it = mServerComponentVec.begin(); it < mServerComponentVec.end(); it++)
 		{
 			if (*it)
-				(*it)->onRepeat();
+				(*it)->onRepeat(makeTimeOut());
 		}
 		componentIter it = std::remove(mServerComponentVec.begin(), mServerComponentVec.end(), (void *)NULL);
 		if (it != mServerComponentVec.end())
@@ -54,4 +54,13 @@ void ServerManager::addFD(int fd, FileDiscriptorListener &listener)
 void ServerManager::removeFD(int fd)
 {
 	mFDManager.remove(fd);
+}
+
+struct timeval ServerManager::makeTimeOut()
+{
+	struct timeval timeOut;
+
+	timeOut.tv_sec = 10;
+	timeOut.tv_usec = 0;
+	return (timeOut);
 }

@@ -18,7 +18,7 @@ class ServerComponent
 
 		ServerComponent(ServerManager &serverManager);
 		virtual ~ServerComponent();
-		virtual void onRepeat() = 0;
+		virtual void onRepeat(struct timeval timeOut) = 0;
 		void finish();
 
 		ServerManager &getServerManager();
