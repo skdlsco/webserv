@@ -75,7 +75,7 @@ void Connection::ConnectionAction::onReadSet()
 
 void Connection::ConnectionAction::onWriteSet()
 {
-	if (mConnection.mRequest.getAnalyzeLevel() == DONE)
+	if (mConnection.mRequest.getAnalyzeLevel() == Request::DONE)
 	{
 		logger::println(TAG, mConnection.mRequest.getTarget());
 		char content[] = "HTTP/1.1 200 OK\r\nContent-Length:2\r\n\r\nabc";
