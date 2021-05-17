@@ -7,6 +7,7 @@
 #include <cstring>
 #include "server/ServerComponent.hpp"
 #include "server/Request.hpp"
+#include "server/Response.hpp"
 #include "fdmanager/FileDiscriptorListener.hpp"
 #include "config/ServerConfig.hpp"
 
@@ -32,6 +33,8 @@ class Connection : public ServerComponent
 		static const int BUFFER_SIZE = 1024;
 		ConnectionAction mFDListener;
 		Request mRequest;
+		Response *mResponse;
+		std::string *mWriteBuffer;
 		const ServerConfig *mConfig;
 		struct sockaddr_in mAddr; // TODO convert type to int, string
 		int mFD;

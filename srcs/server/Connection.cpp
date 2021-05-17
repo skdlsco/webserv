@@ -11,6 +11,8 @@ Connection::Connection(ServerManager &serverManager, const ServerConfig *config,
 Connection::~Connection()
 {
 	getServerManager().removeFD(mFD);
+	delete mResponse;
+	delete mWriteBuffer;
 }
 
 Connection *Connection::create(ServerManager &serverManager,
@@ -29,7 +31,12 @@ Connection *Connection::create(ServerManager &serverManager,
 
 void Connection::onRepeat()
 {
-
+	if (mResponse->getState() == Response::DONE)
+	{
+		mWriteBuffer = mResponse->getResponse();
+		if (!mWriteBuffer)
+			finish();
+	}
 }
 
 const ServerConfig *Connection::getConfig() const
@@ -75,14 +82,18 @@ void Connection::ConnectionAction::onReadSet()
 
 void Connection::ConnectionAction::onWriteSet()
 {
-	if (mConnection.mRequest.getAnalyzeLevel() == Request::DONE)
+	if (mConnection.mWriteBuffer)
 	{
-		logger::println(TAG, mConnection.mRequest.getTarget());
-		char content[] = "HTTP/1.1 200 OK\r\nContent-Length:2\r\n\r\nabc";
-		write(mConnection.mFD, content, strlen(content));
-		mConnection.finish();
+		int writeN = write(mConnection.mFD, mConnection.mWriteBuffer->c_str(), BUFFER_SIZE);
+		if (writeN < 0)
+		{
+			mConnection.finish();
+			return ;
+		}
+		mConnection.mWriteBuffer->erase(0, writeN);
+		if (mConnection.mWriteBuffer->empty())
+			mConnection.finish();
 	}
-	// response writeBuffer check...
 }
 
 void Connection::ConnectionAction::onExceptSet()
