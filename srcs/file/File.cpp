@@ -32,7 +32,7 @@ void File::openFile()
 {
 	mFD = open(mFilePath.c_str(), O_RDONLY);
 	if (mFD < 0)
-		throw File::FileException("file can't open.");
+		throw File::FileException("file name \"" + mFilePath + "\" can't open.");
 }
 
 void File::closeFile()
@@ -47,6 +47,8 @@ void File::readFile()
 
 	if (!(nRead = read(mFD, readBuffer, BUFFER_SIZE)))
 		mState = CONTENT_NOT_LEFT;
+	if (nRead < 0)
+		throw File::FileException("read error");
 	readBuffer[nRead] = '\0';
 	mBuffer = mBuffer + readBuffer;
 }
