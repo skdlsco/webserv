@@ -18,7 +18,7 @@ void ServerComponent::finish()
 	delete this;
 }
 
-ServerManager &ServerComponent::getServerManager()
+ServerManager &ServerComponent::getServerManager() const
 {
 	return (mServerManager);
 }

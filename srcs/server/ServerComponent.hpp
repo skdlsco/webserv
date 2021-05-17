@@ -21,7 +21,7 @@ class ServerComponent
 		virtual void onRepeat() = 0;
 		void finish();
 
-		ServerManager &getServerManager();
+		ServerManager &getServerManager() const;
 };
 
 #endif
