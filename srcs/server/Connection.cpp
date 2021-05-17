@@ -11,6 +11,8 @@ Connection::Connection(ServerManager &serverManager, const ServerConfig *config,
 Connection::~Connection()
 {
 	getServerManager().removeFD(mFD);
+	delete mResponse;
+	delete mWriteBuffer;
 }
 
 Connection *Connection::create(ServerManager &serverManager,
