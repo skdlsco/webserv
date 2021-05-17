@@ -8,15 +8,14 @@
 #include "utils/Method.hpp"
 #include "config/ServerConfig.hpp"
 
-enum AnalyzeLevel
-{
-	REQUEST_LINE, HEADER, BODY, DONE
-};
-
 class Request
 {
 	typedef std::map<std::string, std::string>::iterator FieldIter;
-
+	public:
+		enum AnalyzeLevel
+		{
+			REQUEST_LINE, HEADER, BODY, DONE
+		};
 	private:
 		static std::string const HTTP_VERSION;
 
@@ -57,7 +56,7 @@ class Request
 
 		const ServerConfig *getConfig() const;
 		void setConfig(const ServerConfig *config);
-		enum AnalyzeLevel getAnalyzeLevel() const;
+		enum Request::AnalyzeLevel getAnalyzeLevel() const;
 		std::string getBuffer() const;
 		std::string getBody() const;
 		std::string getMethod() const;

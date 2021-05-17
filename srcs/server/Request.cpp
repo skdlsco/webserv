@@ -223,7 +223,7 @@ void Request::setConfig(const ServerConfig *config)
 	mConfig = config;
 }
 
-enum AnalyzeLevel Request::getAnalyzeLevel() const
+enum Request::AnalyzeLevel Request::getAnalyzeLevel() const
 {
 	return (mAnalyzeLevel);
 }
