@@ -64,7 +64,7 @@ struct tm web::timevalToTm(struct timeval time)
 	return (result);
 }
 
-long getNowTime()
+long web::getNowTime()
 {
 	struct timeval nowTime;
 
