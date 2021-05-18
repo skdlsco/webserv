@@ -55,7 +55,15 @@ void Server::ServerAction::onReadSet()
 	struct sockaddr_in clientAddr;
 	int clientFD = mServer.mSocket.accept(clientAddr);
 	logger::print(TAG) << "accept fd : " << clientFD << std::endl;
-	Connection::create(mServer.getServerManager(), mServer.mConfig, clientAddr, clientFD);
+	try
+	{
+		Connection::create(mServer.getServerManager(), mServer.mConfig, clientAddr, clientFD);
+	}
+	catch(const std::exception& e)
+	{
+		close(clientFD);
+		logger::println(TAG, e.what());
+	}
 }
 
 void Server::ServerAction::onWriteSet()
