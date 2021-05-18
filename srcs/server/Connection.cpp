@@ -3,7 +3,8 @@
 std::string const Connection::TAG = "Connection";
 
 Connection::Connection(ServerManager &serverManager, const ServerConfig *config, struct sockaddr_in addr, int fd)
-: ServerComponent(serverManager), mFDListener(*this), mConfig(config), mAddr(addr), mFD(fd)
+: ServerComponent(serverManager), mFDListener(*this), mResponse(NULL),
+	mWriteBuffer(NULL), mConfig(config), mAddr(addr), mFD(fd)
 {
 	getServerManager().addFD(fd, mFDListener);
 }
@@ -31,7 +32,7 @@ Connection *Connection::create(ServerManager &serverManager,
 
 void Connection::onRepeat()
 {
-	if (mResponse->getState() == Response::DONE)
+	if (mResponse && mResponse->getState() == Response::DONE)
 	{
 		mWriteBuffer = mResponse->getResponse();
 		if (!mWriteBuffer)

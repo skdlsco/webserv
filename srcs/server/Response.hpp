@@ -5,6 +5,8 @@
 #include "ServerManager.hpp"
 #include "server/ServerComponent.hpp"
 #include "config/LocationConfig.hpp"
+#include "config/ServerConfig.hpp"
+
 class Response : public ServerComponent
 {
 	public:
@@ -13,11 +15,14 @@ class Response : public ServerComponent
 			ON_WORKING, DONE, ERROR
 		};
 	private:
-		const LocationConfig *mConfig;
+		const ServerConfig *mServerConfig;
+		const LocationConfig *mLocationConfig;
 		enum ResponseState mState;
 	protected:
 		virtual std::string createResponseHeader() = 0;
 		virtual std::string createResponseBody() = 0;
+
+		void setState(Response::ResponseState state);
 	public:
 		static std::string const TAG;
 
@@ -29,8 +34,10 @@ class Response : public ServerComponent
 		std::string *getResponse();
 
 		virtual void onRepeat();
-		void setConfig(const LocationConfig *config) const;
-		const LocationConfig *getConfig() const;
+		const ServerConfig *getServerConfig() const;
+		void setServerConfig(const ServerConfig *config);
+		const LocationConfig *getLocationConfig() const;
+		void setLocationConfig(const LocationConfig *config);
 		Response::ResponseState getState() const;
 };
 
