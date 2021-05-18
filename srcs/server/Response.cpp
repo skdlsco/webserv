@@ -3,7 +3,7 @@
 std::string const Response::TAG = "Response";
 
 Response::Response(ServerManager &serverManager)
-: ServerComponent(serverManager), mConfig(NULL), mState(ON_WORKING)
+: ServerComponent(serverManager), mServerConfig(NULL), mLocationConfig(NULL), mState(ON_WORKING)
 {
 
 }
@@ -22,6 +22,8 @@ Response &Response::operator=(Response const & rhs)
 {
 	if (this != &rhs)
 	{
+		this->mServerConfig = rhs.mServerConfig;
+		this->mLocationConfig = rhs.mLocationConfig;
 		this->mState = rhs.mState;
 	}
 	return (*this);
@@ -42,4 +44,29 @@ std::string *Response::getResponse()
 Response::ResponseState Response::getState() const
 {
 	return (mState);
+}
+
+void Response::setState(Response::ResponseState state)
+{
+	mState = state;
+}
+
+const ServerConfig *Response::getServerConfig() const
+{
+	return (mServerConfig);
+}
+
+void Response::setServerConfig(const ServerConfig *config)
+{
+	mServerConfig = config;
+}
+
+const LocationConfig *Response::getLocationConfig() const
+{
+	return (mLocationConfig);
+}
+
+void Response::setLocationConfig(const LocationConfig *config)
+{
+	mLocationConfig = config;
 }
