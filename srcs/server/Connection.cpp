@@ -4,7 +4,7 @@ std::string const Connection::TAG = "Connection";
 
 Connection::Connection(ServerManager &serverManager, const ServerConfig *config, struct sockaddr_in addr, int fd)
 : ServerComponent(serverManager), mFDListener(*this), mResponse(NULL),
-	mWriteBuffer(NULL), mConfig(config), mAddr(addr), mFD(fd)
+	mWriteBuffer(NULL), mConfig(config), mAddr(addr), mFD(fd), mStartTime(web::getNowTime())
 {
 	getServerManager().addFD(fd, mFDListener);
 }
@@ -32,6 +32,7 @@ Connection *Connection::create(ServerManager &serverManager,
 
 void Connection::onRepeat()
 {
+	//getNowTime() - mStartTime > TIMEOUT ? ERROR
 	if (mResponse && mResponse->getState() == Response::DONE)
 	{
 		mWriteBuffer = mResponse->getResponse();

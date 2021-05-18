@@ -38,6 +38,7 @@ class Connection : public ServerComponent
 		const ServerConfig *mConfig;
 		struct sockaddr_in mAddr; // TODO convert type to int, string
 		int mFD;
+		long mStartTime;
 
 		Connection();
 		Connection(ServerManager &serverManager, const ServerConfig *config, struct sockaddr_in addr, int fd);
