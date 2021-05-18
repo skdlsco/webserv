@@ -8,6 +8,7 @@
 namespace web
 {
 	struct tm timevalToTm(struct timeval time);
+	long getNowTime();
 };
 
 #endif
