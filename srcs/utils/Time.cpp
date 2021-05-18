@@ -63,3 +63,11 @@ struct tm web::timevalToTm(struct timeval time)
 	result.tm_mday = time.tv_sec;
 	return (result);
 }
+
+long getNowTime()
+{
+	struct timeval nowTime;
+
+	gettimeofday(&nowTime, NULL);
+	return (nowTime.tv_sec);
+}
