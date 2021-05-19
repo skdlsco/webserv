@@ -1,7 +1,7 @@
 #include "File.hpp"
 
 File::File(std::string const & filePath)
-: mState(CONTENT_LEFT), mFilePath(filePath)
+: mFD(-1), mState(CONTENT_LEFT), mFilePath(filePath)
 {
 
 }
@@ -76,22 +76,27 @@ std::string File::getLine()
 	return (line);
 }
 
-int File::getFD()
+int File::getFD() const
 {
 	return (mFD);
 }
 
-enum File::State File::getState()
+enum File::State File::getState() const
 {
 	return (mState);
 }
 
-std::string const &File::getFilePath()
+std::string const &File::getFilePath() const
 {
 	return (mFilePath);
 }
 
-bool File::isStateDone()
+std::string const &File::getBuffer() const
+{
+	return (mBuffer);
+}
+
+bool File::isStateDone() const
 {
 	return (mState == DONE);
 }
