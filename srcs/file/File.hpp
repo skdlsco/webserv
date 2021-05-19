@@ -34,10 +34,11 @@ class File
 		//void writeFile();
 		std::string getLine();
 
-		int getFD();
-		enum State getState();
-		std::string const &getFilePath();
-		bool isStateDone();
+		int getFD() const;
+		enum State getState() const;
+		std::string const &getFilePath() const;
+		std::string const &getBuffer() const;
+		bool isStateDone() const;
 
 		class FileException : public std::exception
 		{
