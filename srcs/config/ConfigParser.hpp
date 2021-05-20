@@ -7,10 +7,11 @@
 #include <string>
 #include <vector>
 #include <map>
-# include "utils/Directive.hpp"
-# include "utils/String.hpp"
-# include "ServerConfig.hpp"
-# include "LocationConfig.hpp"
+#include <algorithm>
+#include "utils/Directive.hpp"
+#include "utils/String.hpp"
+#include "ServerConfig.hpp"
+#include "LocationConfig.hpp"
 
 class ConfigParser
 {
@@ -29,7 +30,7 @@ class ConfigParser
 		ConfigParser &operator=(ConfigParser const & rhs);
 		virtual ~ConfigParser();
 
-		std::vector<ServerConfig *> parseConfigFile();
+		std::vector<std::vector<ServerConfig *> > parseConfigFile();
 		ServerConfig *parseServerDirective(size_t & lineIndex);
 		LocationConfig *parseLocationDirective(size_t & lineIndex);
 
@@ -37,6 +38,7 @@ class ConfigParser
 		void setLocationConfigCommonDirective(LocationConfig * locationConfig);
 		void readConfigFileByLine();
 		std::string const addSlashToURI(std::string const & URI);
+		std::vector<std::vector<ServerConfig *> > classifyServerListByAddress(std::vector<ServerConfig *> & serverList);
 
 		class ConfigParserException : public std::exception
 		{

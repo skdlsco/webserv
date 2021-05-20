@@ -35,7 +35,7 @@ bool ConfigManager::isConfigValidate()
 	return (true);
 }
 
-std::vector<ServerConfig *> ConfigManager::parseConfigFile()
+std::vector<std::vector<ServerConfig *> > ConfigManager::parseConfigFile()
 {
 	return (mParser.parseConfigFile());
 }
