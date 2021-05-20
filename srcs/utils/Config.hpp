@@ -10,6 +10,7 @@
 namespace web
 {
 	ServerConfig *getConfigMatchedWithHost(std::string const & host, std::vector<ServerConfig *> & configList);
+	ServerConfig *getDefaultServerConfig(std::vector<ServerConfig *> & configList);
 };
 
 #endif
