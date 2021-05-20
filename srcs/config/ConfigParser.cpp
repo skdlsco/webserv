@@ -33,7 +33,7 @@ ConfigParser::~ConfigParser()
 
 }
 
-std::vector<ServerConfig *> ConfigParser::parseConfigFile()
+std::vector<std::vector<ServerConfig *> > ConfigParser::parseConfigFile()
 {
 	size_t lineIndex = 0;
 	size_t currentServerIndex = 0;
@@ -59,9 +59,11 @@ std::vector<ServerConfig *> ConfigParser::parseConfigFile()
 		else
 			lineIndex++;
 	}
+
 	/* default server checker */
 	setDefaultServer(serverList);
-	return (serverList);
+
+	return (classifyServerListByAddress(serverList));
 }
 
 ServerConfig *ConfigParser::parseServerDirective(size_t & lineIndex)
@@ -195,19 +197,18 @@ void ConfigParser::setLocationConfigCommonDirective(LocationConfig * locationCon
 
 void ConfigParser::readConfigFileByLine()
 {
+	File file(mFilePath);
 	std::ifstream configFile;
 	std::string line;
 
-	configFile.open(mFilePath.c_str());
-	if (!configFile.is_open())
-		throw ConfigParser::ConfigParserException("The config file can't opened.");
-
-	while (getline(configFile, line))
+	file.openFile();
+	while (!file.isStateDone())
 	{
+		line = file.getLine();
 		if (line != "")
 			mEachConfigLine.push_back(line);
 	}
-	configFile.close();
+	file.closeFile();
 }
 
 std::string const ConfigParser::addSlashToURI(std::string const & URI)
@@ -225,6 +226,35 @@ std::string const ConfigParser::addSlashToURI(std::string const & URI)
 		web::addSuffixToString(newURI, "/");
 
 	return (newURI);
+}
+
+std::vector<std::vector<ServerConfig *> > ConfigParser::classifyServerListByAddress(std::vector<ServerConfig *> & serverList)
+{
+	std::vector<std::vector<ServerConfig *> > Result;
+	std::vector<ServerConfig *> sameAddressConfig;
+	std::vector<std::string> addressList;
+	std::string currentAddress;
+
+	/* to set key */
+	for (std::vector<ServerConfig *>::iterator iter = serverList.begin(); iter != serverList.end(); iter++)
+	{
+		currentAddress = (*iter)->getIP() + web::toString((*iter)->getPort());
+		if (std::find(addressList.begin(), addressList.end(), currentAddress) == addressList.end())
+			addressList.push_back(currentAddress);
+	}
+
+	for (std::vector<std::string>::iterator addressListIter = addressList.begin(); addressListIter != addressList.end(); addressListIter++)
+	{
+		sameAddressConfig.clear();
+		for (std::vector<ServerConfig *>::iterator serverConfigIter = serverList.begin(); serverConfigIter != serverList.end(); serverConfigIter++)
+		{
+			currentAddress = (*serverConfigIter)->getIP() + web::toString((*serverConfigIter)->getPort());
+			if ((*addressListIter) == currentAddress)
+				sameAddressConfig.push_back(*serverConfigIter);
+		}
+		Result.push_back(sameAddressConfig);
+	}
+	return (Result);
 }
 
 ConfigParser::ConfigParserException::ConfigParserException(std::string message) throw()

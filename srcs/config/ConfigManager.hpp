@@ -19,7 +19,7 @@ class ConfigManager
 		virtual ~ConfigManager();
 
 		bool isConfigValidate();
-		std::vector<ServerConfig *> parseConfigFile();
+		std::vector<std::vector<ServerConfig *> > parseConfigFile();
 };
 
 #endif
