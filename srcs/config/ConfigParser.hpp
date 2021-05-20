@@ -8,6 +8,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include "file/File.hpp"
 #include "utils/Directive.hpp"
 #include "utils/String.hpp"
 #include "ServerConfig.hpp"
