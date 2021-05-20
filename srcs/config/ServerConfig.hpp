@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 #include <map>
-# include "LocationConfig.hpp"
-# include "CommonDirective.hpp"
+#include "LocationConfig.hpp"
+#include "CommonDirective.hpp"
 
 class ServerConfig
 {

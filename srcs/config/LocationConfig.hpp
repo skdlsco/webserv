@@ -4,8 +4,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
-# include "utils/Method.hpp"
-# include "CommonDirective.hpp"
+#include "utils/Method.hpp"
+#include "CommonDirective.hpp"
 
 class LocationConfig
 {
