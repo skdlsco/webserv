@@ -9,8 +9,8 @@
 
 namespace web
 {
-	ServerConfig *getConfigMatchedWithHost(std::string const & host, std::vector<ServerConfig *> & configList);
-	ServerConfig *getDefaultServerConfig(std::vector<ServerConfig *> & configList);
+	ServerConfig *getConfigMatchedWithHost(std::string const & host, const std::vector<ServerConfig *> & configList);
+	ServerConfig *getDefaultServerConfig(const std::vector<ServerConfig *> & configList);
 };
 
 #endif

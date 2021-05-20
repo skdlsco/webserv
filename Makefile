@@ -18,6 +18,7 @@ SRC_NAME = main.cpp \
 			config/LocationConfig.cpp \
 			config/ServerConfig.cpp \
 			logger/Logger.cpp \
+			utils/Config.cpp \
 			utils/Time.cpp \
 			utils/String.cpp
 
