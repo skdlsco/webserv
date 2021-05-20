@@ -19,7 +19,8 @@ class Request
 	private:
 		static std::string const HTTP_VERSION;
 
-		const ServerConfig *mConfig;
+		std::vector<ServerConfig *> const &mConfigVec;
+		ServerConfig *mConfig;
 		enum AnalyzeLevel mAnalyzeLevel;
 		std::string mBuffer;
 		std::string mBody;
@@ -32,6 +33,10 @@ class Request
 		bool mIsReadData;
 		int mContentLength;
 		int mErrorCode;
+
+		Request();
+		Request(Request const & copy);
+		Request &operator=(Request const & rhs);
 
 		void badRequest();
 		void appendChunkedBody();
@@ -47,15 +52,13 @@ class Request
 	public:
 		static std::string const TAG;
 
-		Request();
+		Request(std::vector<ServerConfig *> const & configVec);
 		virtual ~Request();
-		Request(Request const & copy);
-		Request &operator=(Request const & rhs);
 
 		void analyzeBuffer(char * buffer);
 
-		const ServerConfig *getConfig() const;
-		void setConfig(const ServerConfig *config);
+		std::vector<ServerConfig *> const &getConfigVec() const;
+		ServerConfig *getConfig() const;
 		enum Request::AnalyzeLevel getAnalyzeLevel() const;
 		std::string getBuffer() const;
 		std::string getBody() const;
