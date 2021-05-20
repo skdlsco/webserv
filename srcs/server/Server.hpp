@@ -1,12 +1,13 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-# include "server/ServerComponent.hpp"
-# include "fdmanager/FileDiscriptorListener.hpp"
-# include "socket/Socket.hpp"
-# include "config/ServerConfig.hpp"
-# include "server/Connection.hpp"
-# include "logger/Logger.hpp"
+#include <vector>
+#include "server/ServerComponent.hpp"
+#include "fdmanager/FileDiscriptorListener.hpp"
+#include "socket/Socket.hpp"
+#include "config/ServerConfig.hpp"
+#include "server/Connection.hpp"
+#include "logger/Logger.hpp"
 
 class Server : public ServerComponent
 {
@@ -27,20 +28,20 @@ class Server : public ServerComponent
 				void onExceptSet();
 		};
 	private:
-		const ServerConfig *mConfig;
+		std::vector<ServerConfig *> const &mConfig;
 		Socket mSocket;
 		ServerAction mFDListener;
 
 		Server();
 		Server(Server const & copy);
 		Server &operator=(Server const & copy);
-		Server(ServerManager &serverManager, const ServerConfig *config);
+		Server(ServerManager &serverManager, std::vector<ServerConfig *> const &config);
 	public:
 		static const std::string TAG;
-		static Server *create(ServerManager &serverManager, const ServerConfig *config);
+		static Server *create(ServerManager &serverManager, std::vector<ServerConfig *> const &config);
 		virtual ~Server();
 
-		const ServerConfig *getConfig() const;
+		std::vector<ServerConfig *> const &getConfig() const;
 		virtual void onRepeat();
 };
 

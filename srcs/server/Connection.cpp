@@ -2,8 +2,9 @@
 
 std::string const Connection::TAG = "Connection";
 
-Connection::Connection(ServerManager &serverManager, const ServerConfig *config, struct sockaddr_in addr, int fd)
-: ServerComponent(serverManager), mFDListener(*this), mResponse(NULL),
+Connection::Connection(ServerManager &serverManager, std::vector<ServerConfig *> const &config,
+						struct sockaddr_in addr, int fd)
+: ServerComponent(serverManager), mFDListener(*this), mRequest(config), mResponse(NULL),
 	mWriteBuffer(NULL), mConfig(config), mAddr(addr), mFD(fd), mStartTime(web::getNowTime())
 {
 	getServerManager().addFD(fd, mFDListener);
@@ -17,7 +18,7 @@ Connection::~Connection()
 }
 
 Connection *Connection::create(ServerManager &serverManager,
-							const ServerConfig *config, struct sockaddr_in addr, int fd)
+							std::vector<ServerConfig *> const &config, struct sockaddr_in addr, int fd)
 {
 	try
 	{
@@ -41,7 +42,7 @@ void Connection::onRepeat()
 	}
 }
 
-const ServerConfig *Connection::getConfig() const
+std::vector<ServerConfig *> const &Connection::getConfig() const
 {
 	return (mConfig);
 }
