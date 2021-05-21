@@ -3,8 +3,7 @@
 std::string const Response::TAG = "Response";
 
 Response::Response(ServerManager &serverManager)
-: ServerComponent(serverManager), mServerConfig(NULL), mLocationConfig(NULL), 
-	mState(ON_WORKING), mCGIResponse(false)
+: ServerComponent(serverManager), mStatusCode(0), mServerConfig(NULL), mLocationConfig(NULL), mState(ON_WORKING)
 {
 
 }
@@ -23,6 +22,9 @@ Response &Response::operator=(Response const & rhs)
 {
 	if (this != &rhs)
 	{
+		this->mStatusCode = rhs.mStatusCode;;
+		this->mTarget = rhs.mTarget;;
+		this->mRequestHeader = rhs.mRequestHeader;;
 		this->mServerConfig = rhs.mServerConfig;
 		this->mLocationConfig = rhs.mLocationConfig;
 		this->mState = rhs.mState;
@@ -41,6 +43,37 @@ std::string *Response::getResponse()
 		return (NULL);
 	return (new std::string(createResponseHeader() + createResponseBody()));
 }
+
+int Response::getStatusCode() const
+{
+	return (mStatusCode);
+}
+
+void Response::setStatusCode(int statusCode)
+{
+	mStatusCode = statusCode;
+}
+
+std::string Response::getTarget() const
+{
+	return (mTarget);
+}
+
+void Response::setTarget(std::string target)
+{
+	mTarget = target;
+}
+
+std::map<std::string, std::string> Response::getRequestHeader() const
+{
+	return (mRequestHeader);
+}
+
+void Response::setRequestHeader(std::map<std::string, std::string> requestHeader)
+{
+	mRequestHeader = requestHeader;
+}
+
 
 Response::ResponseState Response::getState() const
 {
@@ -70,14 +103,4 @@ const LocationConfig *Response::getLocationConfig() const
 void Response::setLocationConfig(const LocationConfig *config)
 {
 	mLocationConfig = config;
-}
-
-const bool Response::isCGIResponse() const
-{
-	return (mCGIResponse);
-}
-
-void Response::setCGIResponse(const bool CGIResponse)
-{
-	mCGIResponse = CGIResponse;
 }

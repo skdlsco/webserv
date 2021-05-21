@@ -6,6 +6,7 @@
 #include "logger/Logger.hpp"
 #include "utils/String.hpp"
 #include "utils/Method.hpp"
+#include "utils/Config.hpp"
 #include "config/ServerConfig.hpp"
 
 class Request
@@ -41,6 +42,7 @@ class Request
 		void badRequest();
 		void appendChunkedBody();
 		void appendContentBody();
+		void checkHost();
 		void checkContentLength();
 		void checkTransferEncoding();
 		void checkHeaderForBody();

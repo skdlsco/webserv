@@ -15,10 +15,12 @@ class Response : public ServerComponent
 			ON_WORKING, DONE, ERROR
 		};
 	private:
+		int mStatusCode;
+		std::string mTarget;
+		std::map<std::string, std::string> mRequestHeader;
 		const ServerConfig *mServerConfig;
 		const LocationConfig *mLocationConfig;
 		enum ResponseState mState;
-		bool mCGIResponse;
 	protected:
 		virtual std::string createResponseHeader() = 0;
 		virtual std::string createResponseBody() = 0;
@@ -35,13 +37,17 @@ class Response : public ServerComponent
 		std::string *getResponse();
 
 		virtual void onRepeat();
+		int getStatusCode() const;
+		void setStatusCode(int statusCode);
+		std::string getTarget() const;
+		void setTarget(std::string target);
+		std::map<std::string, std::string> getRequestHeader() const;
+		void setRequestHeader(std::map<std::string, std::string> requestHeader);
 		const ServerConfig *getServerConfig() const;
 		void setServerConfig(const ServerConfig *config);
 		const LocationConfig *getLocationConfig() const;
 		void setLocationConfig(const LocationConfig *config);
 		Response::ResponseState getState() const;
-		const bool isCGIResponse() const;
-		void setCGIResponse(const bool CGIResponse);
 };
 
 #endif

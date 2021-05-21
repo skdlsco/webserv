@@ -4,8 +4,9 @@ std::string const Request::TAG = "Request";
 std::string const Request::HTTP_VERSION = "HTTP/1.1";
 
 Request::Request(std::vector<ServerConfig *> const & configVec)
-: mConfigVec(configVec), mAnalyzeLevel(REQUEST_LINE), mHasBody(false), mIsChunked(false),
-	mIsReadData(false), mContentLength(0), mErrorCode(0)
+: mConfigVec(configVec), mConfig(web::getDefaultServerConfig(configVec)), mAnalyzeLevel(REQUEST_LINE),
+	mHasBody(false), mIsChunked(false), mIsReadData(false),
+	mContentLength(0), mErrorCode(0)
 {
 
 }
@@ -97,6 +98,17 @@ void Request::analyzeBody()
 		appendContentBody();
 }
 
+void Request::checkHost()
+{
+	FieldIter iter = mField.find("HOST");
+
+	if (iter != mField.end())
+	{
+		mConfig = web::getConfigMatchedWithHost(iter->second, mConfigVec);
+	} else
+		badRequest();
+}
+
 void Request::checkContentLength()
 {
 	FieldIter iter = mField.find("CONTENT-LENGTH");
@@ -127,6 +139,7 @@ void Request::checkTransferEncoding()
 
 void Request::checkHeaderForBody()
 {
+	checkHost();
 	checkContentLength();
 	checkTransferEncoding();
 }
