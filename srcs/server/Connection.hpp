@@ -35,13 +35,13 @@ class Connection : public ServerComponent
 		Request mRequest;
 		Response *mResponse;
 		std::string *mWriteBuffer;
-		const ServerConfig *mConfig;
+		std::vector<ServerConfig *> const &mConfig;
 		struct sockaddr_in mAddr; // TODO convert type to int, string
 		int mFD;
 		long mStartTime;
 
 		Connection();
-		Connection(ServerManager &serverManager, const ServerConfig *config, struct sockaddr_in addr, int fd);
+		Connection(ServerManager &serverManager, std::vector<ServerConfig *> const &config, struct sockaddr_in addr, int fd);
 		Connection(Connection const & copy);
 		Connection &operator=(Connection const & copy);
 	public:
@@ -49,10 +49,10 @@ class Connection : public ServerComponent
 
 		virtual ~Connection();
 		static Connection *create(ServerManager &serverManager,
-									const ServerConfig *config, struct sockaddr_in addr, int fd);
+									std::vector<ServerConfig *> const &config, struct sockaddr_in addr, int fd);
 
 		virtual void onRepeat();
-		const ServerConfig *getConfig() const;
+		std::vector<ServerConfig *> const &getConfig() const;
 };
 
 #endif

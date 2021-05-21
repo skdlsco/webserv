@@ -358,19 +358,18 @@ void ConfigValidator::initializeCountLocationDirective()
 
 void ConfigValidator::readConfigFileByLine()
 {
+	File file(mFilePath);
 	std::ifstream configFile;
 	std::string line;
 
-	configFile.open(mFilePath.c_str());
-	if (!configFile.is_open())
-		throw ConfigValidator::ConfigValidatorException("The config file can't opened.");
-
-	while (getline(configFile, line))
+	file.openFile();
+	while (!file.isStateDone())
 	{
+		line = file.getLine();
 		if (line != "")
 			mEachConfigLine.push_back(line);
 	}
-	configFile.close();
+	file.closeFile();
 }
 
 ConfigValidator::ConfigValidatorException::ConfigValidatorException(std::string message) throw()

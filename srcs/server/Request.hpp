@@ -6,6 +6,7 @@
 #include "logger/Logger.hpp"
 #include "utils/String.hpp"
 #include "utils/Method.hpp"
+#include "utils/Config.hpp"
 #include "config/ServerConfig.hpp"
 
 class Request
@@ -19,7 +20,8 @@ class Request
 	private:
 		static std::string const HTTP_VERSION;
 
-		const ServerConfig *mConfig;
+		std::vector<ServerConfig *> const &mConfigVec;
+		ServerConfig *mConfig;
 		enum AnalyzeLevel mAnalyzeLevel;
 		std::string mBuffer;
 		std::string mBody;
@@ -33,9 +35,14 @@ class Request
 		int mContentLength;
 		int mErrorCode;
 
+		Request();
+		Request(Request const & copy);
+		Request &operator=(Request const & rhs);
+
 		void badRequest();
 		void appendChunkedBody();
 		void appendContentBody();
+		void checkHost();
 		void checkContentLength();
 		void checkTransferEncoding();
 		void checkHeaderForBody();
@@ -47,15 +54,13 @@ class Request
 	public:
 		static std::string const TAG;
 
-		Request();
+		Request(std::vector<ServerConfig *> const & configVec);
 		virtual ~Request();
-		Request(Request const & copy);
-		Request &operator=(Request const & rhs);
 
 		void analyzeBuffer(char * buffer);
 
-		const ServerConfig *getConfig() const;
-		void setConfig(const ServerConfig *config);
+		std::vector<ServerConfig *> const &getConfigVec() const;
+		ServerConfig *getConfig() const;
 		enum Request::AnalyzeLevel getAnalyzeLevel() const;
 		std::string getBuffer() const;
 		std::string getBody() const;
