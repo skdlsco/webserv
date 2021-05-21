@@ -15,6 +15,9 @@ class Response : public ServerComponent
 			ON_WORKING, DONE, ERROR
 		};
 	private:
+		int mStatusCode;
+		std::string mTarget;
+		std::map<std::string, std::string> mRequestHeader;
 		const ServerConfig *mServerConfig;
 		const LocationConfig *mLocationConfig;
 		enum ResponseState mState;
@@ -34,6 +37,12 @@ class Response : public ServerComponent
 		std::string *getResponse();
 
 		virtual void onRepeat();
+		int getStatusCode() const;
+		void setStatusCode(int statusCode);
+		std::string getTarget() const;
+		void setTarget(std::string target);
+		std::map<std::string, std::string> getRequestHeader() const;
+		void setRequestHeader(std::map<std::string, std::string> requestHeader);
 		const ServerConfig *getServerConfig() const;
 		void setServerConfig(const ServerConfig *config);
 		const LocationConfig *getLocationConfig() const;
