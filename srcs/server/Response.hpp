@@ -18,6 +18,7 @@ class Response : public ServerComponent
 		const ServerConfig *mServerConfig;
 		const LocationConfig *mLocationConfig;
 		enum ResponseState mState;
+		bool mCGIResponse;
 	protected:
 		virtual std::string createResponseHeader() = 0;
 		virtual std::string createResponseBody() = 0;
@@ -39,6 +40,8 @@ class Response : public ServerComponent
 		const LocationConfig *getLocationConfig() const;
 		void setLocationConfig(const LocationConfig *config);
 		Response::ResponseState getState() const;
+		const bool isCGIResponse() const;
+		void setCGIResponse(const bool CGIResponse);
 };
 
 #endif

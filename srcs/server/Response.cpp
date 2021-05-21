@@ -3,7 +3,8 @@
 std::string const Response::TAG = "Response";
 
 Response::Response(ServerManager &serverManager)
-: ServerComponent(serverManager), mServerConfig(NULL), mLocationConfig(NULL), mState(ON_WORKING)
+: ServerComponent(serverManager), mServerConfig(NULL), mLocationConfig(NULL), 
+	mState(ON_WORKING), mCGIResponse(false)
 {
 
 }
@@ -69,4 +70,14 @@ const LocationConfig *Response::getLocationConfig() const
 void Response::setLocationConfig(const LocationConfig *config)
 {
 	mLocationConfig = config;
+}
+
+const bool Response::isCGIResponse() const
+{
+	return (mCGIResponse);
+}
+
+void Response::setCGIResponse(const bool CGIResponse)
+{
+	mCGIResponse = CGIResponse;
 }
