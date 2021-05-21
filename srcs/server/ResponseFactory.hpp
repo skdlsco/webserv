@@ -13,9 +13,9 @@
 
 class ResponseFactory
 {
-	enum FactoryState
+	enum ResponseType
 	{ 
-		WORKING, DONE
+		ERROR, CGI, METHOD
 	};
 
 	private:
@@ -23,17 +23,15 @@ class ResponseFactory
 		ResponseFactory(ResponseFactory const & copy);
 		ResponseFactory &operator=(ResponseFactory const & rhs);
 
-		enum FactoryState mState;
+		enum ResponseType mResponseState;
 		Response *mResponse;
 		Request &mRequest;
 		ServerManager &mServerManager;
 		const ServerConfig *mServerConfig;
 		const LocationConfig *mLocationConfig;
-		bool mCGI;
 	public:
 		static std::string const TAG;
-		//request에는 serverManager가 없다. 근데.. Connection에서 호출하니까.. getServerManager로 파라미터로 받아야 할까.
-		static Response *Create(ServerManager &serverManager, Request &request, const ServerConfig *config);
+		static Response *create(ServerManager &serverManager, Request &request, const ServerConfig *config);
 		ResponseFactory(ServerManager &serverManager, Request &request, const ServerConfig *config);
 		virtual ~ResponseFactory();
 
@@ -49,15 +47,14 @@ class ResponseFactory
 		void checkLocationMethodList();
 
 		/* is have CGI? */
-		void checkTargetCGI();
+		void checkLocationCGI();
 
-		void createDetailResponse();
 		void createErrorResponse();
+		void createCGIResponse();
+		void createMethodResponse();
 
-		/* set server/location config */
 		void setResponseServerConfig(Response *response);
 		void setResponseLocationConfig(Response *response);
-		void setResponseCGI(Response *response);
 };
 
 #endif

@@ -2,15 +2,13 @@
 
 std::string const ResponseFactory::TAG = "ResponseFactory";
 
-Response *ResponseFactory::Create(ServerManager &serverManager, Request &request, const ServerConfig *config)
+Response *ResponseFactory::create(ServerManager &serverManager, Request &request, const ServerConfig *config)
 {
 	try
 	{
 		ResponseFactory responseFactory = ResponseFactory(serverManager, request, config);
-		Response *response = responseFactory.createResponse();
-
-		return (response);
 		
+		return (responseFactory.createResponse());
 	}
 	catch(const std::exception& e)
 	{
@@ -20,7 +18,7 @@ Response *ResponseFactory::Create(ServerManager &serverManager, Request &request
 }
 
 ResponseFactory::ResponseFactory(ServerManager &serverManager, Request &request, const ServerConfig *config)
-: mServerManager(serverManager), mRequest(request), mServerConfig(config), mState(WORKING), mCGI(false)
+: mServerManager(serverManager), mRequest(request), mServerConfig(config), mResponseState(METHOD)
 {
 	checkRequestErrorCode();
 }
@@ -35,25 +33,25 @@ Response *ResponseFactory::createResponse()
 {
 	checkRequestErrorCode();
 	checkLocationURI();
+	checkLocationCGI();
 	checkLocationMethodList();
-	if (mState != DONE)
-	{
-		createDetailResponse();
-		checkTargetCGI();
-		setResponseServerConfig(mResponse);
-		setResponseLocationConfig(mResponse);
-		setResponseCGI(mResponse);
-	}
+	
+	if (mResponseState == ERROR)
+		createErrorResponse();
+	if (mResponseState == CGI)
+		createCGIResponse();
+	if (mResponseState == METHOD)
+		createMethodResponse();
+
+	setResponseServerConfig(mResponse);
+	setResponseLocationConfig(mResponse);
 	return (mResponse);
 }
 
 void ResponseFactory::checkRequestErrorCode()
 {
 	if (mRequest.getErrorCode())
-	{
-		createErrorResponse();
-		mState = DONE;
-	}
+		mResponseState = ERROR;
 }
 
 void ResponseFactory::checkLocationURI()
@@ -63,7 +61,7 @@ void ResponseFactory::checkLocationURI()
 	std::string currentLocationURI = "";
 	std::string requestTarget = mRequest.getTarget();
 
-	if (mState == DONE)
+	if (mResponseState == ERROR)
 		return ;
 
 	for (std::map<std::string, LocationConfig *>::iterator iter = locationConfig.begin(); iter != locationConfig.end(); iter++)
@@ -77,36 +75,20 @@ void ResponseFactory::checkLocationURI()
 	}
 
 	if (currentLocationURI == "")
-		createErrorResponse();
+		mResponseState == ERROR;
 	else
 		mLocationConfig = locationConfig[currentLocationURI];
 }
 
-void ResponseFactory::checkLocationMethodList()
-{
-	bool findMethod = false;
-	std::vector<std::string> methodList = mLocationConfig->getAllowMethodList();
-	std::string requestMethod = mRequest.getMethod();
-
-	for (std::vector<std::string>::iterator iter = methodList.begin(); iter != methodList.end(); iter++)
-	{
-		if (requestMethod == *iter)
-			findMethod = true;
-	}
-
-	if (!findMethod)
-	{
-		createErrorResponse();
-		mState = DONE;
-	}
-}
-
-void ResponseFactory::checkTargetCGI()
+void ResponseFactory::checkLocationCGI()
 {
 	std::vector<std::string> CGIExtensionList;
 	std::string targetBackElement;
 	std::string targetFileExtension;
 	size_t dotIndex;
+
+	if (mResponseState == ERROR)
+		return ;
 
 	if (mLocationConfig->getCGIPath() != "")
 	{
@@ -119,14 +101,48 @@ void ResponseFactory::checkTargetCGI()
 				targetFileExtension = targetBackElement.substr(dotIndex);
 			if (targetFileExtension == *iter)
 			{
-				mCGI = true;
+				mResponseState = CGI;
 				return ;
 			}
 		}
 	}
 }
 
-void ResponseFactory::createDetailResponse()
+void ResponseFactory::checkLocationMethodList()
+{
+	bool findMethod = false;
+	std::vector<std::string> methodList = mLocationConfig->getAllowMethodList();
+	std::string requestMethod = mRequest.getMethod();
+
+	if (mResponseState == ERROR || mResponseState == CGI)
+		return ;
+
+	for (std::vector<std::string>::iterator iter = methodList.begin(); iter != methodList.end(); iter++)
+	{
+		if (requestMethod == *iter)
+			findMethod = true;
+	}
+
+	if (!findMethod)
+		mResponseState = ERROR;
+}
+
+
+void ResponseFactory::createErrorResponse()
+{
+	if (mResponse)
+		delete mResponse;
+	// mResponse = new ErrorResponse(mServerManager));
+}
+
+void ResponseFactory::createCGIResponse()
+{
+	if (mResponse)
+		delete mResponse;
+	// mResponse = new CGIResponse(mServerManager));
+}
+
+void ResponseFactory::createMethodResponse()
 {
 	std::string method = mRequest.getMethod();
 
@@ -149,12 +165,7 @@ void ResponseFactory::createDetailResponse()
 	// 	// mResponse = new DELETEResponse(mServerManager));
 }
 
-void ResponseFactory::createErrorResponse()
-{
-	if (mResponse)
-		delete mResponse;
-	// mResponse = new ErrorResponse(mServerManager));
-}
+
 
 void ResponseFactory::setResponseServerConfig(Response *response)
 {
@@ -164,9 +175,4 @@ void ResponseFactory::setResponseServerConfig(Response *response)
 void ResponseFactory::setResponseLocationConfig(Response *response)
 {
 	response->setLocationConfig(mLocationConfig);
-}
-
-void ResponseFactory::setResponseCGI(Response *response)
-{
-	response->setCGIResponse(mCGI);
 }
