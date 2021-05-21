@@ -3,7 +3,7 @@
 std::string const Response::TAG = "Response";
 
 Response::Response(ServerManager &serverManager)
-: ServerComponent(serverManager), mServerConfig(NULL), mLocationConfig(NULL), mState(ON_WORKING)
+: ServerComponent(serverManager), mStatusCode(0), mServerConfig(NULL), mLocationConfig(NULL), mState(ON_WORKING)
 {
 
 }
