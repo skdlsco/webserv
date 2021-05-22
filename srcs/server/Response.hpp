@@ -18,6 +18,7 @@ class Response : public ServerComponent
 		};
 	private:
 		int mStatusCode;
+		std::string mStatusMessage;
 		std::string mTarget;
 		std::map<std::string, std::string> mRequestHeader;
 		const ServerConfig *mServerConfig;
