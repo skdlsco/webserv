@@ -52,7 +52,11 @@ bool ConfigValidator::isConfigValidate()
 	if (isLocationURIAlreadyExisted())
 		throw ConfigValidator::ConfigValidatorException("The config file contains at least two identical URIs.");
 	if (!isValidateMethodName())
-		throw ConfigValidator::ConfigValidatorException("The config file contains weird method names.");
+		throw ConfigValidator::ConfigValidatorException("The config file contains weird method name.");
+	if (!isValidateExtension())
+		throw ConfigValidator::ConfigValidatorException("The config file contains weird extension.");
+	if (!isValidateAuth())
+		throw ConfigValidator::ConfigValidatorException("The config file contains weird auth.");
 	return (true);
 }
 
@@ -255,6 +259,58 @@ bool ConfigValidator::isValidateMethodName()
 				if (!foundDirective)
 					return (false);
 			}
+		}
+		lineIndex++;
+	}
+	return (true);
+}
+
+bool ConfigValidator::isValidateExtension()
+{
+	size_t lineIndex = 0;
+	std::string extension;
+	std::vector<std::string> extensionVector;
+
+	while (lineIndex < mEachConfigLine.size())
+	{
+		if (mEachConfigLine[lineIndex].find("cgi_extension") != std::string::npos)
+		{
+			extensionVector = web::split(mEachConfigLine[lineIndex], " \t");
+			
+			for (size_t splitIdx = 1; splitIdx < extensionVector.size(); splitIdx++)
+			{
+				extension = extensionVector[splitIdx].substr(extensionVector[splitIdx].find_last_of('.') + 1);
+				if (extension.length() <= 0)
+					return (false);
+				for (size_t extensionIdx = 0; extensionIdx < extension.length(); extensionIdx++)
+				{
+					if (!web::isAlpha(extension[extensionIdx]))
+						return (false);
+				}
+			}
+		}
+		lineIndex++;
+	}
+	return (true);
+}
+
+bool ConfigValidator::isValidateAuth()
+{
+	size_t lineIndex = 0;
+	size_t colonIndex;
+	std::string auth;
+	bool foundDirective = false;
+
+	while (lineIndex < mEachConfigLine.size())
+	{
+		if (mEachConfigLine[lineIndex].find("auth") != std::string::npos)
+		{
+			auth = web::split(mEachConfigLine[lineIndex], " \t").back();
+			colonIndex = auth.find(":");
+			if (colonIndex == std::string::npos)
+				return (false);
+			if (auth.substr(0, colonIndex) == "" || auth.substr(colonIndex + 1) == "");
+				return (false);
 		}
 		lineIndex++;
 	}
