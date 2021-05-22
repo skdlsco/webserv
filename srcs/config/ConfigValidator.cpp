@@ -46,7 +46,6 @@ bool ConfigValidator::isConfigValidate()
 	/* second, check config info sequence. */
 	if (!isConfigSequenceMatched())
 		throw ConfigValidator::ConfigValidatorException("The directives are out of order in the config file.");
-	/* third, */
 	if (isServerInfoAlreadyExisted())
 		throw ConfigValidator::ConfigValidatorException("Two or more server blocks have same server_name, ports, and ip.");
 	if (isLocationURIAlreadyExisted())
@@ -112,7 +111,7 @@ bool ConfigValidator::isConfigSequenceMatched()
 			if (!hasMandatoryDirective(FLAG_LOCATION) || !hasEachDirectiveOnlyOne(FLAG_LOCATION))
 				return (false);
 		}
-		else if (splitResult.front() == "}")
+		else if (splitResult.front() == "}" || mEachConfigLine[lineIndex][0] == '#')
 			lineIndex++;
 		else
 			return (false);
@@ -280,7 +279,6 @@ bool ConfigValidator::isValidateExtension()
 			for (size_t splitIdx = 1; splitIdx < extensionVector.size(); splitIdx++)
 			{
 				extension = extensionVector[splitIdx].substr(extensionVector[splitIdx].find('.') + 1);
-				std::cout << extension << std::endl;
 				if (extension.length() <= 0)
 					return (false);
 				for (size_t extensionIdx = 0; extensionIdx < extension.length(); extensionIdx++)
@@ -422,6 +420,9 @@ void ConfigValidator::readConfigFileByLine()
 	while (!file.isStateDone())
 	{
 		line = file.getLine();
+		web::trim(line);
+		if (line[0] == '#')
+			continue;
 		if (line != "")
 			mEachConfigLine.push_back(line);
 	}

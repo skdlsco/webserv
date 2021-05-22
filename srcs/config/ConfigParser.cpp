@@ -209,6 +209,9 @@ void ConfigParser::readConfigFileByLine()
 	while (!file.isStateDone())
 	{
 		line = file.getLine();
+		web::trim(line);
+		if (line[0] == '#')
+			continue;
 		if (line != "")
 			mEachConfigLine.push_back(line);
 	}
