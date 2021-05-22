@@ -3,7 +3,8 @@
 std::string const LocationConfig::TAG = "LocationConfig";
 
 LocationConfig::LocationConfig()
-: mCommonDirective(), mAllowMethodList(), mCGIExtensionList(), mCGIPath("")
+: mCommonDirective(), mAllowMethodList(), mCGIExtensionList(),
+	mCGIPath(""), mAuthUserName(""), mAuthUserPassword("")
 {
 	/* to avoid nested name specifier */
 	mAllowMethodList.push_back(web::method[web::GET]);
@@ -64,6 +65,16 @@ std::string const &LocationConfig::getCGIPath() const
 	return (mCGIPath);
 }
 
+std::string const &LocationConfig::getAuthUserName() const
+{
+	return (mAuthUserName);
+}
+
+std::string const &LocationConfig::getAuthUserPassword() const
+{
+	return (mAuthUserPassword);
+}
+
 void LocationConfig::setIndexFile(std::string const & indexFile)
 {
 	mCommonDirective.setIndexFile(indexFile);
@@ -77,6 +88,16 @@ void LocationConfig::setRoot(std::string const & root)
 void LocationConfig::setAutoIndex(bool autoIndex)
 {
 	mCommonDirective.setAutoIndex(autoIndex);
+}
+
+void LocationConfig::setAuthUserName(std::string const & userName)
+{
+	mAuthUserName = userName;
+}
+
+void LocationConfig::setAuthUserPassword(std::string const & userPassword)
+{
+	mAuthUserPassword = userPassword;
 }
 
 void LocationConfig::addAllowMethod(std::string const & allowMethod)

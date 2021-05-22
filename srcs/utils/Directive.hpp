@@ -6,7 +6,7 @@
 
 # define NUM_COMMON_DIRECTIVE 3
 # define NUM_SERVER_DIRECTIVE 8
-# define NUM_LOCATION_DIRECTIVE 6
+# define NUM_LOCATION_DIRECTIVE 7
 
 # include <iostream>
 # include <string>
@@ -39,7 +39,8 @@ namespace web
 		"autoindex",
 		"allow_method",
 		"cgi_extension",
-		"cgi_path"
+		"cgi_path",
+		"auth"
 	};
 
 	namespace CommonDirective
@@ -76,7 +77,8 @@ namespace web
 			AUTOINDEX,
 			ALLOW_METHOD,
 			CGI_EXTENSION,
-			CGI_PATH
+			CGI_PATH,
+			AUTH
 		};
 	}
 }
