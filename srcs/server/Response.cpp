@@ -2,8 +2,10 @@
 
 std::string const Response::TAG = "Response";
 
-Response::Response(ServerManager &serverManager)
-: ServerComponent(serverManager), mStatusCode(0), mServerConfig(NULL), mLocationConfig(NULL), mState(ON_WORKING)
+Response::Response(ServerManager &serverManager, const ServerConfig * serverConfig,
+					const LocationConfig * locationConfig)
+: ServerComponent(serverManager), mStatusCode(0), mServerConfig(serverConfig),
+	mLocationConfig(locationConfig), mState(ON_WORKING)
 {
 
 }
