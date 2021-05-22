@@ -3,7 +3,7 @@
 std::string const CommonDirective::TAG = "CommonDirective";
 
 CommonDirective::CommonDirective()
-: mIndexFile(""), mRoot("/"), mAutoIndex(false)
+: mIndexFile(""), mRoot("/"), mIsAutoIndex(false)
 {
 
 }
@@ -19,7 +19,7 @@ CommonDirective &CommonDirective::operator=(CommonDirective const & rhs)
 	{
 		this->mIndexFile = rhs.mIndexFile;
 		this->mRoot = rhs.mRoot;
-		this->mAutoIndex = rhs.mAutoIndex;
+		this->mIsAutoIndex = rhs.mIsAutoIndex;
 	}
 	return (*this);
 }
@@ -41,7 +41,7 @@ std::string const &CommonDirective::getRoot() const
 
 bool CommonDirective::isAutoIndex() const
 {
-	return (mAutoIndex);
+	return (mIsAutoIndex);
 }
 
 void CommonDirective::setIndexFile(std::string const & indexFile)
@@ -56,5 +56,5 @@ void CommonDirective::setRoot(std::string const & root)
 
 void CommonDirective::setAutoIndex(bool autoIndex)
 {
-	mAutoIndex = autoIndex;
+	mIsAutoIndex = autoIndex;
 }

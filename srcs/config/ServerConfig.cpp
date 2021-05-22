@@ -31,7 +31,7 @@ ServerConfig &ServerConfig::operator=(ServerConfig const & rhs)
 		this->mIP = rhs.mIP;
 		this->mPort = rhs.mPort;
 		this->mServerName = rhs.mServerName;
-		this->mDefaultServer = rhs.mDefaultServer;
+		this->mIsDefaultServer = rhs.mIsDefaultServer;
 		this->mCommonDirective = rhs.mCommonDirective;
 		this->mClientMaxBodySize = rhs.mClientMaxBodySize;
 		this->mDefaultErrorPagePath = rhs.mDefaultErrorPagePath;
@@ -78,7 +78,7 @@ std::string const &ServerConfig::getServerName() const
 
 bool ServerConfig::isDefaultServer() const
 {
-	return (mDefaultServer);
+	return (mIsDefaultServer);
 }
 
 size_t ServerConfig::getClientMaxBodySize() const
@@ -128,7 +128,7 @@ void ServerConfig::setServerName(std::string const & serverName)
 
 void ServerConfig::setDefaultServer(bool defaultServer)
 {
-	mDefaultServer = defaultServer;
+	mIsDefaultServer = defaultServer;
 }
 
 void ServerConfig::setClientMaxBodySize(size_t clientMaxBodySize)

@@ -3,7 +3,8 @@
 std::string const LocationConfig::TAG = "LocationConfig";
 
 LocationConfig::LocationConfig()
-: mCommonDirective(), mAllowMethodList(), mCGIExtensionList(), mCGIPath("")
+: mCommonDirective(), mAllowMethodList(), mCGIExtensionList(),
+	mCGIPath(""), mAuthUserName(""), mAuthUserPassword("")
 {
 	/* to avoid nested name specifier */
 	mAllowMethodList.push_back(web::method[web::GET]);

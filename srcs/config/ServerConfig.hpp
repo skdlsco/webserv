@@ -18,7 +18,7 @@ class ServerConfig
 		std::string mIP;
 		size_t mPort;
 		std::string	mServerName;
-		bool mDefaultServer;
+		bool mIsDefaultServer;
 		size_t mClientMaxBodySize;
 		std::string mDefaultErrorPagePath;
 		std::map<std::string, LocationConfig *>	mLocationList;

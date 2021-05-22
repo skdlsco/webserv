@@ -10,7 +10,7 @@ class CommonDirective
 	private:
 		std::string mIndexFile;
 		std::string mRoot;
-		bool mAutoIndex;
+		bool mIsAutoIndex;
 		
 	public:
 		static std::string const TAG;
