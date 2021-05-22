@@ -18,7 +18,8 @@ Response *ResponseFactory::create(ServerManager &serverManager, Request &request
 }
 
 ResponseFactory::ResponseFactory(ServerManager &serverManager, Request &request, const ServerConfig *config)
-: mServerManager(serverManager), mRequest(request), mServerConfig(config), mResponseState(METHOD)
+: mServerManager(serverManager), mResponseState(METHOD), mResponse(NULL),
+	mRequest(request), mServerConfig(config), mLocationConfig(NULL)
 {
 	checkRequestErrorCode();
 }
@@ -32,7 +33,9 @@ ResponseFactory::~ResponseFactory()
 Response *ResponseFactory::createResponse()
 {
 	checkRequestErrorCode();
+	logger::print(TAG) << mLocationConfig << std::endl;
 	checkLocationURI();
+	logger::print(TAG) << mLocationConfig << std::endl;
 	checkLocationCGI();
 	checkLocationMethodList();
 
@@ -72,7 +75,7 @@ void ResponseFactory::checkLocationURI()
 	}
 
 	if (currentLocationURI == "")
-		mResponseState == ERROR;
+		mResponseState = ERROR;
 	else
 		mLocationConfig = locationConfig[currentLocationURI];
 }
@@ -107,12 +110,13 @@ void ResponseFactory::checkLocationCGI()
 
 void ResponseFactory::checkLocationMethodList()
 {
-	bool findMethod = false;
-	std::vector<std::string> methodList = mLocationConfig->getAllowMethodList();
-	std::string requestMethod = mRequest.getMethod();
-
 	if (mResponseState == ERROR || mResponseState == CGI)
 		return ;
+
+	bool findMethod = false;
+	logger::print(TAG) << mLocationConfig->getCGIPath() << std::endl;
+	std::vector<std::string> methodList = mLocationConfig->getAllowMethodList();
+	std::string requestMethod = mRequest.getMethod();
 
 	for (std::vector<std::string>::iterator iter = methodList.begin(); iter != methodList.end(); iter++)
 	{
@@ -129,7 +133,8 @@ void ResponseFactory::createErrorResponse()
 {
 	if (mResponse)
 		delete mResponse;
-	// mResponse = new ErrorResponse(mServerManager, mServerConfig, mLocationConfig));
+	mResponse = new ErrorResponse(mServerManager, mServerConfig, mLocationConfig);
+	mResponse->setStatusCode(400); // how to check status code... bad request or not found
 }
 
 void ResponseFactory::createCGIResponse()

@@ -1,6 +1,6 @@
 NAME = webserv
 CC = clang++
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -I./srcs #-fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -std=c++98 -I./srcs -fsanitize=address
 SRC_NAME = main.cpp \
 			ServerManager.cpp \
 			fdmanager/FileDiscriptorManager.cpp \
@@ -9,6 +9,7 @@ SRC_NAME = main.cpp \
 			server/ErrorResponse.cpp \
 			server/Request.cpp \
 			server/Response.cpp \
+			server/ResponseFactory.cpp \
 			server/Server.cpp \
 			server/ServerComponent.cpp \
 			socket/Socket.cpp \

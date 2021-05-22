@@ -3,6 +3,7 @@
 
 #include "server/Response.hpp"
 #include "file/File.hpp"
+#include "utils/Time.hpp"
 
 class ErrorResponse : public Response
 {
@@ -38,7 +39,8 @@ class ErrorResponse : public Response
 	public:
 		static std::string const TAG;
 
-		ErrorResponse(ServerManager &serverManager);
+		ErrorResponse(ServerManager &serverManager, const ServerConfig * serverConfig,
+					const LocationConfig * locationConfig);
 		virtual ~ErrorResponse();
 };
 

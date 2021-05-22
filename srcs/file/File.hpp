@@ -1,7 +1,6 @@
 #ifndef FILE_HPP
 # define FILE_HPP
 
-# define BUFFER_SIZE 1024
 #include <iostream>
 #include <string>
 #include <unistd.h>
@@ -10,12 +9,14 @@
 
 class File
 {
-	enum State
-	{
-		CONTENT_LEFT, CONTENT_NOT_LEFT, DONE
-	};
+	public:
+		enum State
+		{
+			CONTENT_LEFT, CONTENT_NOT_LEFT, DONE
+		};
 
 	private:
+		static const int BUFFER_SIZE = 1024;
 		int mFD;
 		enum State mState;
 		std::string mFilePath;

@@ -39,11 +39,21 @@ void Response::onRepeat()
 
 }
 
+std::string Response::createResponseLine()
+{
+	std::string responseline;
+
+	responseline += "HTTP/1.1 ";
+	responseline += web::toString(mStatusCode);
+	responseline += " Messeage\r\n"; // getStatusMessage;
+	return (responseline);
+}
+
 std::string *Response::getResponse()
 {
 	if (mState != DONE)
 		return (NULL);
-	return (new std::string(createResponseHeader() + createResponseBody()));
+	return (new std::string(createResponseLine() + createResponseHeader() + createResponseBody()));
 }
 
 int Response::getStatusCode() const

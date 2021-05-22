@@ -8,13 +8,14 @@
 #include "config/LocationConfig.hpp"
 #include "server/Request.hpp"
 #include "server/Response.hpp"
+#include "server/ErrorResponse.hpp"
 #include "utils/String.hpp"
 #include "utils/Method.hpp"
 
 class ResponseFactory
 {
 	enum ResponseType
-	{ 
+	{
 		ERROR, CGI, METHOD
 	};
 
@@ -23,10 +24,10 @@ class ResponseFactory
 		ResponseFactory(ResponseFactory const & copy);
 		ResponseFactory &operator=(ResponseFactory const & rhs);
 
+		ServerManager &mServerManager;
 		enum ResponseType mResponseState;
 		Response *mResponse;
 		Request &mRequest;
-		ServerManager &mServerManager;
 		const ServerConfig *mServerConfig;
 		const LocationConfig *mLocationConfig;
 	public:

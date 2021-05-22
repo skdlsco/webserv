@@ -72,8 +72,10 @@ void Connection::ConnectionAction::onReadSet()
 	try
 	{
 		mConnection.mRequest.analyzeBuffer(buffer);
-		// if (mConnection.mRequest.getAnalyzeLevel() == DONE)
-			// mConnection.mResponse = ResponseFactory.create(mConnection.mRequest);
+		if (mConnection.mRequest.getAnalyzeLevel() == Request::DONE)
+			mConnection.mResponse = ResponseFactory::create(mConnection.getServerManager(),
+															mConnection.mRequest,
+															mConnection.mRequest.getConfig());
 	}
 	catch(const std::exception& e)
 	{
@@ -87,7 +89,11 @@ void Connection::ConnectionAction::onWriteSet()
 {
 	if (mConnection.mWriteBuffer)
 	{
-		int writeN = write(mConnection.mFD, mConnection.mWriteBuffer->c_str(), BUFFER_SIZE);
+		int bufferSize = BUFFER_SIZE;
+
+		if (BUFFER_SIZE > mConnection.mWriteBuffer->size())
+			bufferSize = mConnection.mWriteBuffer->size();
+		int writeN = write(mConnection.mFD, mConnection.mWriteBuffer->c_str(), bufferSize);
 		if (writeN < 0)
 		{
 			mConnection.finish();
