@@ -279,7 +279,8 @@ bool ConfigValidator::isValidateExtension()
 			
 			for (size_t splitIdx = 1; splitIdx < extensionVector.size(); splitIdx++)
 			{
-				extension = extensionVector[splitIdx].substr(extensionVector[splitIdx].find_last_of('.') + 1);
+				extension = extensionVector[splitIdx].substr(extensionVector[splitIdx].find('.') + 1);
+				std::cout << extension << std::endl;
 				if (extension.length() <= 0)
 					return (false);
 				for (size_t extensionIdx = 0; extensionIdx < extension.length(); extensionIdx++)
@@ -299,7 +300,6 @@ bool ConfigValidator::isValidateAuth()
 	size_t lineIndex = 0;
 	size_t colonIndex;
 	std::string auth;
-	bool foundDirective = false;
 
 	while (lineIndex < mEachConfigLine.size())
 	{
@@ -309,7 +309,7 @@ bool ConfigValidator::isValidateAuth()
 			colonIndex = auth.find(":");
 			if (colonIndex == std::string::npos)
 				return (false);
-			if (auth.substr(0, colonIndex) == "" || auth.substr(colonIndex + 1) == "");
+			if (auth.substr(0, colonIndex) == "" || auth.substr(colonIndex + 1) == "")
 				return (false);
 		}
 		lineIndex++;
