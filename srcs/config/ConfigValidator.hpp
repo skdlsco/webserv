@@ -44,7 +44,9 @@ class ConfigValidator
 		bool isValidateServerDirective(size_t & lineIndex);
 		bool isValidateLocationDirective(size_t & lineIndex);
 		bool isValidateMethodName();
-
+		bool isValidateExtension();
+		bool isValidateAuth();
+	
 		bool hasMandatoryDirective(size_t flag);
 		bool hasEachDirectiveOnlyOne(size_t flag);
 

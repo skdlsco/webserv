@@ -161,8 +161,12 @@ LocationConfig *ConfigParser::parseLocationDirective(size_t & lineIndex)
 			}
 		}
 		if (currentDirective == web::locationDirective[web::LocationDirective::CGI_PATH])
-			locationConfig->setCGIPath(splitResult.back());
-
+			locationConfig->setCGIPath(currentDirectiveValue);
+		if (currentDirective == web::locationDirective[web::LocationDirective::AUTH])
+		{
+			locationConfig->setAuthUserName(currentDirectiveValue.substr(0, currentDirectiveValue.find(":")));
+			locationConfig->setAuthUserPassword(currentDirectiveValue.substr(currentDirectiveValue.find(":") + 1));
+		}
 		lineIndex++;
 	}
 	return (locationConfig);
@@ -205,6 +209,9 @@ void ConfigParser::readConfigFileByLine()
 	while (!file.isStateDone())
 	{
 		line = file.getLine();
+		web::trim(line);
+		if (line[0] == '#')
+			continue;
 		if (line != "")
 			mEachConfigLine.push_back(line);
 	}
