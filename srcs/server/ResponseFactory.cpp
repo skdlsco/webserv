@@ -7,7 +7,7 @@ Response *ResponseFactory::create(ServerManager &serverManager, Request &request
 	try
 	{
 		ResponseFactory responseFactory = ResponseFactory(serverManager, request, config);
-		
+
 		return (responseFactory.createResponse());
 	}
 	catch(const std::exception& e)
@@ -35,16 +35,13 @@ Response *ResponseFactory::createResponse()
 	checkLocationURI();
 	checkLocationCGI();
 	checkLocationMethodList();
-	
+
 	if (mResponseState == ERROR)
 		createErrorResponse();
 	if (mResponseState == CGI)
 		createCGIResponse();
 	if (mResponseState == METHOD)
 		createMethodResponse();
-
-	setResponseServerConfig(mResponse);
-	setResponseLocationConfig(mResponse);
 	return (mResponse);
 }
 
@@ -132,7 +129,7 @@ void ResponseFactory::createErrorResponse()
 {
 	if (mResponse)
 		delete mResponse;
-	// mResponse = new ErrorResponse(mServerManager));
+	// mResponse = new ErrorResponse(mServerManager, mServerConfig, mLocationConfig));
 }
 
 void ResponseFactory::createCGIResponse()
@@ -152,27 +149,15 @@ void ResponseFactory::createMethodResponse()
 
 	/* will changed */
 	// if (method == web::method[web::Method::GET])
-	// 	// mResponse = new GETResponse(mServerManager));
+	// 	// mResponse = new GETResponse(mServerManager, mServerConfig, mLocationConfig));
 	// else if (method == web::method[web::Method::HEAD])
-	// 	// mResponse = new HEADResponse(mServerManager));
+	// 	// mResponse = new HEADResponse(mServerManager, mServerConfig, mLocationConfig));
 	// else if (method == web::method[web::Method::PUT])
-	// 	// mResponse = new PUTResponse(mServerManager));
+	// 	// mResponse = new PUTResponse(mServerManager, mServerConfig, mLocationConfig));
 	// else if (method == web::method[web::Method::POST])
-	// 	// mResponse = new POSTResponse(mServerManager));
+	// 	// mResponse = new POSTResponse(mServerManager, mServerConfig, mLocationConfig));
 	// else if (method == web::method[web::Method::OPTIONS])
-	// 	// mResponse = new OPTIONSResponse(mServerManager));
+	// 	// mResponse = new OPTIONSResponse(mServerManager, mServerConfig, mLocationConfig));
 	// else if (method == web::method[web::Method::DELETE])
-	// 	// mResponse = new DELETEResponse(mServerManager));
-}
-
-
-
-void ResponseFactory::setResponseServerConfig(Response *response)
-{
-	response->setServerConfig(mServerConfig);
-}
-
-void ResponseFactory::setResponseLocationConfig(Response *response)
-{
-	response->setLocationConfig(mLocationConfig);
+	// 	// mResponse = new DELETEResponse(mServerManager, mServerConfig, mLocationConfig));
 }

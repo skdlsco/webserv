@@ -21,6 +21,8 @@ class Response : public ServerComponent
 		const ServerConfig *mServerConfig;
 		const LocationConfig *mLocationConfig;
 		enum ResponseState mState;
+
+		Response();
 	protected:
 		virtual std::string createResponseHeader() = 0;
 		virtual std::string createResponseBody() = 0;
@@ -29,7 +31,8 @@ class Response : public ServerComponent
 	public:
 		static std::string const TAG;
 
-		Response(ServerManager &serverManager);
+		Response(ServerManager &serverManager, const ServerConfig * serverConfig,
+					const LocationConfig * locationConfig);
 		virtual ~Response();
 		Response(Response const & copy);
 		Response &operator=(Response const & rhs);
