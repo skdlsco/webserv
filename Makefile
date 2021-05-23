@@ -22,7 +22,8 @@ SRC_NAME = main.cpp \
 			logger/Logger.cpp \
 			utils/Config.cpp \
 			utils/Time.cpp \
-			utils/String.cpp
+			utils/String.cpp \
+			utils/Auth.cpp
 
 SRC_DIR = ./srcs/
 SRC = $(addprefix $(SRC_DIR), $(SRC_NAME))
