@@ -8,8 +8,10 @@
 #include "server/ServerComponent.hpp"
 #include "server/Request.hpp"
 #include "server/Response.hpp"
+#include "server/ResponseFactory.hpp"
 #include "fdmanager/FileDiscriptorListener.hpp"
 #include "config/ServerConfig.hpp"
+#include "logger/Logger.hpp"
 
 class Connection : public ServerComponent
 {

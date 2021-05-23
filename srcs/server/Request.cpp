@@ -267,3 +267,8 @@ std::map<std::string, std::string> Request::getField() const
 {
 	return (mField);
 }
+
+int Request::getErrorCode() const
+{
+	return (mErrorCode);
+}

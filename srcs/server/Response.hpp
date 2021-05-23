@@ -6,6 +6,8 @@
 #include "server/ServerComponent.hpp"
 #include "config/LocationConfig.hpp"
 #include "config/ServerConfig.hpp"
+#include "utils/String.hpp"
+#include "logger/Logger.hpp"
 
 class Response : public ServerComponent
 {
@@ -16,6 +18,7 @@ class Response : public ServerComponent
 		};
 	private:
 		int mStatusCode;
+		std::string mStatusMessage;
 		std::string mTarget;
 		std::map<std::string, std::string> mRequestHeader;
 		const ServerConfig *mServerConfig;
@@ -24,6 +27,7 @@ class Response : public ServerComponent
 
 		Response();
 	protected:
+		virtual std::string createResponseLine();
 		virtual std::string createResponseHeader() = 0;
 		virtual std::string createResponseBody() = 0;
 
