@@ -9,6 +9,7 @@ ConfigManager::ConfigManager(std::string filePath)
 }
 
 ConfigManager::ConfigManager(ConfigManager const & copy)
+: mValidator(copy.mValidator), mParser(copy.mParser)
 {
 	*this = copy;
 }

@@ -25,7 +25,6 @@ class Response : public ServerComponent
 		const ServerConfig *mServerConfig;
 		const LocationConfig *mLocationConfig;
 		enum ResponseState mState;
-
 		Response();
 	protected:
 		virtual std::string createResponseLine();
@@ -35,7 +34,6 @@ class Response : public ServerComponent
 		void setState(Response::ResponseState state);
 	public:
 		static std::string const TAG;
-
 		Response(ServerManager &serverManager, const ServerConfig * serverConfig,
 					const LocationConfig * locationConfig);
 		virtual ~Response();
