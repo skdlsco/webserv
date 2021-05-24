@@ -27,11 +27,11 @@ int main(void)
 			logger::print("MAIN") << "configList[0][1].index : " << (configList[0][1]->getLocationList())["/test/"]->isAutoIndex() << std::endl;
 		}
 
-		// for (size_t idx = 0; idx < configList.size(); idx++)
-		// {
-		// 	Server::create(serverManager, configList[idx]);
-		// }
-		// serverManager.run();
+		for (size_t idx = 0; idx < configList.size(); idx++)
+		{
+			Server::create(serverManager, configList[idx]);
+		}
+		serverManager.run();
 	}
 	catch(const std::exception& e)
 	{

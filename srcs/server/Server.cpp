@@ -2,16 +2,18 @@
 
 std::string const Server::TAG = "Server";
 
-Server::Server(ServerManager &serverManager, const ServerConfig *config)
+Server::Server(ServerManager &serverManager, std::vector<ServerConfig *> const &config)
 : ServerComponent(serverManager), mConfig(config), mFDListener(*this)
 {
-	mSocket.bind(mConfig->getPort());
+	mConfig[0]->getPort();
+	mSocket.bind(mConfig[0]->getPort());
 	mSocket.listen(100);
 	getServerManager().addFD(mSocket.getSocketFD(), mFDListener);
-	logger::print(TAG) << "listening port = " << mConfig->getPort() << std::endl;
+	logger::print(TAG) << "listening port = " << mConfig[0]->getPort() << std::endl;
 }
 
-Server *Server::create(ServerManager &serverManager, const ServerConfig *config)
+Server *Server::create(ServerManager &serverManager,
+						std::vector<ServerConfig *> const &config)
 {
 	try
 	{
@@ -29,7 +31,7 @@ Server::~Server()
 	getServerManager().removeFD(mSocket.getSocketFD());
 }
 
-const ServerConfig *Server::getConfig() const
+std::vector<ServerConfig *> const &Server::getConfig() const
 {
 	return (mConfig);
 }

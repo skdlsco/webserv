@@ -2,8 +2,10 @@
 
 std::string const Response::TAG = "Response";
 
-Response::Response(ServerManager &serverManager)
-: ServerComponent(serverManager), mServerConfig(NULL), mLocationConfig(NULL), mState(ON_WORKING)
+Response::Response(ServerManager &serverManager, const ServerConfig * serverConfig,
+					const LocationConfig * locationConfig)
+: ServerComponent(serverManager), mStatusCode(0), mServerConfig(serverConfig),
+	mLocationConfig(locationConfig), mState(ON_WORKING)
 {
 
 }
@@ -22,6 +24,9 @@ Response &Response::operator=(Response const & rhs)
 {
 	if (this != &rhs)
 	{
+		this->mStatusCode = rhs.mStatusCode;;
+		this->mTarget = rhs.mTarget;;
+		this->mRequestHeader = rhs.mRequestHeader;;
 		this->mServerConfig = rhs.mServerConfig;
 		this->mLocationConfig = rhs.mLocationConfig;
 		this->mState = rhs.mState;
@@ -34,12 +39,56 @@ void Response::onRepeat()
 
 }
 
+std::string Response::createResponseLine()
+{
+	std::string responseline;
+
+	responseline += "HTTP/1.1 ";
+	responseline += web::toString(mStatusCode);
+	if (mStatusMessage.empty())
+		mStatusMessage = web::getStatusMessage(mStatusCode);
+	responseline += mStatusMessage;
+	responseline += "\r\n";
+	return (responseline);
+}
+
 std::string *Response::getResponse()
 {
 	if (mState != DONE)
 		return (NULL);
-	return (new std::string(createResponseHeader() + createResponseBody()));
+	return (new std::string(createResponseLine() + createResponseHeader() + createResponseBody()));
 }
+
+int Response::getStatusCode() const
+{
+	return (mStatusCode);
+}
+
+void Response::setStatusCode(int statusCode)
+{
+	mStatusCode = statusCode;
+}
+
+std::string Response::getTarget() const
+{
+	return (mTarget);
+}
+
+void Response::setTarget(std::string target)
+{
+	mTarget = target;
+}
+
+std::map<std::string, std::string> Response::getRequestHeader() const
+{
+	return (mRequestHeader);
+}
+
+void Response::setRequestHeader(std::map<std::string, std::string> requestHeader)
+{
+	mRequestHeader = requestHeader;
+}
+
 
 Response::ResponseState Response::getState() const
 {

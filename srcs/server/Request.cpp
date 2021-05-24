@@ -3,8 +3,10 @@
 std::string const Request::TAG = "Request";
 std::string const Request::HTTP_VERSION = "HTTP/1.1";
 
-Request::Request()
-: mAnalyzeLevel(REQUEST_LINE), mHasBody(false), mIsChunked(false), mIsReadData(false), mContentLength(0), mErrorCode(0)
+Request::Request(std::vector<ServerConfig *> const & configVec)
+: mConfigVec(configVec), mConfig(web::getDefaultServerConfig(configVec)), mAnalyzeLevel(REQUEST_LINE),
+	mHasBody(false), mIsChunked(false), mIsReadData(false),
+	mContentLength(0), mErrorCode(0)
 {
 
 }
@@ -14,7 +16,7 @@ Request::~Request()
 
 }
 
-Request::Request(Request const & copy)
+Request::Request(Request const & copy) : mConfigVec(copy.mConfigVec)
 {
 	*this = copy;
 }
@@ -23,6 +25,7 @@ Request &Request::operator=(Request const & rhs)
 {
 	if (this != &rhs)
 	{
+		mConfig = rhs.mConfig;
 		mAnalyzeLevel = rhs.mAnalyzeLevel;
 		mBuffer = rhs.mBuffer;
 		mBody = rhs.mBody;
@@ -95,6 +98,17 @@ void Request::analyzeBody()
 		appendContentBody();
 }
 
+void Request::checkHost()
+{
+	FieldIter iter = mField.find("HOST");
+
+	if (iter != mField.end())
+	{
+		mConfig = web::getConfigMatchedWithHost(iter->second, mConfigVec);
+	} else
+		badRequest();
+}
+
 void Request::checkContentLength()
 {
 	FieldIter iter = mField.find("CONTENT-LENGTH");
@@ -125,6 +139,7 @@ void Request::checkTransferEncoding()
 
 void Request::checkHeaderForBody()
 {
+	checkHost();
 	checkContentLength();
 	checkTransferEncoding();
 }
@@ -213,14 +228,14 @@ void Request::analyzeBuffer(char *buffer)
 		mAnalyzeLevel = DONE;
 }
 
-const ServerConfig *Request::getConfig() const
+std::vector<ServerConfig *> const &Request::getConfigVec() const
 {
-	return (mConfig);
+	return (mConfigVec);
 }
 
-void Request::setConfig(const ServerConfig *config)
+ServerConfig *Request::getConfig() const
 {
-	mConfig = config;
+	return (mConfig);
 }
 
 enum Request::AnalyzeLevel Request::getAnalyzeLevel() const
@@ -251,4 +266,9 @@ std::string Request::getTarget() const
 std::map<std::string, std::string> Request::getField() const
 {
 	return (mField);
+}
+
+int Request::getErrorCode() const
+{
+	return (mErrorCode);
 }

@@ -19,8 +19,7 @@ Response *ResponseFactory::create(ServerManager &serverManager, Request &request
 
 ResponseFactory::ResponseFactory(ServerManager &serverManager, Request &request, const ServerConfig *config)
 : mServerManager(serverManager), mResponseState(METHOD), mResponse(NULL),
-	mRequest(request), mServerConfig(config), mLocationConfig(NULL), 
-	mStatusCode(0), mIsAutoIndex(false)
+	mRequest(request), mServerConfig(config), mLocationConfig(NULL), mStatusCode(0)
 {
 	checkRequestErrorCode();
 }
@@ -75,9 +74,7 @@ void ResponseFactory::checkLocationURI()
 	}
 	for (std::vector<std::string>::iterator iter = locationURIList.begin(); iter != locationURIList.end(); iter++)
 	{
-		/* find specific location URI */
-		/* >= because same length target (not file, only path) */
-		if ((requestTarget.find(*iter) != std::string::npos) && ((*iter).length() >= currentLocationURI.length()))
+		if ((requestTarget.find(*iter) != std::string::npos) && ((*iter).length() > currentLocationURI.length()))
 			currentLocationURI = *iter;
 	}
 
@@ -88,13 +85,7 @@ void ResponseFactory::checkLocationURI()
 		mStatusCode = 404;
 	}
 	else
-	{
 		mLocationConfig = locationConfig[currentLocationURI];
-		
-		/* autoindex checker */
-		if (requestTarget == currentLocationURI)
-			mIsAutoIndex = true;
-	}
 }
 
 void ResponseFactory::checkLocationCGI()
@@ -175,7 +166,7 @@ void ResponseFactory::createMethodResponse()
 
 	/* will changed */
 	// if (method == web::method[web::Method::GET])
-	// 	// mResponse = new GETResponse(mServerManager, mServerConfig, mLocationConfig, mIsAutoIndex));
+	// 	// mResponse = new GETResponse(mServerManager, mServerConfig, mLocationConfig));
 	// else if (method == web::method[web::Method::HEAD])
 	// 	// mResponse = new HEADResponse(mServerManager, mServerConfig, mLocationConfig));
 	// else if (method == web::method[web::Method::PUT])
