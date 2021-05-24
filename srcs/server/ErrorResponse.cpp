@@ -45,13 +45,10 @@ std::string ErrorResponse::createResponseHeader()
 	responseHeader += "Content-Type: text/html\r\n";
 
 	if (mIsDefault)
-		responseHeader += "Content-Length: " + web::toString(std::string("<html><head></head><body>asdf</body></html>\r\n").size()) + "\r\n";
+		responseHeader += "Content-Length: " + web::toString(web::getErrorPage(getStatusCode()).size()) + "\r\n";
 	else
 		responseHeader += "Content-Length: " + web::toString(mFile.getBuffer().size() + 2) + "\r\n";
-	// getStatusCode() + getStatusMessage(status code);
-	// TODO Header에 넣어야 하는 field들 확인 (Content Length같은 경우는 string.size() + 2로 할 예정 등...)
 	responseHeader += "\r\n";
-	logger::println(TAG, responseHeader);
 	return (responseHeader);
 }
 
@@ -59,11 +56,9 @@ std::string ErrorResponse::createResponseBody()
 {
 	if (mIsDefault)
 	{
-		// return static default error
+		return (web::getErrorPage(getStatusCode()));
 	}
-	else
-		return (mFile.getBuffer() + "\r\n");
-	return ("<html><head></head><body>asdf</body></html>\r\n");
+	return (mFile.getBuffer() + "\r\n");
 }
 
 ErrorResponse::ErrorResponseFDListener::ErrorResponseFDListener(ErrorResponse &errorResponse)

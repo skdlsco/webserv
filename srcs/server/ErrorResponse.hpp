@@ -4,6 +4,7 @@
 #include "server/Response.hpp"
 #include "file/File.hpp"
 #include "utils/Time.hpp"
+#include "utils/HTTP.hpp"
 
 class ErrorResponse : public Response
 {
