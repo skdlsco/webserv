@@ -31,6 +31,7 @@ class ResponseFactory
 		const ServerConfig *mServerConfig;
 		const LocationConfig *mLocationConfig;
 		int mStatusCode;
+		bool mIsAutoIndex;
 	public:
 		static std::string const TAG;
 		static Response *create(ServerManager &serverManager, Request &request, const ServerConfig *config);
