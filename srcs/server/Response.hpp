@@ -7,6 +7,7 @@
 #include "config/LocationConfig.hpp"
 #include "config/ServerConfig.hpp"
 #include "utils/String.hpp"
+#include "utils/HTTP.hpp"
 #include "logger/Logger.hpp"
 
 class Response : public ServerComponent

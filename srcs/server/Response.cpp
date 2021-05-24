@@ -45,8 +45,8 @@ std::string Response::createResponseLine()
 
 	responseline += "HTTP/1.1 ";
 	responseline += web::toString(mStatusCode);
-	// if (mStatusMessage.empty())
-		// mStatusMessage = getStatusMessageByCode()
+	if (mStatusMessage.empty())
+		mStatusMessage = web::getStatusMessage(mStatusCode);
 	responseline += mStatusMessage;
 	responseline += "\r\n";
 	return (responseline);
