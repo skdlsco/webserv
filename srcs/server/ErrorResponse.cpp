@@ -37,11 +37,12 @@ void ErrorResponse::setErrorToDefault()
 
 std::string ErrorResponse::getAllowMethod()
 {
+	if (getLocationConfig() == NULL)
+		return ("");
+
 	std::vector<std::string> methodVector = getLocationConfig()->getAllowMethodList();
 	std::string result;
 
-	if (getLocationConfig() == NULL)
-		return (result);
 	for (std::vector<std::string>::const_iterator iter = methodVector.cbegin(); iter != methodVector.cend(); iter++)
 	{
 		result += *iter;
@@ -59,13 +60,13 @@ std::string ErrorResponse::createResponseHeader()
 	responseHeader += "Connection: close\r\n";
 	responseHeader += "Content-Type: text/html\r\n";
 
-	// 503 timeout
+	/* 503 timeout */
 	if (getStatusCode() == 503)
 		responseHeader += "Retry-After: 120\r\n";
-	// 405 not allowed method
+	/* 405 not allowed method */
 	if (getStatusCode() == 405)
 		responseHeader += "Allow: " + getAllowMethod() + "\r\n";
-	// 401 unathorized
+	/* 401 unauthorized */
 	if (getStatusCode() == 401)
 		responseHeader += "WWW-Authenticate: Basic realm=\"webserv\"\r\n";
 
