@@ -19,7 +19,7 @@ Response *ResponseFactory::create(ServerManager &serverManager, Request &request
 
 ResponseFactory::ResponseFactory(ServerManager &serverManager, Request &request, const ServerConfig *config)
 : mServerManager(serverManager), mResponseState(METHOD), mResponse(NULL),
-	mRequest(request), mServerConfig(config), mLocationConfig(NULL)
+	mRequest(request), mServerConfig(config), mLocationConfig(NULL), mStatusCode(0)
 {
 	checkRequestErrorCode();
 }
@@ -50,8 +50,12 @@ Response *ResponseFactory::createResponse()
 
 void ResponseFactory::checkRequestErrorCode()
 {
+	/* 400 bad request */
 	if (mRequest.getErrorCode())
+	{
 		mResponseState = ERROR;
+		mStatusCode = 400;
+	}
 }
 
 void ResponseFactory::checkLocationURI()
@@ -74,8 +78,12 @@ void ResponseFactory::checkLocationURI()
 			currentLocationURI = *iter;
 	}
 
+	/* 404 not found */
 	if (currentLocationURI == "")
+	{
 		mResponseState = ERROR;
+		mStatusCode = 404;
+	}
 	else
 		mLocationConfig = locationConfig[currentLocationURI];
 }
@@ -124,8 +132,12 @@ void ResponseFactory::checkLocationMethodList()
 			findMethod = true;
 	}
 
+	/* 405 method not allowed */
 	if (!findMethod)
+	{
 		mResponseState = ERROR;
+		mStatusCode = 405; 
+	}
 }
 
 
@@ -134,7 +146,7 @@ void ResponseFactory::createErrorResponse()
 	if (mResponse)
 		delete mResponse;
 	mResponse = new ErrorResponse(mServerManager, mServerConfig, mLocationConfig);
-	mResponse->setStatusCode(400); // how to check status code... bad request or not found
+	mResponse->setStatusCode(mStatusCode);
 }
 
 void ResponseFactory::createCGIResponse()

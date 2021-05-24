@@ -30,6 +30,7 @@ class ResponseFactory
 		Request &mRequest;
 		const ServerConfig *mServerConfig;
 		const LocationConfig *mLocationConfig;
+		int mStatusCode;
 	public:
 		static std::string const TAG;
 		static Response *create(ServerManager &serverManager, Request &request, const ServerConfig *config);
