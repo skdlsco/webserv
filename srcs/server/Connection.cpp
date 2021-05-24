@@ -2,8 +2,9 @@
 
 std::string const Connection::TAG = "Connection";
 
-Connection::Connection(ServerManager &serverManager, const ServerConfig *config, struct sockaddr_in addr, int fd)
-: ServerComponent(serverManager), mFDListener(*this), mResponse(NULL),
+Connection::Connection(ServerManager &serverManager, std::vector<ServerConfig *> const &config,
+						struct sockaddr_in addr, int fd)
+: ServerComponent(serverManager), mFDListener(*this), mRequest(config), mResponse(NULL),
 	mWriteBuffer(NULL), mConfig(config), mAddr(addr), mFD(fd), mStartTime(web::getNowTime())
 {
 	getServerManager().addFD(fd, mFDListener);
@@ -17,7 +18,7 @@ Connection::~Connection()
 }
 
 Connection *Connection::create(ServerManager &serverManager,
-							const ServerConfig *config, struct sockaddr_in addr, int fd)
+							std::vector<ServerConfig *> const &config, struct sockaddr_in addr, int fd)
 {
 	try
 	{
@@ -41,7 +42,7 @@ void Connection::onRepeat()
 	}
 }
 
-const ServerConfig *Connection::getConfig() const
+std::vector<ServerConfig *> const &Connection::getConfig() const
 {
 	return (mConfig);
 }
@@ -71,8 +72,10 @@ void Connection::ConnectionAction::onReadSet()
 	try
 	{
 		mConnection.mRequest.analyzeBuffer(buffer);
-		// if (mConnection.mRequest.getAnalyzeLevel() == DONE)
-			// mConnection.mResponse = ResponseFactory.create(mConnection.mRequest);
+		if (mConnection.mRequest.getAnalyzeLevel() == Request::DONE)
+			mConnection.mResponse = ResponseFactory::create(mConnection.getServerManager(),
+															mConnection.mRequest,
+															mConnection.mRequest.getConfig());
 	}
 	catch(const std::exception& e)
 	{
@@ -86,7 +89,11 @@ void Connection::ConnectionAction::onWriteSet()
 {
 	if (mConnection.mWriteBuffer)
 	{
-		int writeN = write(mConnection.mFD, mConnection.mWriteBuffer->c_str(), BUFFER_SIZE);
+		int bufferSize = BUFFER_SIZE;
+
+		if (BUFFER_SIZE > mConnection.mWriteBuffer->size())
+			bufferSize = mConnection.mWriteBuffer->size();
+		int writeN = write(mConnection.mFD, mConnection.mWriteBuffer->c_str(), bufferSize);
 		if (writeN < 0)
 		{
 			mConnection.finish();

@@ -42,10 +42,10 @@ struct tm web::timevalToTm(struct timeval time)
 	time.tv_sec /= 24;
 	result.tm_wday = ((time.tv_sec + 4) % 7);
 
-	while((days += getYearLength(year + 1970)) <= time.tv_sec)
+	while((days += getYearLength(year + 70)) <= time.tv_sec)
 		year++;
-	result.tm_year = year + 1970;
-	days -= getYearLength(year + 1970);
+	result.tm_year = year + 70;
+	days -= getYearLength(year + 70);
 	time.tv_sec -= days;
 	result.tm_yday = time.tv_sec;
 	for (int month = 0; month < 12; month++)
@@ -70,4 +70,18 @@ long web::getNowTime()
 
 	gettimeofday(&nowTime, NULL);
 	return (nowTime.tv_sec);
+}
+
+std::string web::getDate()
+{
+	char buffer[32];
+
+	bzero(buffer, sizeof(buffer));
+	struct timeval time;
+	struct tm t;
+
+	gettimeofday(&time, NULL);
+	t = web::timevalToTm(time);
+	strftime(buffer, sizeof(buffer), "%a, %d %b %Y %X GMT", &t);
+	return (buffer);
 }
