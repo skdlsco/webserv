@@ -8,6 +8,7 @@ int main(void)
 	std::string filePath;
 	std::vector<std::vector<ServerConfig *> >configList;
 	ServerManager serverManager;
+
 	try
 	{
 		ConfigManager configManager("configs/validate.conf");

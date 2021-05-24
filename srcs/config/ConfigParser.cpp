@@ -2,11 +2,6 @@
 
 std::string const ConfigParser::TAG = "ConfigParser";
 
-ConfigParser::ConfigParser()
-{
-
-}
-
 ConfigParser::ConfigParser(std::string filePath)
 : mFilePath(filePath)
 {
@@ -150,7 +145,10 @@ LocationConfig *ConfigParser::parseLocationDirective(size_t & lineIndex)
 		{
 			for (size_t idx = 1; idx < splitResult.size(); idx++)
 			{
-				locationConfig->addAllowMethod(splitResult[idx]);
+				if (std::find(locationConfig->getAllowMethodList().begin(),
+								locationConfig->getAllowMethodList().end(),
+								splitResult[idx]) != locationConfig->getAllowMethodList().end()) 
+					locationConfig->addAllowMethod(splitResult[idx]);
 			}
 		}
 		if (currentDirective == web::locationDirective[web::LocationDirective::CGI_EXTENSION])

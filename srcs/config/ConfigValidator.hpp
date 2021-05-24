@@ -20,6 +20,7 @@ class ConfigValidator
 		std::map<std::string, size_t> mCountServerDirective;
 		std::map<std::string, size_t> mCountLocationDirective;
 		std::vector<std::string> mEachConfigLine;
+		ConfigValidator();
 
 	public:
 		static std::string const TAG;
@@ -28,7 +29,6 @@ class ConfigValidator
 		static std::string const DEFAULT_SERVER_NAME;
 
 		/* to avoid inaccess error */
-		ConfigValidator();
 		ConfigValidator(std::string const & filePath);
 		ConfigValidator(ConfigValidator const & copy);
 		ConfigValidator &operator=(ConfigValidator const & rhs);
