@@ -6,11 +6,6 @@ std::string const ConfigValidator::DEFAULT_IP = "0.0.0.0";
 std::string const ConfigValidator::DEFAULT_PORT = "8080";
 std::string const ConfigValidator::DEFAULT_SERVER_NAME = "0.0.0.0";
 
-// ConfigValidator::ConfigValidator()
-// {
-
-// }
-
 ConfigValidator::ConfigValidator(std::string const & FilePath)
 : mFilePath(FilePath)
 {

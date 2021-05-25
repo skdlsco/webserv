@@ -43,7 +43,7 @@ std::string ErrorResponse::getAllowMethod()
 	std::vector<std::string> methodVector = getLocationConfig()->getAllowMethodList();
 	std::string result;
 
-	for (std::vector<std::string>::const_iterator iter = methodVector.cbegin(); iter != methodVector.cend(); iter++)
+	for (std::vector<std::string>::iterator iter = methodVector.begin(); iter != methodVector.end(); iter++)
 	{
 		result += *iter;
 		result += " ";
