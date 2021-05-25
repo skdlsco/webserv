@@ -154,18 +154,23 @@ bool Request::isValidMethod(std::string method)
 	return (false);
 }
 
+bool Request::isValidTarget(std::string target)
+{
+	return (target[0] == '/');
+}
+
 void Request::analyzeRequestLine(std::string line)
 {
-	std::vector<std::string> lineElements = web::split(line, std::string(" "));
+	std::vector<std::string> lineElements = web::split(line, std::string(" \t"));
 
 	if (lineElements.size() != 3 || !isValidMethod(lineElements[0]) ||
-		lineElements[2] != HTTP_VERSION)
+		!isValidTarget(lineElements[1])	|| lineElements[2] != HTTP_VERSION)
 	{
 		badRequest();
 		return ;
 	}
 	mMethod = lineElements[0];
-	mTarget = lineElements[1];
+	mTarget = web::removeConsecutiveDuplicate(lineElements[1], '/');
 	mAnalyzeLevel = HEADER;
 }
 

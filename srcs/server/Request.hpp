@@ -51,6 +51,7 @@ class Request
 		void analyzeHeaderField(std::string line);
 		void analyzeBody();
 		bool isValidMethod(std::string method);
+		bool isValidTarget(std::string target);
 	public:
 		static std::string const TAG;
 
