@@ -52,7 +52,6 @@ class Request
 		void analyzeBody();
 		bool isValidMethod(std::string method);
 		bool isValidTarget(std::string target);
-		std::string createTarget(std::string input);
 	public:
 		static std::string const TAG;
 
