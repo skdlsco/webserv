@@ -46,6 +46,12 @@ Response *ResponseFactory::createResponse()
 		createCGIResponse();
 	if (mResponseState == METHOD)
 		createMethodResponse();
+	if (mResponse)
+	{
+		mResponse->setTarget(mRequest.getTarget());
+		mResponse->setRequestHeader(mRequest.getField());
+		mResponse->setRequestBody(mRequest.getBody());
+	}
 	return (mResponse);
 }
 
