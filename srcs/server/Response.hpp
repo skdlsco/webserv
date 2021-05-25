@@ -22,6 +22,7 @@ class Response : public ServerComponent
 		std::string mStatusMessage;
 		std::string mTarget;
 		std::map<std::string, std::string> mRequestHeader;
+		std::string mRequestBody;
 		const ServerConfig *mServerConfig;
 		const LocationConfig *mLocationConfig;
 		enum ResponseState mState;
@@ -49,6 +50,8 @@ class Response : public ServerComponent
 		void setTarget(std::string target);
 		std::map<std::string, std::string> getRequestHeader() const;
 		void setRequestHeader(std::map<std::string, std::string> requestHeader);
+		std::string getRequestBody() const;
+		void setRequestBody(std::string requestBody);
 		const ServerConfig *getServerConfig() const;
 		void setServerConfig(const ServerConfig *config);
 		const LocationConfig *getLocationConfig() const;

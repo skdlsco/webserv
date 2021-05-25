@@ -89,6 +89,15 @@ void Response::setRequestHeader(std::map<std::string, std::string> requestHeader
 	mRequestHeader = requestHeader;
 }
 
+std::string Response::getRequestBody() const
+{
+	return (mRequestBody);
+}
+
+void Response::setRequestBody(std::string requestBody)
+{
+	mRequestBody = requestBody;
+}
 
 Response::ResponseState Response::getState() const
 {
