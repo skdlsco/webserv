@@ -20,7 +20,6 @@ Response *ResponseFactory::create(ServerManager &serverManager, Request &request
 ResponseFactory::ResponseFactory(ServerManager &serverManager, Request &request, const ServerConfig *config)
 : mServerManager(serverManager), mResponseState(METHOD), mResponse(NULL),
 	mRequest(request), mServerConfig(config), mLocationConfig(NULL), mStatusCode(0)
-
 {
 	checkRequestErrorCode();
 }

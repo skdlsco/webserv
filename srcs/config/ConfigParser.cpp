@@ -134,7 +134,7 @@ LocationConfig *ConfigParser::parseLocationDirective(size_t & lineIndex)
 		if (currentDirective == web::commonDirective[web::CommonDirective::INDEX])
 			locationConfig->setIndexFile(currentDirectiveValue);
 		if (currentDirective == web::commonDirective[web::CommonDirective::ROOT])
-			locationConfig->setRoot(currentDirectiveValue);
+			locationConfig->setRoot(addSlashToURI(currentDirectiveValue));
 		if (currentDirective == web::commonDirective[web::CommonDirective::AUTOINDEX] && currentDirectiveValue == "on")
 			locationConfig->setAutoIndex(true);
 		if (currentDirective == web::commonDirective[web::CommonDirective::AUTOINDEX] && currentDirectiveValue == "off")
