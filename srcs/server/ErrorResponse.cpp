@@ -10,7 +10,7 @@ ErrorResponse::ErrorResponse(ServerManager &serverManager, const ServerConfig * 
 	try
 	{
 		mFile.openFile();
-		getServerManager(). addFD(mFile.getFD(), mFDListener);
+		getServerManager().addFD(mFile.getFD(), mFDListener);
 	}
 	catch(const std::exception& e)
 	{
