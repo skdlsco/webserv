@@ -166,7 +166,7 @@ std::string Request::createTarget(std::string input)
 
 	for (std::string::iterator iter = input.begin(); iter < input.end(); iter++)
 	{
-		if (!(prev == '\\' && *iter == '\\'))
+		if (!(prev == '/' && *iter == '/'))
 			result += *iter;
 		prev = *iter;
 	}
