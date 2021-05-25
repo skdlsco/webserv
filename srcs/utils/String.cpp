@@ -282,7 +282,7 @@ std::string web::removeConsecutiveDuplicate(std::string const str, char c)
 	std::string result;
 	char prev = '\0';
 
-	for (std::string::const_iterator iter = str.cbegin(); iter < str.cend(); iter++)
+	for (std::string::const_iterator iter = str.begin(); iter < str.end(); iter++)
 	{
 		if (!(prev == c && *iter == c))
 			result += *iter;
