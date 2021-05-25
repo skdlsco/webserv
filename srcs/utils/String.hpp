@@ -34,6 +34,8 @@ namespace web
 	std::string toLower(std::string &str);
 	std::string copyToUpper(std::string const &str);
 	std::string copyToLower(std::string const &str);
+
+	std::string removeConsecutiveDuplicate(std::string const str, char c);
 };
 
 #endif

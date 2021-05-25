@@ -276,3 +276,17 @@ std::string web::copyToLower(std::string const &str)
 	}
 	return (lowerResult);
 }
+
+std::string web::removeConsecutiveDuplicate(std::string const str, char c)
+{
+	std::string result;
+	char prev = '\0';
+
+	for (std::string::const_iterator iter = str.cbegin(); iter < str.cend(); iter++)
+	{
+		if (!(prev == c && *iter == c))
+			result += *iter;
+		prev = *iter;
+	}
+	return (result);
+}

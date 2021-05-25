@@ -159,20 +159,6 @@ bool Request::isValidTarget(std::string target)
 	return (target[0] == '/');
 }
 
-std::string Request::createTarget(std::string input)
-{
-	std::string result;
-	char prev = ' ';
-
-	for (std::string::iterator iter = input.begin(); iter < input.end(); iter++)
-	{
-		if (!(prev == '/' && *iter == '/'))
-			result += *iter;
-		prev = *iter;
-	}
-	return (result);
-}
-
 void Request::analyzeRequestLine(std::string line)
 {
 	std::vector<std::string> lineElements = web::split(line, std::string(" \t"));
@@ -184,7 +170,7 @@ void Request::analyzeRequestLine(std::string line)
 		return ;
 	}
 	mMethod = lineElements[0];
-	mTarget = createTarget(lineElements[1]);
+	mTarget = web::removeConsecutiveDuplicate(lineElements[1], '/');
 	mAnalyzeLevel = HEADER;
 }
 
