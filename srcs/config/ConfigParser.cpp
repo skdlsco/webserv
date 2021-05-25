@@ -120,7 +120,7 @@ LocationConfig *ConfigParser::parseLocationDirective(size_t & lineIndex)
 
 	/* setting common directive use server block's value */
 	setLocationConfigCommonDirective(locationConfig);
-	
+
 	while (lineIndex < mEachConfigLine.size() &&
 		mEachConfigLine[lineIndex].find("}") == std::string::npos)
 	{
@@ -143,11 +143,13 @@ LocationConfig *ConfigParser::parseLocationDirective(size_t & lineIndex)
 		/* find location directive */
 		if (currentDirective == web::locationDirective[web::LocationDirective::ALLOW_METHOD])
 		{
+			std::vector<std::string> allowMethodList = locationConfig->getAllowMethodList();
+
 			for (size_t idx = 1; idx < splitResult.size(); idx++)
 			{
-				if (std::find(locationConfig->getAllowMethodList().begin(),
-								locationConfig->getAllowMethodList().end(),
-								splitResult[idx]) != locationConfig->getAllowMethodList().end()) 
+				if (std::find(allowMethodList.begin(),
+								allowMethodList.end(),
+								splitResult[idx]) != allowMethodList.end())
 					locationConfig->addAllowMethod(splitResult[idx]);
 			}
 		}
@@ -180,7 +182,7 @@ void ConfigParser::setDefaultServer(std::vector<ServerConfig *> & serverList)
 	{
 		isDefaultServer = true;
 
-		/* will be make function itos() */ 
+		/* will be make function itos() */
 		key = serverList[serverIdx]->getIP() + web::toString(serverList[serverIdx]->getPort());
 		if (defaultServer.count(key))
 			isDefaultServer = false;

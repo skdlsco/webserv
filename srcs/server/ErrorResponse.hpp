@@ -1,6 +1,8 @@
 #ifndef ERROR_RESPONSE_HPP
 # define ERROR_RESPONSE_HPP
 
+#include <string>
+#include <vector>
 #include "server/Response.hpp"
 #include "file/File.hpp"
 #include "utils/Time.hpp"
@@ -34,6 +36,7 @@ class ErrorResponse : public Response
 		ErrorResponse &operator=(ErrorResponse const & rhs);
 
 		void setErrorToDefault();
+		std::string getAllowMethod();
 	protected:
 		std::string createResponseHeader();
 		std::string createResponseBody();
