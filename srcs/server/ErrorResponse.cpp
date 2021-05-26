@@ -7,6 +7,16 @@ ErrorResponse::ErrorResponse(ServerManager &serverManager, const ServerConfig * 
 : Response(serverManager, serverConfig, locationConfig), mIsDefault(false),
 	mFile(getServerConfig()->getDefaultErrorPagePath()), mFDListener(*this)
 {
+
+}
+
+ErrorResponse::~ErrorResponse()
+{
+	setErrorToDefault();
+}
+
+void ErrorResponse::run()
+{
 	try
 	{
 		mFile.openFile();
@@ -17,11 +27,6 @@ ErrorResponse::ErrorResponse(ServerManager &serverManager, const ServerConfig * 
 		mIsDefault = true;
 		setState(Response::DONE);
 	}
-}
-
-ErrorResponse::~ErrorResponse()
-{
-	setErrorToDefault();
 }
 
 void ErrorResponse::setErrorToDefault()

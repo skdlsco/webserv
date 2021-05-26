@@ -5,7 +5,7 @@ std::string const Response::TAG = "Response";
 Response::Response(ServerManager &serverManager, const ServerConfig * serverConfig,
 					const LocationConfig * locationConfig)
 : ServerComponent(serverManager), mStatusCode(0), mServerConfig(serverConfig),
-	mLocationConfig(locationConfig), mState(ON_WORKING)
+	mLocationConfig(locationConfig), mState(READY)
 {
 
 }
@@ -45,6 +45,7 @@ std::string Response::createResponseLine()
 
 	responseline += "HTTP/1.1 ";
 	responseline += web::toString(mStatusCode);
+	responseline += " ";
 	if (mStatusMessage.empty())
 		mStatusMessage = web::getStatusMessage(mStatusCode);
 	responseline += mStatusMessage;
@@ -57,6 +58,12 @@ std::string *Response::getResponse()
 	if (mState != DONE)
 		return (NULL);
 	return (new std::string(createResponseLine() + createResponseHeader() + createResponseBody()));
+}
+
+void Response::start()
+{
+	setState(ON_WORKING);
+	run();
 }
 
 int Response::getStatusCode() const
