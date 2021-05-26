@@ -171,8 +171,8 @@ void ResponseFactory::createMethodResponse()
 		delete mResponse;
 
 	/* will changed */
-	// if (method == web::method[web::Method::GET])
-	// 	// mResponse = new GETResponse(mServerManager, mServerConfig, mLocationConfig));
+	if (method == web::method[web::GET])
+		mResponse = new GETResponse(mServerManager, mServerConfig, mLocationConfig);
 	// else if (method == web::method[web::Method::HEAD])
 	// 	// mResponse = new HEADResponse(mServerManager, mServerConfig, mLocationConfig));
 	// else if (method == web::method[web::Method::PUT])

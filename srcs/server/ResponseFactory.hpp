@@ -9,6 +9,7 @@
 #include "server/Request.hpp"
 #include "server/Response.hpp"
 #include "server/ErrorResponse.hpp"
+#include "server/GETResponse.hpp"
 #include "utils/String.hpp"
 #include "utils/Method.hpp"
 
