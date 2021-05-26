@@ -4,7 +4,8 @@ std::string const GETResponse::TAG = "GETResponse";
 
 GETResponse::GETResponse(ServerManager &serverManager, const ServerConfig * serverConfig,
 						const LocationConfig * locationConfig)
-: Response(serverManager, serverConfig, locationConfig), mContentLocation(""), mBody(""), mState(INDEX_HTML)
+: Response(serverManager, serverConfig, locationConfig), mContentLocation(""), 
+	mBody(""), mState(INDEX_HTML)
 {
 
 }
@@ -19,18 +20,22 @@ GETResponse &GETResponse::operator=(GETResponse const & rhs)
 {
 	if (this != &rhs)
 	{
-		//TODO
+		mContentLocation = rhs.mContentLocation;
+		mBody = rhs.mBody;
+		mState = rhs.mState;
 	}
 	return (*this);
 }
 
 GETResponse::~GETResponse()
 {
-	
+
 }
 
 void GETResponse::run()
 {
+	int fd;
+
 	if (isDirectory(getTarget().c_str()))
 	{
 		/* directory & autoindex check*/
@@ -42,9 +47,7 @@ void GETResponse::run()
 	else
 	{
 		/* file */
-		int fd = open(getTarget().c_str(), O_RDONLY);
-
-		if (fd < 0)
+		if ((fd = open(getTarget().c_str(), O_RDONLY)) < 0)
 			mState = INDEX_HTML;
 		else
 		{
@@ -54,12 +57,21 @@ void GETResponse::run()
 	}
 
 	/* execute once to error check. but... not good */
-	createResponseBody();
-	createResponseHeader();
+	// mResponse = new std::string(createResponseLine() + createResponseBody() + createResponseHeader());
 
 	/* to connection call getResponse() */
-	setState(DONE);
+	// if (getState() != ERROR)
+	// 	setState(DONE);
 }
+
+std::string *GETResponse::getResponse()
+{
+	if (getState() == ERROR)
+		return (NULL);
+	else
+		return (new std::string(createResponseLine() + createResponseHeader() + createResponseBody()));
+}
+
 std::string GETResponse::createResponseHeader()
 {
 	std::string responseHeader;
@@ -110,6 +122,7 @@ std::string GETResponse::createResponseBody()
 		mContentLocation = getTarget();
 		responseBody = readTargetContent() + "\r\n";
 	}
+	logger::println(TAG, "mContentLocation : " + mContentLocation);
 	return (responseBody);
 }
 
@@ -151,7 +164,7 @@ std::string GETResponse::makeAutoIndexContent()
 std::string GETResponse::readIndexPageContent()
 {
 	size_t nRead;
-	int fd = open(mContentLocation.c_str(), O_RDONLY);
+	int fd = open((getLocationConfig()->getRoot() + mContentLocation).c_str(), O_RDONLY);
 	char readBuffer[1025];
 	std::string indexPageContent;
 
@@ -164,7 +177,7 @@ std::string GETResponse::readIndexPageContent()
 	{
 		while (!(nRead = read(fd, readBuffer, 1024)))
 		{
-			readBuffer[nRead] = '\0'; 
+			readBuffer[nRead] = '\0';
 			indexPageContent = indexPageContent + readBuffer;
 		}
 		close(fd);

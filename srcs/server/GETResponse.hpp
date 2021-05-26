@@ -24,6 +24,7 @@ class GETResponse : public Response
 		enum state mState;
 	protected:
 		void run();
+		std::string *getResponse();
 		std::string createResponseHeader();
 		std::string createResponseBody();
 	public:
