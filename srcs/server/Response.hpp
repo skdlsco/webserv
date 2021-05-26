@@ -10,7 +10,7 @@
 #include "utils/HTTP.hpp"
 #include "logger/Logger.hpp"
 
-class Response : public ServerComponent
+class Response
 {
 	public:
 		enum ResponseState
@@ -25,27 +25,18 @@ class Response : public ServerComponent
 		std::string mRequestBody;
 		const ServerConfig *mServerConfig;
 		const LocationConfig *mLocationConfig;
-		enum ResponseState mState;
 		Response();
 	protected:
-		virtual std::string createResponseLine();
-		virtual void run() = 0;
-		virtual std::string createResponseHeader() = 0;
-		virtual std::string createResponseBody() = 0;
-
-		void setState(Response::ResponseState state);
+		std::string createResponseLine();
 	public:
 		static std::string const TAG;
-		Response(ServerManager &serverManager, const ServerConfig * serverConfig,
-					const LocationConfig * locationConfig);
+		Response(const ServerConfig * serverConfig, const LocationConfig * locationConfig);
 		virtual ~Response();
 		Response(Response const & copy);
 		Response &operator=(Response const & rhs);
 
-		void start();
-		std::string *getResponse();
+		virtual std::string *getResponse() = 0;
 
-		virtual void onRepeat();
 		int getStatusCode() const;
 		void setStatusCode(int statusCode);
 		std::string getTarget() const;
@@ -58,7 +49,6 @@ class Response : public ServerComponent
 		void setServerConfig(const ServerConfig *config);
 		const LocationConfig *getLocationConfig() const;
 		void setLocationConfig(const LocationConfig *config);
-		Response::ResponseState getState() const;
 };
 
 #endif
