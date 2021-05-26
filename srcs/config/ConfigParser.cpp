@@ -149,7 +149,7 @@ LocationConfig *ConfigParser::parseLocationDirective(size_t & lineIndex)
 			{
 				if (std::find(allowMethodList.begin(),
 								allowMethodList.end(),
-								splitResult[idx]) != allowMethodList.end())
+								splitResult[idx]) == allowMethodList.end())
 					locationConfig->addAllowMethod(splitResult[idx]);
 			}
 		}
