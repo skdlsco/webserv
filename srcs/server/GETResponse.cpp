@@ -103,7 +103,7 @@ std::string const &GETResponse::createResponseHeader(std::string const & respons
 		responseHeader += "Content-Location: " + mContentLocation;
 
 	if (mContentLocation.find_last_of('.') != std::string::npos)
-		responseHeader += "Content-Type: " + web::getMIMEType(mContentLocation.substr(mContentLocation.find_last_of('.')) + "\r\n";
+		responseHeader += "Content-Type: " + web::getMIMEType(mContentLocation.substr(mContentLocation.find_last_of('.'))) + "\r\n";
 	else
 		responseHeader += "Content-Type: text/html\r\n";
 
