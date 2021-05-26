@@ -10,6 +10,7 @@
 #include "Response.hpp"
 #include "file/File.hpp"
 #include "utils/Time.hpp"
+#include "logger/Logger.hpp"
 
 class GETResponse : public Response
 {
@@ -19,26 +20,24 @@ class GETResponse : public Response
 	};
 	private:
 		GETResponse();
-		std::string mContentLocation;
-		std::string mBody;
 		enum state mState;
+		std::string mContentLocation;
+		std::string *mResponseContent;
 	protected:
-		void run();
 		std::string *getResponse();
-		std::string createResponseHeader();
-		std::string createResponseBody();
+		std::string const &createResponseHeader(std::string const & responseBody);
+		std::string const &createResponseBody();
 	public:
 		static std::string const TAG;
-		GETResponse(ServerManager &serverManager, const ServerConfig * serverConfig,
-					const LocationConfig * locationConfig);
+		GETResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);
 		GETResponse(GETResponse const & copy);
 		GETResponse &operator=(GETResponse const & rhs);
 		virtual ~GETResponse();
 
 		bool isDirectory(const char *target);
+		void setContentLocation();
 		std::string makeAutoIndexContent();
-		std::string readIndexPageContent();
-		std::string readTargetContent();
+		std::string readContentLocation();
 };
 
 #endif

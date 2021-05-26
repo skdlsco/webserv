@@ -201,7 +201,7 @@ Response *ResponseFactory::createMethodResponse()
 
 	/* will changed */
 	if (method == web::method[web::GET])
-		mResponse = new GETResponse(mServerManager, mServerConfig, mLocationConfig);
+		mResponse = new GETResponse(mServerConfig, mLocationConfig);
 	// else if (method == web::method[web::Method::HEAD])
 	// 	// mResponse = new HEADResponse(mServerManager, mServerConfig, mLocationConfig));
 	// else if (method == web::method[web::Method::PUT])
