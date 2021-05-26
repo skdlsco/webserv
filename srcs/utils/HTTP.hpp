@@ -5,6 +5,7 @@
 
 namespace web
 {
+	std::string getMIMEType(std::string const & extension);
 	std::string getStatusMessage(int statusCode);
 	std::string getErrorPage(int statusCode);
 
@@ -339,6 +340,65 @@ namespace web
 	"<body>\r\n" \
 	"<center><h1>Undefined</h1></center>\r\n" \
 	"</body></html>\r\n";
+
+	std::string const MIMETYPE_AAC = "audio/aac";
+	std::string const MIMETYPE_ABW = "application/x-abiword";
+	std::string const MIMETYPE_ARC = "application/octet-stream";
+	std::string const MIMETYPE_AVI = "video/x-msvideo";
+	std::string const MIMETYPE_AZW = "application/vnd.amazon.ebook";
+	std::string const MIMETYPE_BIN = "application/octet-stream";
+	std::string const MIMETYPE_BZ = "application/x-bzip";
+	std::string const MIMETYPE_BZ2 = "application/x-bzip2";
+	std::string const MIMETYPE_CSH = "application/x-csh";
+	std::string const MIMETYPE_CSS = "text/css";
+	std::string const MIMETYPE_CSV = "text/csv";
+	std::string const MIMETYPE_DOC = "application/msword";
+	std::string const MIMETYPE_EPUB = "application/epub+zip";
+	std::string const MIMETYPE_GIF = "image/gif";
+	std::string const MIMETYPE_HTM = "text/html";
+	std::string const MIMETYPE_HTML = "text/html";
+	std::string const MIMETYPE_ICO = "image/x-icon";
+	std::string const MIMETYPE_ICS = "text/calendar";
+	std::string const MIMETYPE_JAR = "application/java-archive";
+	std::string const MIMETYPE_JPEG = "image/jpeg";
+	std::string const MIMETYPE_JPG = "image/jpeg";
+	std::string const MIMETYPE_JS = "application/js";
+	std::string const MIMETYPE_JSON = "application/json";
+	std::string const MIMETYPE_MID = "audio/midi";
+	std::string const MIMETYPE_MIDI = "audio/midi";
+	std::string const MIMETYPE_MPEG = "video/mpeg";
+	std::string const MIMETYPE_MPKG = "application/vnd.apple.installer+xml";
+	std::string const MIMETYPE_ODP = "application/vnd.oasis.opendocument.presentation";
+	std::string const MIMETYPE_ODS = "application/vnd.oasis.opendocument.spreadsheet";
+	std::string const MIMETYPE_ODT = "application/vnd.oasis.opendocument.text";
+	std::string const MIMETYPE_OGA = "audio/ogg";
+	std::string const MIMETYPE_OGV = "video/ogg";
+	std::string const MIMETYPE_OGX = "application/ogg";
+	std::string const MIMETYPE_PDF = "application/pdf";
+	std::string const MIMETYPE_PPT = "application/vnd.ms-powerpoint";
+	std::string const MIMETYPE_RAR = "application/x-rar-compressed";
+	std::string const MIMETYPE_RTF = "application/rtf";
+	std::string const MIMETYPE_SH = "application/x-sh";
+	std::string const MIMETYPE_SVG = "image/svg+xml";
+	std::string const MIMETYPE_SWF = "application/x-shockwave-flash";
+	std::string const MIMETYPE_TAR = "application/x-tar";
+	std::string const MIMETYPE_TIF = "image/tiff";
+	std::string const MIMETYPE_TIFF = "image/tiff";
+	std::string const MIMETYPE_TTF = "application/x-font-ttf";
+	std::string const MIMETYPE_VSD = "application/vnd.visio";
+	std::string const MIMETYPE_WAV = "audio/x-wav";
+	std::string const MIMETYPE_WEBA = "audio/webm";
+	std::string const MIMETYPE_WEBM = "video/webm";
+	std::string const MIMETYPE_WEBP = "image/webp";
+	std::string const MIMETYPE_WOFF = "application/x-font-woff";
+	std::string const MIMETYPE_XHTML = "application/xhtml+xml";
+	std::string const MIMETYPE_XLS = "application/vnd.ms-excel";
+	std::string const MIMETYPE_XML = "application/xml";
+	std::string const MIMETYPE_XUL = "application/vnd.mozilla.xul+xml";
+	std::string const MIMETYPE_ZIP = "application/zip";
+	std::string const MIMETYPE_3GP = "video/3gpp audio/3gpp"; 
+	std::string const MIMETYPE_3G2 = "video/3gpp2 audio/3gpp2";
+	std::string const MIMETYPE_7Z = "application/x-7z-compressed";
 };
 
 #endif
