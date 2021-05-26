@@ -5,6 +5,7 @@
 #include <string>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #include <unistd.h>
 #include "Response.hpp"
 #include "file/File.hpp"

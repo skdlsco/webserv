@@ -92,6 +92,47 @@ std::string GETResponse::createResponseBody()
 	}
 }
 
+std::string GETResponse::makeAutoIndexContent()
+{
+	std::string locationURI = getTarget();
+	DIR *dir_ptr = opendir(locationURI.c_str());
+	struct dirent *file = NULL;
+
+	if (dir_ptr == NULL)
+		// throw()
+
+	mBody += "<html>\r\n";
+	mBody += "<head><title>Index of " + locationURI + "</title></head>\r\n";
+	mBody += "<body bgcolor=\"white\">\r\n";
+	mBody += "<h1>Index of " + locationURI + "</h1><hr>";
+	mBody += "<pre><a href=\"../\">../</a>";
+
+	while ((file = readdir(dir_ptr)) != NULL)
+	{
+		mBody += "<a href=\"" + file->d_name + "\">" + file->d_name + "</a>";
+		for (size_t idx = 0; idx < 50 - strlen(file->d_name); idx++)
+			mBody += " ";
+		mBody += 
+	}
+	
+	mBody += 
+
+}
+
+std::string GETResponse::readIndexFile()
+{
+
+}
+
+std::string GETResponse::readTargetFile()
+{
+	int fd = open(mContentLocation.c_str(), O_RDONLY);
+
+
+
+
+}
+
 bool GETResponse::isDirectory()
 {
 	struct stat buf;
