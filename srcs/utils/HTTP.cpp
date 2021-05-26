@@ -232,3 +232,125 @@ std::string web::getErrorPage(int statusCode)
 	}
 	return (web::ERROR_PAGE_UNDEFINED);
 }
+
+std::string getMIMEType(std::string const & extension)
+{
+	if (extension == ".aac")
+		return (web::MIMETYPE_AAC);
+	else if (extension == ".abw")
+		return (web::MIMETYPE_ABW);
+	else if (extension == ".arc")
+		return (web::MIMETYPE_ARC);
+	else if (extension == ".avi")
+		return (web::MIMETYPE_AVI);
+	else if (extension == ".azw")
+		return (web::MIMETYPE_AZW);
+	else if (extension == ".bin")
+		return (web::MIMETYPE_BIN);
+	else if (extension == ".bz")
+		return (web::MIMETYPE_BZ);
+	else if (extension == ".bz2")
+		return (web::MIMETYPE_BZ2);
+	else if (extension == ".csh")
+		return (web::MIMETYPE_CSH);
+	else if (extension == ".css")
+		return (web::MIMETYPE_CSS);
+	else if (extension == ".csv")
+		return (web::MIMETYPE_CSV);
+	else if (extension == ".doc")
+		return (web::MIMETYPE_DOC);
+	else if (extension == ".epub")
+		return (web::MIMETYPE_EPUB);
+	else if (extension == ".gif")
+		return (web::MIMETYPE_GIF);
+	else if (extension == ".htm")
+		return (web::MIMETYPE_HTM);
+	else if (extension == ".html")
+		return (web::MIMETYPE_HTML);
+	else if (extension == ".ico")
+		return (web::MIMETYPE_ICO);
+	else if (extension == ".ics")
+		return (web::MIMETYPE_ICS);
+	else if (extension == ".jar")
+		return (web::MIMETYPE_JAR);
+	else if (extension == ".jpeg")
+		return (web::MIMETYPE_JPEG);
+	else if (extension == ".jpg")
+		return (web::MIMETYPE_JPG);
+	else if (extension == ".js")
+		return (web::MIMETYPE_JS);
+	else if (extension == ".json")
+		return (web::MIMETYPE_JSON);
+	else if (extension == ".mid")
+		return (web::MIMETYPE_MID);
+	else if (extension == ".midi")
+		return (web::MIMETYPE_MIDI);
+	else if (extension == ".mpeg")
+		return (web::MIMETYPE_MPEG);
+	else if (extension == ".mpkg")
+		return (web::MIMETYPE_MPKG);
+	else if (extension == ".odp")
+		return (web::MIMETYPE_ODP);
+	else if (extension == ".ods")
+		return (web::MIMETYPE_ODS);
+	else if (extension == ".odt")
+		return (web::MIMETYPE_ODT);
+	else if (extension == ".oga")
+		return (web::MIMETYPE_OGA);
+	else if (extension == ".ogv")
+		return (web::MIMETYPE_OGV);
+	else if (extension == ".ogx")
+		return (web::MIMETYPE_OGX);
+	else if (extension == ".pdf")
+		return (web::MIMETYPE_PDF);
+	else if (extension == ".ppt")
+		return (web::MIMETYPE_PPT);
+	else if (extension == ".rar")
+		return (web::MIMETYPE_RAR);
+	else if (extension == ".rtf")
+		return (web::MIMETYPE_RTF);
+	else if (extension == ".sh")
+		return (web::MIMETYPE_SH);
+	else if (extension == ".svg")
+		return (web::MIMETYPE_SVG);
+	else if (extension == ".swf")
+		return (web::MIMETYPE_SWF);
+	else if (extension == ".tar")
+		return (web::MIMETYPE_TAR);
+	else if (extension == ".tif")
+		return (web::MIMETYPE_TIF);
+	else if (extension == ".tiff")
+		return (web::MIMETYPE_TIFF);
+	else if (extension == ".ttf")
+		return (web::MIMETYPE_TTF);
+	else if (extension == ".vsd")
+		return (web::MIMETYPE_VSD);
+	else if (extension == ".wav")
+		return (web::MIMETYPE_WAV);
+	else if (extension == ".weba")
+		return (web::MIMETYPE_WEBA);
+	else if (extension == ".webm")
+		return (web::MIMETYPE_WEBM);
+	else if (extension == ".webp")
+		return (web::MIMETYPE_WEBP);
+	else if (extension == ".woff")
+		return (web::MIMETYPE_WOFF);
+	else if (extension == ".xhtml")
+		return (web::MIMETYPE_XHTML);
+	else if (extension == ".xls")
+		return (web::MIMETYPE_XLS);
+	else if (extension == ".xml")
+		return (web::MIMETYPE_XML);
+	else if (extension == ".xul")
+		return (web::MIMETYPE_XUL);
+	else if (extension == ".zip")
+		return (web::MIMETYPE_ZIP);
+	else if (extension == ".3gp")
+		return (web::MIMETYPE_3GP);
+	else if (extension == ".3g2")
+		return (web::MIMETYPE_3G2);
+	else if (extension == ".7z")
+		return (web::MIMETYPE_7Z);
+
+	return ("text/plain");
+}
