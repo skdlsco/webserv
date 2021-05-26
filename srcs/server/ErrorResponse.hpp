@@ -38,6 +38,7 @@ class ErrorResponse : public Response
 		void setErrorToDefault();
 		std::string getAllowMethod();
 	protected:
+		void run();
 		std::string createResponseHeader();
 		std::string createResponseBody();
 	public:

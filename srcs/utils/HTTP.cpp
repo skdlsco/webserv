@@ -233,7 +233,7 @@ std::string web::getErrorPage(int statusCode)
 	return (web::ERROR_PAGE_UNDEFINED);
 }
 
-std::string getMIMEType(std::string const & extension)
+std::string web::getMIMEType(std::string const & extension)
 {
 	if (extension == ".aac")
 		return (web::MIMETYPE_AAC);
