@@ -15,7 +15,7 @@ ErrorResponse::~ErrorResponse()
 }
 
 ErrorResponse::ErrorResponse(ErrorResponse const & copy)
-: Response(copy.getServerConfig(), copy.getLocationConfig()), mFile(copy.mFile)
+: Response(copy), mFile(copy.mFile)
 {
 	*this = copy;
 }
