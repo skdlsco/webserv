@@ -49,23 +49,24 @@ GETResponse &GETResponse::operator=(GETResponse const & rhs)
 
 GETResponse::~GETResponse()
 {
-
+	if (mResponseContent)
+		delete mResponseContent;
 }
 
 std::string *GETResponse::getResponse()
 {
 	std::string responseBody;
-	mResponseContent = new std::string();
 
 	try
 	{
+		mResponseContent = new std::string();
 		if (mResponseContent)
 		{
 			setContentLocation();
 			responseBody = createResponseBody();
 
 			*mResponseContent += createResponseLine();
-			*mResponseContent += createResponseHeader(responseBody);
+			createResponseHeader(responseBody);
 			*mResponseContent += responseBody;
 		}
 
@@ -86,32 +87,29 @@ std::string *GETResponse::getResponse()
 	return (mResponseContent);
 }
 
-std::string GETResponse::createResponseHeader(std::string const & responseBody)
+void GETResponse::createResponseHeader(std::string const & responseBody)
 {
-	std::string responseHeader;
-
 	/* default header */
-	responseHeader += "Date: " + web::getDate() + "\r\n";
-	responseHeader += "Server: webserv (chlee, ina)\r\n";
-	responseHeader += "Connection: close\r\n";
+	*mResponseContent += "Date: " + web::getDate() + "\r\n";
+	*mResponseContent += "Server: webserv (chlee, ina)\r\n";
+	*mResponseContent += "Connection: close\r\n";
 
 	/* content part */
-	responseHeader += "Content-Language: en-US\r\n";
-	responseHeader += "Content-Length: " + web::toString(responseBody.length()) + "\r\n";
+	*mResponseContent += "Content-Language: en-US\r\n";
+	*mResponseContent += "Content-Length: " + web::toString(responseBody.length()) + "\r\n";
 
 	if (mState != AUTOINDEX)
-		responseHeader += "Content-Location: " + mContentLocation;
+		*mResponseContent += "Content-Location: " + mContentLocation;
 
 	if (mContentLocation.find_last_of('.') != std::string::npos)
-		responseHeader += "Content-Type: " + web::getMIMEType(mContentLocation.substr(mContentLocation.find_last_of('.'))) + "\r\n";
+		*mResponseContent += "Content-Type: " + web::getMIMEType(mContentLocation.substr(mContentLocation.find_last_of('.'))) + "\r\n";
 	else
-		responseHeader += "Content-Type: text/html\r\n";
+		*mResponseContent += "Content-Type: text/html\r\n";
 
 	if (mState != AUTOINDEX)
-		responseHeader += "Last-Modified: " + web::getDate() + "\r\n";
+		*mResponseContent += "Last-Modified: " + web::getDate() + "\r\n";
 
-	responseHeader += "\r\n";
-	return (responseHeader);
+	*mResponseContent += "\r\n";
 }
 
 void GETResponse::setContentLocation()
@@ -135,9 +133,9 @@ std::string GETResponse::makeAutoIndexContent()
 	std::string locationURI = getTarget();
 	std::string autoIndexContent;
 	struct dirent *file = NULL;
-	DIR *dir_ptr = opendir(locationURI.c_str());
+	DIR *directoryPointer = opendir(locationURI.c_str());
 
-	if (dir_ptr == NULL)
+	if (directoryPointer == NULL)
 		setStatusCode(500);
 
 	autoIndexContent += "<html>";
@@ -146,7 +144,7 @@ std::string GETResponse::makeAutoIndexContent()
 	autoIndexContent += "<h1>Index of " + locationURI + "</h1><hr>";
 	autoIndexContent += "<pre><a href=\"../\">../</a>";
 
-	while ((file = readdir(dir_ptr)) != NULL)
+	while ((file = readdir(directoryPointer)) != NULL)
 	{
 		fileName = file->d_name;
 		autoIndexContent += "<a href=\"" + fileName + "\">" + fileName + "</a>";

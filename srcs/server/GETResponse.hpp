@@ -25,7 +25,7 @@ class GETResponse : public Response
 		std::string *mResponseContent;
 	protected:
 		std::string *getResponse();
-		std::string createResponseHeader(std::string const & responseBody);
+		void createResponseHeader(std::string const & responseBody);
 		std::string createResponseBody();
 	public:
 		static std::string const TAG;
