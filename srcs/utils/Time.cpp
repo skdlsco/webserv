@@ -85,3 +85,18 @@ std::string web::getDate()
 	strftime(buffer, sizeof(buffer), "%a, %d %b %Y %X GMT", &t);
 	return (buffer);
 }
+
+/* for autoindex */
+std::string web::getFileTime()
+{
+	char buffer[32];
+	bzero(buffer, sizeof(buffer));
+
+	struct timeval time;
+	struct tm t;
+	
+	gettimeofday(&time, NULL);
+	t = web::timevalToTm(time);
+	strftime(buffer, sizeof(buffer), "%d-%b-%Y %H:%M", &t);
+	return (buffer);
+}
