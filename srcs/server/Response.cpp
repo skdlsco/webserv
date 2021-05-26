@@ -2,10 +2,8 @@
 
 std::string const Response::TAG = "Response";
 
-Response::Response(ServerManager &serverManager, const ServerConfig * serverConfig,
-					const LocationConfig * locationConfig)
-: ServerComponent(serverManager), mStatusCode(0), mServerConfig(serverConfig),
-	mLocationConfig(locationConfig), mState(READY)
+Response::Response(const ServerConfig * serverConfig, const LocationConfig * locationConfig)
+: mStatusCode(0), mServerConfig(serverConfig), mLocationConfig(locationConfig)
 {
 
 }
@@ -15,7 +13,7 @@ Response::~Response()
 
 }
 
-Response::Response(Response const & copy) : ServerComponent(copy.getServerManager())
+Response::Response(Response const & copy)
 {
 	*this = copy;
 }
@@ -29,14 +27,8 @@ Response &Response::operator=(Response const & rhs)
 		this->mRequestHeader = rhs.mRequestHeader;;
 		this->mServerConfig = rhs.mServerConfig;
 		this->mLocationConfig = rhs.mLocationConfig;
-		this->mState = rhs.mState;
 	}
 	return (*this);
-}
-
-void Response::onRepeat()
-{
-
 }
 
 std::string Response::createResponseLine()
@@ -51,19 +43,6 @@ std::string Response::createResponseLine()
 	responseline += mStatusMessage;
 	responseline += "\r\n";
 	return (responseline);
-}
-
-std::string *Response::getResponse()
-{
-	if (mState != DONE)
-		return (NULL);
-	return (new std::string(createResponseLine() + createResponseHeader() + createResponseBody()));
-}
-
-void Response::start()
-{
-	setState(ON_WORKING);
-	run();
 }
 
 int Response::getStatusCode() const
@@ -104,16 +83,6 @@ std::string Response::getRequestBody() const
 void Response::setRequestBody(std::string requestBody)
 {
 	mRequestBody = requestBody;
-}
-
-Response::ResponseState Response::getState() const
-{
-	return (mState);
-}
-
-void Response::setState(Response::ResponseState state)
-{
-	mState = state;
 }
 
 const ServerConfig *Response::getServerConfig() const

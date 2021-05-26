@@ -24,7 +24,6 @@ class ResponseFactory
 		ResponseFactory(ResponseFactory const & copy);
 		ResponseFactory &operator=(ResponseFactory const & rhs);
 
-		ServerManager &mServerManager;
 		enum ResponseType mResponseState;
 		Response *mResponse;
 		Request &mRequest;
@@ -33,8 +32,9 @@ class ResponseFactory
 		int mStatusCode;
 	public:
 		static std::string const TAG;
-		static Response *create(ServerManager &serverManager, Request &request, const ServerConfig *config);
-		ResponseFactory(ServerManager &serverManager, Request &request, const ServerConfig *config);
+
+		static std::string *create(Request &request, const ServerConfig *config);
+		ResponseFactory(Request &request, const ServerConfig *config);
 		virtual ~ResponseFactory();
 
 		Response *createResponse();
@@ -51,9 +51,11 @@ class ResponseFactory
 		/* is have CGI? */
 		void checkLocationCGI();
 
-		void createErrorResponse();
-		void createCGIResponse();
-		void createMethodResponse();
+		Response *createErrorResponse();
+		Response *createCGIResponse();
+		Response *createMethodResponse();
+
+		void initResponseValue();
 
 		void setResponseServerConfig(Response *response);
 		void setResponseLocationConfig(Response *response);

@@ -35,7 +35,6 @@ class Connection : public ServerComponent
 		static const int BUFFER_SIZE = 1024;
 		ConnectionAction mFDListener;
 		Request mRequest;
-		Response *mResponse;
 		std::string *mWriteBuffer;
 		std::vector<ServerConfig *> const &mConfig;
 		struct sockaddr_in mAddr; // TODO convert type to int, string
@@ -55,6 +54,7 @@ class Connection : public ServerComponent
 
 		virtual void onRepeat();
 		std::vector<ServerConfig *> const &getConfig() const;
+		void createResponseBuffer();
 };
 
 #endif
