@@ -25,8 +25,8 @@ class GETResponse : public Response
 		std::string *mResponseContent;
 	protected:
 		std::string *getResponse();
-		std::string const &createResponseHeader(std::string const & responseBody);
-		std::string const &createResponseBody();
+		std::string createResponseHeader(std::string const & responseBody);
+		std::string createResponseBody();
 	public:
 		static std::string const TAG;
 		GETResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);

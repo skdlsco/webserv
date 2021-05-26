@@ -4,7 +4,7 @@ std::string const GETResponse::TAG = "GETResponse";
 
 GETResponse::GETResponse(const ServerConfig * serverConfig,
 						const LocationConfig * locationConfig)
-: Response(serverConfig, locationConfig), mContentLocation(""), mState(INDEX_HTML),
+: Response(serverConfig, locationConfig), mState(INDEX_HTML), mContentLocation(""), 
 	mResponseContent(NULL)
 {
 	int fd;
@@ -86,7 +86,7 @@ std::string *GETResponse::getResponse()
 	return (mResponseContent);
 }
 
-std::string const &GETResponse::createResponseHeader(std::string const & responseBody)
+std::string GETResponse::createResponseHeader(std::string const & responseBody)
 {
 	std::string responseHeader;
 
@@ -122,12 +122,11 @@ void GETResponse::setContentLocation()
 		mContentLocation = getTarget();
 }
 
-std::string const &GETResponse::createResponseBody()
+std::string GETResponse::createResponseBody()
 {
 	if (mState == AUTOINDEX)
 		return (makeAutoIndexContent() + "\r\n");
-	else if (mState == TARGET || mState == INDEX_HTML)
-		return (readContentLocation() + "\r\n");
+	return (readContentLocation() + "\r\n");
 }
 
 std::string GETResponse::makeAutoIndexContent()
