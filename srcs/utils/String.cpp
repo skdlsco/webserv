@@ -131,7 +131,7 @@ std::string web::toString(int val)
 	std::string str(CStr);
 
 	/* I don't have certainty below delete code.. */
-	delete CStr;
+	// delete CStr;
 	return (str);
 }
 
