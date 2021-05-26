@@ -40,8 +40,8 @@ GETResponse &GETResponse::operator=(GETResponse const & rhs)
 	{
 		mContentLocation = rhs.mContentLocation;
 		mState = rhs.mState;
-		if (mResponseContent)
-			delete mResponseContent;
+
+		delete mResponseContent;
 		mResponseContent = new std::string();
 		*mResponseContent = *rhs.mResponseContent;
 	}
