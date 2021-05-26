@@ -22,13 +22,13 @@ std::string *ResponseFactory::create(Request &request, const ServerConfig *confi
 				errorResponse->setTarget(request.getTarget());
 				errorResponse->setRequestHeader(request.getField());
 				errorResponse->setRequestBody(request.getBody());
+				if (responseFactory.mResponseState == ERROR)
+					errorResponse->setStatusCode(responseFactory.mStatusCode);
+				else if (response)
+					errorResponse->setStatusCode(response->getStatusCode());
+				else
+					errorResponse->setStatusCode(500);
 			}
-			if (responseFactory.mResponseState == ERROR)
-				errorResponse->setStatusCode(responseFactory.mStatusCode);
-			else if (response)
-				errorResponse->setStatusCode(response->getStatusCode());
-			else
-				errorResponse->setStatusCode(500);
 			delete response;
 			response = errorResponse;
 			result = response->getResponse();
