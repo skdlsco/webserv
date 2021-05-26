@@ -36,8 +36,6 @@ struct tm web::timevalToTm(struct timeval time)
 	result.tm_min = time.tv_sec % 60;
 	time.tv_sec /= 60;
 
-	//for UTC+9
-	time.tv_sec += 9;
 	result.tm_hour = time.tv_sec % 24;
 	time.tv_sec /= 24;
 	result.tm_wday = ((time.tv_sec + 4) % 7);
