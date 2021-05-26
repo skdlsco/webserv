@@ -2,23 +2,49 @@
 
 std::string const ResponseFactory::TAG = "ResponseFactory";
 
-Response *ResponseFactory::create(ServerManager &serverManager, Request &request, const ServerConfig *config)
+std::string *ResponseFactory::create(Request &request, const ServerConfig *config)
 {
+	std::string *result = NULL;
+	Response *response = NULL;
 	try
 	{
-		ResponseFactory responseFactory = ResponseFactory(serverManager, request, config);
-
-		return (responseFactory.createResponse());
+		ResponseFactory responseFactory(request, config);
+		response = responseFactory.createResponse();
+		if (response)
+		{
+			result = response->getResponse();
+		}
+		if (result == NULL)
+		{
+			Response *errorResponse = responseFactory.createErrorResponse();
+			if (errorResponse)
+			{
+				errorResponse->setTarget(request.getTarget());
+				errorResponse->setRequestHeader(request.getField());
+				errorResponse->setRequestBody(request.getBody());
+				if (responseFactory.mResponseState == ERROR)
+					errorResponse->setStatusCode(responseFactory.mStatusCode);
+				else if (response)
+					errorResponse->setStatusCode(response->getStatusCode());
+				else
+					errorResponse->setStatusCode(500);
+			}
+			delete response;
+			response = errorResponse;
+			result = response->getResponse();
+		}
+		return (result);
 	}
 	catch(const std::exception& e)
 	{
 		logger::println(TAG, e.what());
 	}
-	return (NULL);
+	delete response;
+	return (result);
 }
 
-ResponseFactory::ResponseFactory(ServerManager &serverManager, Request &request, const ServerConfig *config)
-: mServerManager(serverManager), mResponseState(METHOD), mResponse(NULL),
+ResponseFactory::ResponseFactory(Request &request, const ServerConfig *config)
+: mResponseState(METHOD), mResponse(NULL),
 	mRequest(request), mServerConfig(config), mLocationConfig(NULL), mStatusCode(0)
 {
 	checkRequestErrorCode();
@@ -32,26 +58,31 @@ ResponseFactory::~ResponseFactory()
 
 Response *ResponseFactory::createResponse()
 {
+	Response *response = NULL;
+
 	checkRequestErrorCode();
-	logger::print(TAG) << mLocationConfig << std::endl;
 	checkLocationURI();
-	logger::print(TAG) << mLocationConfig << std::endl;
 	checkLocationCGI();
 	checkLocationMethodList();
 
-	if (mResponseState == ERROR)
-		createErrorResponse();
-	if (mResponseState == CGI)
-		createCGIResponse();
-	if (mResponseState == METHOD)
-		createMethodResponse();
-	if (mResponse)
+	try
 	{
-		mResponse->setTarget(mRequest.getTarget());
-		mResponse->setRequestHeader(mRequest.getField());
-		mResponse->setRequestBody(mRequest.getBody());
+		if (mResponseState == CGI)
+			response = createCGIResponse();
+		if (mResponseState == METHOD)
+			response = createMethodResponse();
 	}
-	return (mResponse);
+	catch(const std::exception& e)
+	{
+		logger::println(TAG, e.what());
+	}
+	if (response)
+	{
+		response->setTarget(mRequest.getTarget());
+		response->setRequestHeader(mRequest.getField());
+		response->setRequestBody(mRequest.getBody());
+	}
+	return (response);
 }
 
 void ResponseFactory::checkRequestErrorCode()
@@ -142,33 +173,31 @@ void ResponseFactory::checkLocationMethodList()
 	if (!findMethod)
 	{
 		mResponseState = ERROR;
-		mStatusCode = 405; 
+		mStatusCode = 405;
 	}
 }
 
-
-void ResponseFactory::createErrorResponse()
+Response *ResponseFactory::createErrorResponse()
 {
-	if (mResponse)
-		delete mResponse;
-	mResponse = new ErrorResponse(mServerManager, mServerConfig, mLocationConfig);
-	mResponse->setStatusCode(mStatusCode);
+	mResponse = new ErrorResponse(mServerConfig, mLocationConfig);
+	return (mResponse);
 }
 
-void ResponseFactory::createCGIResponse()
+Response *ResponseFactory::createCGIResponse()
 {
-	if (mResponse)
-		delete mResponse;
-	// mResponse = new CGIResponse(mServerManager));
+	if (mResponseState != CGI)
+		return (NULL);
+	// return (new CGIResponse(mServerManager)));
+	return (NULL);
 }
 
-void ResponseFactory::createMethodResponse()
+Response *ResponseFactory::createMethodResponse()
 {
 	std::string method = mRequest.getMethod();
 
 	/* Meaningless Code */
-	if (mResponse)
-		delete mResponse;
+	if (mResponseState != METHOD)
+		return (NULL);
 
 	/* will changed */
 	// if (method == web::method[web::Method::GET])
@@ -183,4 +212,5 @@ void ResponseFactory::createMethodResponse()
 	// 	// mResponse = new OPTIONSResponse(mServerManager, mServerConfig, mLocationConfig));
 	// else if (method == web::method[web::Method::DELETE])
 	// 	// mResponse = new DELETEResponse(mServerManager, mServerConfig, mLocationConfig));
+	return (NULL);
 }

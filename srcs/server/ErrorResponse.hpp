@@ -11,25 +11,9 @@
 class ErrorResponse : public Response
 {
 	private:
-		class ErrorResponseFDListener : public FileDiscriptorListener
-		{
-			private:
-				ErrorResponse &mErrorResponse;
-				ErrorResponseFDListener();
-				ErrorResponseFDListener(ErrorResponseFDListener const & copy);
-				ErrorResponseFDListener &operator=(ErrorResponseFDListener const & copy);
-			public:
-				ErrorResponseFDListener(ErrorResponse &mErrorResponse);
-				virtual ~ErrorResponseFDListener();
-
-				void onReadSet();
-				void onWriteSet();
-				void onExceptSet();
-		};
-	private:
+		std::string *mResponseContent;
 		bool mIsDefault;
 		File mFile;
-		ErrorResponseFDListener mFDListener;
 
 		ErrorResponse();
 		ErrorResponse(ErrorResponse const & copy);
@@ -37,16 +21,16 @@ class ErrorResponse : public Response
 
 		void setErrorToDefault();
 		std::string getAllowMethod();
-	protected:
-		void run();
-		std::string createResponseHeader();
-		std::string createResponseBody();
+		void createResponseHeader();
+		void createResponseBody();
+		void createUserErrorPage();
 	public:
 		static std::string const TAG;
 
-		ErrorResponse(ServerManager &serverManager, const ServerConfig * serverConfig,
-					const LocationConfig * locationConfig);
+		ErrorResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);
 		virtual ~ErrorResponse();
+
+		virtual std::string *getResponse();
 };
 
 #endif

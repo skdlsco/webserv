@@ -4,7 +4,7 @@ std::string const Connection::TAG = "Connection";
 
 Connection::Connection(ServerManager &serverManager, std::vector<ServerConfig *> const &config,
 						struct sockaddr_in addr, int fd)
-: ServerComponent(serverManager), mFDListener(*this), mRequest(config), mResponse(NULL),
+: ServerComponent(serverManager), mFDListener(*this), mRequest(config),
 	mWriteBuffer(NULL), mConfig(config), mAddr(addr), mFD(fd), mStartTime(web::getNowTime())
 {
 	getServerManager().addFD(fd, mFDListener);
@@ -13,7 +13,6 @@ Connection::Connection(ServerManager &serverManager, std::vector<ServerConfig *>
 Connection::~Connection()
 {
 	getServerManager().removeFD(mFD);
-	delete mResponse;
 	delete mWriteBuffer;
 }
 
@@ -31,39 +30,16 @@ Connection *Connection::create(ServerManager &serverManager,
 	return (NULL);
 }
 
+void Connection::createResponseBuffer()
+{
+	mWriteBuffer = ResponseFactory::create(mRequest, mRequest.getConfig());
+	if (mWriteBuffer == NULL)
+		finish();
+}
+
 void Connection::onRepeat()
 {
 	//getNowTime() - mStartTime > TIMEOUT ? ERROR
-
-	if (mResponse && mResponse->getState() == Response::DONE)
-	{
-		mWriteBuffer = mResponse->getResponse();
-		if (!mWriteBuffer)
-			finish();
-	}
-
-	if (mResponse && mResponse->getState() == Response::ERROR)
-	{
-		Response *prev = mResponse;
-		try
-		{
-			Response *error = new ErrorResponse(getServerManager(),
-												prev->getServerConfig(), prev->getLocationConfig());
-			error->setTarget(prev->getTarget());
-			error->setRequestHeader(prev->getRequestHeader());
-			error->setStatusCode(prev->getStatusCode());
-			mResponse = error;
-		}
-		catch(const std::exception& e)
-		{
-			mResponse = NULL;
-			logger::println(TAG, e.what());
-		}
-		delete prev;
-	}
-
-	if (mResponse && mResponse->getState() == Response::READY)
-		mResponse->start();
 }
 
 std::vector<ServerConfig *> const &Connection::getConfig() const
@@ -86,7 +62,7 @@ void Connection::ConnectionAction::onReadSet()
 {
 	char buffer[BUFFER_SIZE];
 
-	if (mConnection.mResponse)
+	if (mConnection.mWriteBuffer)
 		return ;
 	int n = recv(mConnection.mFD, buffer, BUFFER_SIZE - 1, 0);
 	if (n == -1)
@@ -99,13 +75,11 @@ void Connection::ConnectionAction::onReadSet()
 	{
 		mConnection.mRequest.analyzeBuffer(buffer);
 		if (mConnection.mRequest.getAnalyzeLevel() == Request::DONE)
-			mConnection.mResponse = ResponseFactory::create(mConnection.getServerManager(),
-															mConnection.mRequest,
-															mConnection.mRequest.getConfig());
+			mConnection.createResponseBuffer();
 	}
 	catch(const std::exception& e)
 	{
-		std::cerr << e.what() << '\n';
+		logger::println(TAG, e.what());
 		mConnection.finish();
 		return ;
 	}
