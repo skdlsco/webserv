@@ -6,27 +6,7 @@ GETResponse::GETResponse(ServerManager &serverManager, const ServerConfig * serv
 						const LocationConfig * locationConfig)
 : Response(serverManager, serverConfig, locationConfig), mContentLocation(""), mBody(""), mState(INDEX_HTML)
 {
-	if (isDirectory())
-	{
-		/* directory & autoindex check*/
-		if (getLocationConfig()->isAutoIndex())
-			mState = AUTOINDEX;
-		else
-			mState = INDEX_HTML;
-	}
-	else
-	{
-		/* file */
-		int fd = open(getTarget().c_str(), O_RDONLY);
 
-		if (fd < 0)
-			mState = INDEX_HTML;
-		else
-		{
-			mState = TARGET;
-			close(fd);
-		}
-	}
 }
 
 GETResponse::GETResponse(GETResponse const & copy)
@@ -49,95 +29,173 @@ GETResponse::~GETResponse()
 	
 }
 
+void GETResponse::run()
+{
+	if (isDirectory(getTarget().c_str()))
+	{
+		/* directory & autoindex check*/
+		if (getLocationConfig()->isAutoIndex())
+			mState = AUTOINDEX;
+		else
+			mState = INDEX_HTML;
+	}
+	else
+	{
+		/* file */
+		int fd = open(getTarget().c_str(), O_RDONLY);
+
+		if (fd < 0)
+			mState = INDEX_HTML;
+		else
+		{
+			mState = TARGET;
+			close(fd);
+		}
+	}
+
+	/* execute once to error check. but... not good */
+	createResponseBody();
+	createResponseHeader();
+
+	/* to connection call getResponse() */
+	setState(DONE);
+}
 std::string GETResponse::createResponseHeader()
 {
 	std::string responseHeader;
+	std::string extension;
 
+	/* default header */
 	responseHeader += "Date: " + web::getDate() + "\r\n";
 	responseHeader += "Server: webserv (chlee, ina)\r\n";
 	responseHeader += "Connection: close\r\n";
-	
+
+	/* content part */
 	responseHeader += "Content-Language: en-US\r\n";
-	responseHeader += "Content-Length: " + (mBody.length() + 2);
+	responseHeader += "Content-Length: " + web::toString(mBody.length() + 2) + "\r\n";
 
 	if (mState != AUTOINDEX)
 		responseHeader += "Content-Location: " + mContentLocation;
 
-	if (mContentLocation.split(~)) //if not found . back -> text/plain
-		responseHeader += "Content-Type: text/html\r\n";
+	if (mContentLocation.find_last_of('.') != std::string::npos)
+	{
+		extension = mContentLocation.substr(mContentLocation.find_last_of('.'));
+		responseHeader += "Content-Type: " + web::getMIMEType(extension) + "\r\n";
+	}
 	else
-		responseHeader += "Content-Type: " + web::mime_type[~] + "\r\n";
+		responseHeader += "Content-Type: text/html\r\n";
 
 	if (mState != AUTOINDEX)
-		responseHeader += "Last-Modified: " + get~; // openFile? what func?
+		responseHeader += "Last-Modified: " + web::getDate() + "\r\n";
+
+	responseHeader += "\r\n";
+	return (responseHeader);
 }
 
 std::string GETResponse::createResponseBody()
 {
+	std::string responseBody = "";
+
 	if (mState == INDEX_HTML)
 	{
 		mContentLocation = getLocationConfig()->getRoot() + getLocationConfig()->getIndexFile();
-		mBody = readIndexFile() + "\r\n";
+		responseBody = readIndexPageContent() + "\r\n";
 	}
 	else if (mState == AUTOINDEX)
 	{
-		// mContentLocation = //readdir()
-		mBody = makeAutoIndexContent() + "\r\n";
+		responseBody = makeAutoIndexContent() + "\r\n";
 	}
 	else if (mState == TARGET)
 	{
-		//target ? root setting?
 		mContentLocation = getTarget();
-		mBody = readTargetFile() + "\r\n";
+		responseBody = readTargetContent() + "\r\n";
 	}
+	return (responseBody);
 }
 
 std::string GETResponse::makeAutoIndexContent()
 {
+	std::string fileName;
 	std::string locationURI = getTarget();
+	std::string autoIndexContent;
 	DIR *dir_ptr = opendir(locationURI.c_str());
 	struct dirent *file = NULL;
 
 	if (dir_ptr == NULL)
-		// throw()
+	{
+		setStatusCode(500);
+		setState(ERROR);
+	}
 
-	mBody += "<html>\r\n";
-	mBody += "<head><title>Index of " + locationURI + "</title></head>\r\n";
-	mBody += "<body bgcolor=\"white\">\r\n";
-	mBody += "<h1>Index of " + locationURI + "</h1><hr>";
-	mBody += "<pre><a href=\"../\">../</a>";
+	autoIndexContent += "<html>";
+	autoIndexContent += "<head><title>Index of " + locationURI + "</title></head>";
+	autoIndexContent += "<body bgcolor=\"white\">";
+	autoIndexContent += "<h1>Index of " + locationURI + "</h1><hr>";
+	autoIndexContent += "<pre><a href=\"../\">../</a>";
 
 	while ((file = readdir(dir_ptr)) != NULL)
 	{
-		mBody += "<a href=\"" + file->d_name + "\">" + file->d_name + "</a>";
-		for (size_t idx = 0; idx < 50 - strlen(file->d_name); idx++)
+		fileName = file->d_name;
+		autoIndexContent += "<a href=\"" + fileName + "\">" + fileName + "</a>";
+		for (size_t idx = 0; idx < 50 - fileName.length(); idx++)
+		{
 			mBody += " ";
-		mBody += 
+		}
+		autoIndexContent += web::getFileTime();
+		autoIndexContent += "<br>";
 	}
-	
-	mBody += 
-
+	autoIndexContent += "</pre><hr></body></html>";
+	return (autoIndexContent);
 }
 
-std::string GETResponse::readIndexFile()
+std::string GETResponse::readIndexPageContent()
 {
+	size_t nRead;
+	int fd = open(mContentLocation.c_str(), O_RDONLY);
+	char readBuffer[1025];
+	std::string indexPageContent;
 
+	if (fd < 0)
+	{
+		setStatusCode(404);
+		setState(ERROR);
+	}
+	else
+	{
+		while (!(nRead = read(fd, readBuffer, 1024)))
+		{
+			readBuffer[nRead] = '\0'; 
+			indexPageContent = indexPageContent + readBuffer;
+		}
+		close(fd);
+	}
+	return (indexPageContent);
 }
 
-std::string GETResponse::readTargetFile()
+std::string GETResponse::readTargetContent()
 {
 	int fd = open(mContentLocation.c_str(), O_RDONLY);
+	char readBuffer[1025];
+	size_t nRead;
+	std::string targetContent = "";
 
-
-
-
+	while (!(nRead = read(fd, readBuffer, 1024)))
+	{
+		readBuffer[nRead] = '\0';
+		targetContent = targetContent + readBuffer;
+	}
+	close(fd);
+	return (targetContent);
 }
 
-bool GETResponse::isDirectory()
+bool GETResponse::isDirectory(const char *target)
 {
 	struct stat buf;
-	if (stat(getTarget().c_str(), &buf) < 0)
-		//error
+	if (stat(target, &buf) < 0)
+	{
+		setStatusCode(500);
+		setState(ERROR);
+	}
 
 	if (S_ISDIR(buf.st_mode))
 		return (true);

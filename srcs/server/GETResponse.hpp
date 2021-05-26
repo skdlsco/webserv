@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include "Response.hpp"
 #include "file/File.hpp"
+#include "utils/Time.hpp"
 
 class GETResponse : public Response
 {
@@ -22,6 +23,7 @@ class GETResponse : public Response
 		std::string mBody;
 		enum state mState;
 	protected:
+		void run();
 		std::string createResponseHeader();
 		std::string createResponseBody();
 	public:
@@ -32,10 +34,10 @@ class GETResponse : public Response
 		GETResponse &operator=(GETResponse const & rhs);
 		virtual ~GETResponse();
 
-		bool isDirectory();
+		bool isDirectory(const char *target);
 		std::string makeAutoIndexContent();
-		std::string readIndexFile();
-		std::string readTargetFile();
+		std::string readIndexPageContent();
+		std::string readTargetContent();
 };
 
 #endif
