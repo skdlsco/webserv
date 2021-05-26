@@ -34,12 +34,36 @@ Connection *Connection::create(ServerManager &serverManager,
 void Connection::onRepeat()
 {
 	//getNowTime() - mStartTime > TIMEOUT ? ERROR
+
 	if (mResponse && mResponse->getState() == Response::DONE)
 	{
 		mWriteBuffer = mResponse->getResponse();
 		if (!mWriteBuffer)
 			finish();
 	}
+
+	if (mResponse && mResponse->getState() == Response::ERROR)
+	{
+		Response *prev = mResponse;
+		try
+		{
+			Response *error = new ErrorResponse(getServerManager(),
+												prev->getServerConfig(), prev->getLocationConfig());
+			error->setTarget(prev->getTarget());
+			error->setRequestHeader(prev->getRequestHeader());
+			error->setStatusCode(prev->getStatusCode());
+			mResponse = error;
+		}
+		catch(const std::exception& e)
+		{
+			mResponse = NULL;
+			logger::println(TAG, e.what());
+		}
+		delete prev;
+	}
+
+	if (mResponse && mResponse->getState() == Response::READY)
+		mResponse->start();
 }
 
 std::vector<ServerConfig *> const &Connection::getConfig() const
@@ -62,6 +86,8 @@ void Connection::ConnectionAction::onReadSet()
 {
 	char buffer[BUFFER_SIZE];
 
+	if (mConnection.mResponse)
+		return ;
 	int n = recv(mConnection.mFD, buffer, BUFFER_SIZE - 1, 0);
 	if (n == -1)
 	{

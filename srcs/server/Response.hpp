@@ -15,7 +15,7 @@ class Response : public ServerComponent
 	public:
 		enum ResponseState
 		{
-			ON_WORKING, DONE, ERROR
+			READY, ON_WORKING, DONE, ERROR
 		};
 	private:
 		int mStatusCode;
@@ -29,6 +29,7 @@ class Response : public ServerComponent
 		Response();
 	protected:
 		virtual std::string createResponseLine();
+		virtual void run() = 0;
 		virtual std::string createResponseHeader() = 0;
 		virtual std::string createResponseBody() = 0;
 
@@ -41,6 +42,7 @@ class Response : public ServerComponent
 		Response(Response const & copy);
 		Response &operator=(Response const & rhs);
 
+		void start();
 		std::string *getResponse();
 
 		virtual void onRepeat();
