@@ -65,10 +65,17 @@ Response *ResponseFactory::createResponse()
 	checkLocationCGI();
 	checkLocationMethodList();
 
-	if (mResponseState == CGI)
-		response = createCGIResponse();
-	if (mResponseState == METHOD)
-		response = createMethodResponse();
+	try
+	{
+		if (mResponseState == CGI)
+			response = createCGIResponse();
+		if (mResponseState == METHOD)
+			response = createMethodResponse();
+	}
+	catch(const std::exception& e)
+	{
+		logger::println(TAG, e.what());
+	}
 	if (response)
 	{
 		response->setTarget(mRequest.getTarget());
