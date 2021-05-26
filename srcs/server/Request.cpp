@@ -59,7 +59,7 @@ void Request::appendChunkedBody()
 		} else
 		{
 			std::string line;
-			std::size_t lineIndex = mBuffer.find("\r\n");
+			size_t lineIndex = mBuffer.find("\r\n");
 			if (lineIndex != std::string::npos)
 			{
 				line = mBuffer.substr(0, lineIndex);
@@ -81,6 +81,8 @@ void Request::appendContentBody()
 		mBody.append(mBuffer.substr(0, mContentLength - mBody.size()));
 	else
 		mBody.append(mBuffer);
+	if (mBody.size() >= static_cast<unsigned long>(mContentLength))
+		mAnalyzeLevel = DONE;
 	mBuffer.clear();
 }
 
