@@ -8,11 +8,12 @@
 #include <dirent.h>
 #include <unistd.h>
 #include "Response.hpp"
+#include "GETResponse.hpp"
 #include "file/File.hpp"
 #include "utils/Time.hpp"
 #include "logger/Logger.hpp"
 
-class HEADResponse : public Response
+class HEADResponse : public GETResponse
 {
 	enum state
 	{
@@ -20,24 +21,14 @@ class HEADResponse : public Response
 	};
 	private:
 		HEADResponse();
-		enum state mState;
-		std::string mContentLocation;
-		std::string *mResponseContent;
 	protected:
 		std::string *getResponse();
-		void createResponseHeader(std::string const & responseBody);
-		std::string createResponseBody();
 	public:
 		static std::string const TAG;
 		HEADResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);
 		HEADResponse(HEADResponse const & copy);
 		HEADResponse &operator=(HEADResponse const & rhs);
 		virtual ~HEADResponse();
-
-		bool isDirectory(const char *target);
-		void setContentLocation();
-		std::string makeAutoIndexContent();
-		std::string readContentLocation();
 };
 
 #endif
