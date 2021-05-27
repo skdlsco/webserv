@@ -2,34 +2,19 @@
 
 std::string const POSTResponse::TAG = "POST Response";
 
-// uri 체크 (폴더는 추가가 안되도록 한다?..)
-// naming -> target_ms.target_type;?
-// auth check -> uri check -> fd open(naming), write body -> done -> 201(create) (Location, Content-Location)
-
-POSTResponse::POSTResponse(ServerManager &serverManager, const ServerConfig * serverConfig,
-				const LocationConfig * locationConfig)
-: Response(serverManager, serverConfig, locationConfig), mFD(-1), mFDListener(*this), mBody(getRequestBody())
+POSTResponse::POSTResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig)
+: Response(serverConfig, locationConfig), mFD(-1)
 {
-	try
-	{
-		checkAuthorization();
-		checkTarget();
-		openFile();
-	}
-	catch(const std::exception& e)
-	{
-		setError(500);
-		logger::println(TAG, e.what());
-	}
+
 }
 
 POSTResponse::~POSTResponse()
 {
-	getServerManager().removeFD(mFD);
+
 }
 
 POSTResponse::POSTResponse(POSTResponse const & copy)
-: Response(copy), mFDListener(*this), mFD(-1)
+: Response(copy), mFD(-1)
 {
 	*this = copy;
 }
@@ -40,10 +25,39 @@ POSTResponse &POSTResponse::operator=(POSTResponse const & rhs)
 	return (*this);
 }
 
-void POSTResponse::setError(int errorCode)
+std::string *POSTResponse::getResponse()
 {
-	setStatusCode(errorCode);
-	setState(Response::ERROR);
+	std::string *responseContent = NULL;
+
+	mBody = getRequestBody();
+	checkAuthorization();
+	if (getStatusCode())
+		return (NULL);
+	checkTarget();
+	if (getStatusCode())
+		return (NULL);
+	try
+	{
+		writeFile();
+		/* 201 created (success) */
+		if (getStatusCode() != 201)
+			return (NULL);
+		responseContent = new std::string();
+		if (responseContent)
+		{
+			*responseContent += createResponseLine();
+			appendResponseHeader(*responseContent);
+			appendResponseBody(*responseContent);
+		}
+	}
+	catch(std::exception const &e)
+	{
+		logger::println(TAG, e.what());
+		setStatusCode(500);
+		delete responseContent;
+		responseContent = NULL;
+	}
+	return (responseContent);
 }
 
 void POSTResponse::checkAuthorization()
@@ -54,7 +68,7 @@ void POSTResponse::checkAuthorization()
 	if (requestHeader.find("Authorization") == requestHeader.end())
 	{
 		/* Unauthorized */
-		setError(401);
+		setStatusCode(401);
 		return ;
 	}
 	std::string userAuth = web::base64Decoder(requestHeader["Authorization"]);
@@ -62,7 +76,7 @@ void POSTResponse::checkAuthorization()
 	if (userAuth != serverAuth)
 	{
 		/* Forbidden */
-		setError(403);
+		setStatusCode(403);
 		return ;
 	}
 }
@@ -94,7 +108,7 @@ void POSTResponse::createFileName(std::string path)
 	while (number > 0)
 	{
 		std::string fileName = path + " (" + web::toString(number) + ")";
-		if (!isFileExist(path))
+		if (!isFileExist(fileName))
 		{
 			mFileName = fileName;
 			return ;
@@ -105,8 +119,6 @@ void POSTResponse::createFileName(std::string path)
 
 void POSTResponse::checkTarget()
 {
-	if (getState() == Response::ERROR)
-		return ;
 	std::string path = getLocationConfig()->getRoot() + getTarget();
 
 	path = web::removeConsecutiveDuplicate(path, '/');
@@ -118,89 +130,55 @@ void POSTResponse::checkTarget()
 	/* 폴더인 경우 404(이부분은 고민이 되네요), 경로가 존재하지 않는 경우 404 */
 	if (file.empty() || !isFolderExist(folder))
 	{
-		setError(404);
+		setStatusCode(404);
 		return ;
 	}
 	createFileName(path);
 }
 
-void POSTResponse::openFile()
+void POSTResponse::writeFile()
 {
 	mFD = open(mFileName.c_str(), O_CREAT | O_WRONLY);
 	if (mFD == -1)
 	{
-		/* 403으로 처리?*/
-		setError(403);
+		setStatusCode(500);
 		return ;
 	}
-	getServerManager().addFD(mFD, mFDListener);
+	int writeN;
+	size_t bufferSize = BUFFER_SIZE;
+
+	if (BUFFER_SIZE > mBody.length())
+		bufferSize = mBody.length();
+	while ((writeN = write(mFD, mBody.c_str(), bufferSize)) > 0)
+	{
+		mBody.erase(0, writeN);
+		if (BUFFER_SIZE > mBody.length())
+			bufferSize = mBody.length();
+	}
+	if (writeN == -1)
+		setStatusCode(500);
+	 else
+		setStatusCode(201);
 }
 
-void POSTResponse::onRepeat()
-{
-
-}
-
-std::string POSTResponse::createResponseHeader()
+void POSTResponse::appendResponseHeader(std::string &responseContent)
 {
 	std::string responseHeader;
 
-	responseHeader += "Date: " + web::getDate() + "\r\n";
-	responseHeader += "Server: webserv (chlee, ina)\r\n";
-	responseHeader += "Connection: close\r\n";
+	responseContent += "Date: " + web::getDate() + "\r\n";
+	responseContent += "Server: webserv (chlee, ina)\r\n";
+	responseContent += "Connection: close\r\n";
 
 	std::string location = mFileName;
 	size_t pos = location.find(getLocationConfig()->getRoot());
 	location.erase(pos, getLocationConfig()->getRoot().length());
 
-	responseHeader += "Location: " + location +"\r\n";
-	responseHeader += "Content-Location: " + location +"\r\n";
-	responseHeader += "\r\n";
-	return (responseHeader);
+	responseContent += "Location: " + location +"\r\n";
+	responseContent += "Content-Location: " + location +"\r\n";
+	responseContent += "\r\n";
 }
 
-std::string POSTResponse::createResponseBody()
+void POSTResponse::appendResponseBody(std::string &responseContent)
 {
-	return ("\r\n");
-}
-
-
-POSTResponse::POSTResponseFDListener::POSTResponseFDListener(POSTResponse &response)
-: mResponse(response)
-{
-
-}
-
-POSTResponse::POSTResponseFDListener::~POSTResponseFDListener()
-{
-
-}
-
-void POSTResponse::POSTResponseFDListener::onReadSet()
-{
-
-}
-
-void POSTResponse::POSTResponseFDListener::onWriteSet()
-{
-	int writeN = write(mResponse.mFD, mResponse.mBody.c_str(), BUFFER_SIZE);
-
-	if (writeN == -1)
-	{
-		/* server error */
-		mResponse.setError(500);
-		return ;
-	}
-	mResponse.mBody.erase(0, writeN);
-	if (mResponse.mBody.empty())
-	{
-		mResponse.setStatusCode(201);
-		mResponse.setState(Response::DONE);
-	}
-}
-
-void POSTResponse::POSTResponseFDListener::onExceptSet()
-{
-	/* Error code 무엇으로 하는게 맞는가 */
-	mResponse.setError(500);
+	responseContent += "\r\n";
 }

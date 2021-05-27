@@ -10,27 +10,10 @@
 class POSTResponse : public Response
 {
 	private:
-		class POSTResponseFDListener : public FileDiscriptorListener
-		{
-			private:
-				POSTResponse &mResponse;
-				POSTResponseFDListener();
-				POSTResponseFDListener(POSTResponseFDListener const & copy);
-				POSTResponseFDListener &operator=(POSTResponseFDListener const & copy);
-			public:
-				POSTResponseFDListener(POSTResponse &POSTResponse);
-				virtual ~POSTResponseFDListener();
-
-				void onReadSet();
-				void onWriteSet();
-				void onExceptSet();
-		};
-	private:
 		static const int BUFFER_SIZE = 1024;
 		POSTResponse();
 
 		int mFD;
-		POSTResponseFDListener mFDListener;
 		std::string mFileName;
 		std::string mBody;
 
@@ -39,20 +22,17 @@ class POSTResponse : public Response
 		void checkTarget();
 		bool isFolderExist(std::string dir);
 		bool isFileExist(std::string dir);
-		void setError(int errorCode);
-		void openFile();
-	protected:
-		virtual std::string createResponseHeader();
-		virtual std::string createResponseBody();
+		void writeFile();
+		void appendResponseHeader(std::string &responseContent);
+		void appendResponseBody(std::string &responseContent);
 	public:
 		static std::string const TAG;
-		POSTResponse(ServerManager &serverManager, const ServerConfig * serverConfig,
-						const LocationConfig * locationConfig);
+		POSTResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);
 		virtual ~POSTResponse();
 		POSTResponse(POSTResponse const & copy);
 		POSTResponse &operator=(POSTResponse const & rhs);
 
-		virtual void onRepeat();
+		std::string *getResponse();
 };
 
 #endif
