@@ -18,6 +18,7 @@ HEADResponse::HEADResponse(HEADResponse const & copy)
 HEADResponse &HEADResponse::operator=(HEADResponse const & rhs)
 {
 	GETResponse::operator=(rhs);
+	return (*this);
 }
 
 HEADResponse::~HEADResponse()
