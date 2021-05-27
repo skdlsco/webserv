@@ -11,9 +11,7 @@ std::string *ResponseFactory::create(Request &request, const ServerConfig *confi
 		ResponseFactory responseFactory(request, config);
 		response = responseFactory.createResponse();
 		if (response)
-		{
 			result = response->getResponse();
-		}
 		if (result == NULL)
 		{
 			Response *errorResponse = responseFactory.createErrorResponse();
@@ -64,7 +62,7 @@ Response *ResponseFactory::createResponse()
 	checkLocationURI();
 	checkLocationCGI();
 	checkLocationMethodList();
-
+	logger::print(TAG) << mRequest.getMethod() << " " << mRequest.getTarget() << std::endl;
 	try
 	{
 		if (mResponseState == CGI)
@@ -179,8 +177,7 @@ void ResponseFactory::checkLocationMethodList()
 
 Response *ResponseFactory::createErrorResponse()
 {
-	mResponse = new ErrorResponse(mServerConfig, mLocationConfig);
-	return (mResponse);
+	return (new ErrorResponse(mServerConfig, mLocationConfig));
 }
 
 Response *ResponseFactory::createCGIResponse()
@@ -194,14 +191,13 @@ Response *ResponseFactory::createCGIResponse()
 Response *ResponseFactory::createMethodResponse()
 {
 	std::string method = mRequest.getMethod();
-
 	/* Meaningless Code */
 	if (mResponseState != METHOD)
 		return (NULL);
 
 	/* will changed */
 	if (method == web::method[web::GET])
-		mResponse = new GETResponse(mServerConfig, mLocationConfig);
+		return (new GETResponse(mServerConfig, mLocationConfig));
 	// else if (method == web::method[web::Method::HEAD])
 	// 	// mResponse = new HEADResponse(mServerManager, mServerConfig, mLocationConfig));
 	// else if (method == web::method[web::Method::PUT])
