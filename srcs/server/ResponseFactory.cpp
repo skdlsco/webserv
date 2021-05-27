@@ -42,8 +42,8 @@ std::string *ResponseFactory::create(Request &request, const ServerConfig *confi
 }
 
 ResponseFactory::ResponseFactory(Request &request, const ServerConfig *config)
-: mResponseState(METHOD), mResponse(NULL),
-	mRequest(request), mServerConfig(config), mLocationConfig(NULL), mStatusCode(0)
+: mResponseState(METHOD), mRequest(request),
+	mServerConfig(config), mLocationConfig(NULL), mStatusCode(0)
 {
 	checkRequestErrorCode();
 }
@@ -198,14 +198,14 @@ Response *ResponseFactory::createMethodResponse()
 	/* will changed */
 	if (method == web::method[web::GET])
 		return (new GETResponse(mServerConfig, mLocationConfig));
-	// else if (method == web::method[web::Method::HEAD])
-	// 	// mResponse = new HEADResponse(mServerManager, mServerConfig, mLocationConfig));
+	else if (method == web::method[web::HEAD])
+		return (new HEADResponse(mServerConfig, mLocationConfig));
 	// else if (method == web::method[web::Method::PUT])
 	// 	// mResponse = new PUTResponse(mServerManager, mServerConfig, mLocationConfig));
-	// else if (method == web::method[web::Method::POST])
-	// 	// mResponse = new POSTResponse(mServerManager, mServerConfig, mLocationConfig));
-	// else if (method == web::method[web::Method::OPTIONS])
-	// 	// mResponse = new OPTIONSResponse(mServerManager, mServerConfig, mLocationConfig));
+	else if (method == web::method[web::POST])
+		return (new POSTResponse(mServerConfig, mLocationConfig));
+	else if (method == web::method[web::OPTIONS])
+		return (new OPTIONSResponse(mServerConfig, mLocationConfig));
 	// else if (method == web::method[web::Method::DELETE])
 	// 	// mResponse = new DELETEResponse(mServerManager, mServerConfig, mLocationConfig));
 	return (NULL);

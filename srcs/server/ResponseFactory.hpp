@@ -10,6 +10,9 @@
 #include "server/Response.hpp"
 #include "server/ErrorResponse.hpp"
 #include "server/GETResponse.hpp"
+#include "server/HEADResponse.hpp"
+#include "server/POSTResponse.hpp"
+#include "server/OPTIONSResponse.hpp"
 #include "utils/String.hpp"
 #include "utils/Method.hpp"
 
@@ -26,7 +29,6 @@ class ResponseFactory
 		ResponseFactory &operator=(ResponseFactory const & rhs);
 
 		enum ResponseType mResponseState;
-		Response *mResponse;
 		Request &mRequest;
 		const ServerConfig *mServerConfig;
 		const LocationConfig *mLocationConfig;

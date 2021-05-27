@@ -11,7 +11,7 @@ int main(void)
 
 	try
 	{
-		ConfigManager configManager("configs/validate.conf");
+		ConfigManager configManager("configs/validate_ina.conf");
 		if (configManager.isConfigValidate())
 		{
 			configList = configManager.parseConfigFile();
