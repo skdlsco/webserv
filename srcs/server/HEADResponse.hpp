@@ -15,10 +15,6 @@
 
 class HEADResponse : public GETResponse
 {
-	enum state
-	{
-		INDEX_HTML, AUTOINDEX, TARGET
-	};
 	private:
 		HEADResponse();
 	protected:
