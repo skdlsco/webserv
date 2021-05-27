@@ -13,15 +13,14 @@ class POSTResponse : public Response
 		static const int BUFFER_SIZE = 1024;
 		POSTResponse();
 
-		int mFD;
 		std::string mFileName;
 		std::string mBody;
 
 		void checkAuthorization();
 		void createFileName(std::string targetFile);
 		void checkTarget();
-		bool isFolderExist(std::string dir);
-		bool isFileExist(std::string dir);
+		bool isFolderExist(std::string path);
+		bool isFileExist(std::string path);
 		void writeFile();
 		void appendResponseHeader(std::string &responseContent);
 		void appendResponseBody(std::string &responseContent);

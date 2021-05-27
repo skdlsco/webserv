@@ -3,7 +3,7 @@
 std::string const POSTResponse::TAG = "POST Response";
 
 POSTResponse::POSTResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig)
-: Response(serverConfig, locationConfig), mFD(-1)
+: Response(serverConfig, locationConfig)
 {
 
 }
@@ -14,7 +14,7 @@ POSTResponse::~POSTResponse()
 }
 
 POSTResponse::POSTResponse(POSTResponse const & copy)
-: Response(copy), mFD(-1)
+: Response(copy)
 {
 	*this = copy;
 }
@@ -81,20 +81,20 @@ void POSTResponse::checkAuthorization()
 	}
 }
 
-bool POSTResponse::isFolderExist(std::string dir)
+bool POSTResponse::isFolderExist(std::string path)
 {
 	struct stat buf;
 
-	if (stat(dir.c_str(), &buf) == -1)
+	if (stat(path.c_str(), &buf) == -1)
 		return (false);
 	return (buf.st_mode & S_IFDIR);
 }
 
-bool POSTResponse::isFileExist(std::string dir)
+bool POSTResponse::isFileExist(std::string path)
 {
 	struct stat buf;
 
-	return (stat(dir.c_str(), &buf) == 0);
+	return (stat(path.c_str(), &buf) == 0);
 }
 
 void POSTResponse::createFileName(std::string path)
@@ -127,7 +127,7 @@ void POSTResponse::checkTarget()
 	std::string folder = path.substr(0, slashIdx);
 	std::string file = path.substr(slashIdx + 1);
 
-	/* 폴더인 경우 404(이부분은 고민이 되네요), 경로가 존재하지 않는 경우 404 */
+	/* 폴더인 경우, 경로가 존재하지 않는 경우 404 */
 	if (file.empty() || !isFolderExist(folder))
 	{
 		setStatusCode(404);
@@ -138,8 +138,8 @@ void POSTResponse::checkTarget()
 
 void POSTResponse::writeFile()
 {
-	mFD = open(mFileName.c_str(), O_CREAT | O_WRONLY);
-	if (mFD == -1)
+	int fd = open(mFileName.c_str(), O_CREAT | O_WRONLY);
+	if (fd == -1)
 	{
 		setStatusCode(500);
 		return ;
@@ -149,12 +149,13 @@ void POSTResponse::writeFile()
 
 	if (BUFFER_SIZE > mBody.length())
 		bufferSize = mBody.length();
-	while ((writeN = write(mFD, mBody.c_str(), bufferSize)) > 0)
+	while ((writeN = write(fd, mBody.c_str(), bufferSize)) > 0)
 	{
 		mBody.erase(0, writeN);
 		if (BUFFER_SIZE > mBody.length())
 			bufferSize = mBody.length();
 	}
+	close(fd);
 	if (writeN == -1)
 		setStatusCode(500);
 	 else
