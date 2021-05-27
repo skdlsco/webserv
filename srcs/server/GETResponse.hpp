@@ -24,7 +24,7 @@ class GETResponse : public Response
 		enum state mState;
 		std::string mContentLocation;
 		std::string *mResponseContent;
-		std::string *getResponse();
+		virtual std::string *getResponse();
 		void createResponseHeader(std::string const & responseBody);
 		std::string createResponseBody();
 	public:
