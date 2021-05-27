@@ -11,6 +11,7 @@
 #include "server/ErrorResponse.hpp"
 #include "server/GETResponse.hpp"
 #include "server/POSTResponse.hpp"
+#include "server/PUTResponse.hpp"
 #include "utils/String.hpp"
 #include "utils/Method.hpp"
 
