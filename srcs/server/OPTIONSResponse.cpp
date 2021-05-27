@@ -30,8 +30,6 @@ OPTIONSResponse::~OPTIONSResponse()
 
 std::string *OPTIONSResponse::getResponse()
 {
-	std::string responseBody;
-
 	try
 	{
 		mResponseContent = new std::string();
