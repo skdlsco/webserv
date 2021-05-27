@@ -22,7 +22,7 @@ class HEADResponse : public GETResponse
 	private:
 		HEADResponse();
 	protected:
-		std::string *getResponse();
+		virtual std::string *getResponse();
 	public:
 		static std::string const TAG;
 		HEADResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);
