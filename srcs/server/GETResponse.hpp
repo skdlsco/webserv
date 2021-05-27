@@ -20,10 +20,10 @@ class GETResponse : public Response
 	};
 	private:
 		GETResponse();
+	protected:
 		enum state mState;
 		std::string mContentLocation;
 		std::string *mResponseContent;
-	protected:
 		std::string *getResponse();
 		void createResponseHeader(std::string const & responseBody);
 		std::string createResponseBody();
