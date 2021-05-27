@@ -198,10 +198,10 @@ Response *ResponseFactory::createMethodResponse()
 	/* will changed */
 	if (method == web::method[web::GET])
 		return (new GETResponse(mServerConfig, mLocationConfig));
+	else if (method == web::method[web::PUT])
+		return (new PUTResponse(mServerConfig, mLocationConfig));
 	else if (method == web::method[web::HEAD])
 		return (new HEADResponse(mServerConfig, mLocationConfig));
-	// else if (method == web::method[web::Method::PUT])
-	// 	// mResponse = new PUTResponse(mServerManager, mServerConfig, mLocationConfig));
 	else if (method == web::method[web::POST])
 		return (new POSTResponse(mServerConfig, mLocationConfig));
 	else if (method == web::method[web::OPTIONS])

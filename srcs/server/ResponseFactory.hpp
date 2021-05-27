@@ -12,6 +12,7 @@
 #include "server/GETResponse.hpp"
 #include "server/HEADResponse.hpp"
 #include "server/POSTResponse.hpp"
+#include "server/PUTResponse.hpp"
 #include "server/OPTIONSResponse.hpp"
 #include "utils/String.hpp"
 #include "utils/Method.hpp"
