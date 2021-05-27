@@ -20,7 +20,8 @@ class OPTIONSResponse : public Response
 		std::string *mResponseContent;
 
 		virtual std::string *getResponse();
-		void createResponseHeader();
+		void appendResponseHeader();
+		void appendResponseBody();
 	public:
 		static std::string const TAG;
 		OPTIONSResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);

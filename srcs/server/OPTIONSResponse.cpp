@@ -38,7 +38,8 @@ std::string *OPTIONSResponse::getResponse()
 		if (mResponseContent)
 		{
 			*mResponseContent += createResponseLine();
-			createResponseHeader();
+			appendResponseHeader();
+			appendResponseBody();
 		}
 		setStatusCode(200);
 	}
@@ -51,7 +52,7 @@ std::string *OPTIONSResponse::getResponse()
 	return (mResponseContent);
 }
 
-void OPTIONSResponse::createResponseHeader()
+void OPTIONSResponse::appendResponseHeader()
 {
 	/* default header */
 	*mResponseContent += "Date: " + web::getDate() + "\r\n";
@@ -70,5 +71,10 @@ void OPTIONSResponse::createResponseHeader()
 		if (idx < getLocationConfig()->getAllowMethodList().size() - 1)
 			*mResponseContent += " ";
 	}
+	*mResponseContent += "\r\n";
+}
+
+void OPTIONSResponse::appendResponseBody()
+{
 	*mResponseContent += "\r\n";
 }
