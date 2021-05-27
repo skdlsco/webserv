@@ -8,14 +8,9 @@
 
 class OPTIONSResponse : public Response
 {
-	enum state
-	{
-		INDEX_HTML, AUTOINDEX, TARGET
-	};
 	private:
 		OPTIONSResponse();
 	protected:
-		enum state mState;
 		std::string mContentLocation;
 		std::string *mResponseContent;
 

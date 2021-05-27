@@ -16,10 +16,7 @@ OPTIONSResponse::OPTIONSResponse(OPTIONSResponse const & copy)
 
 OPTIONSResponse &OPTIONSResponse::operator=(OPTIONSResponse const & rhs)
 {
-	if (this != &rhs)
-	{
-		//ToDO
-	}
+	Response::operator=(rhs);
 	return (*this);
 }
 
