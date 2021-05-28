@@ -81,7 +81,7 @@ void PUTResponse::checkAuthorization()
 	}
 }
 
-bool PUTResponse::isFolderExist(std::string path)
+bool PUTResponse::isFolderExist(std::string const & path)
 {
 	struct stat buf;
 
@@ -90,7 +90,7 @@ bool PUTResponse::isFolderExist(std::string path)
 	return (!(buf.st_mode & S_IFDIR));
 }
 
-bool PUTResponse::isFileExist(std::string path)
+bool PUTResponse::isFileExist(std::string const & path)
 {
 	struct stat buf;
 

@@ -17,10 +17,10 @@ class POSTResponse : public Response
 		std::string mBody;
 
 		void checkAuthorization();
-		void createFileName(std::string targetFile);
+		void createFileName(std::string const & targetFile);
 		void checkTarget();
-		bool isFolderExist(std::string path);
-		bool isFileExist(std::string path);
+		bool isFolderExist(std::string const & path);
+		bool isFileExist(std::string const & path);
 		void writeFile();
 		void appendResponseHeader(std::string &responseContent);
 		void appendResponseBody(std::string &responseContent);

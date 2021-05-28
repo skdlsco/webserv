@@ -81,7 +81,7 @@ void POSTResponse::checkAuthorization()
 	}
 }
 
-bool POSTResponse::isFolderExist(std::string path)
+bool POSTResponse::isFolderExist(std::string const & path)
 {
 	struct stat buf;
 
@@ -94,14 +94,14 @@ bool POSTResponse::isFolderExist(std::string path)
 	return (!(buf.st_mode & S_IFDIR));
 }
 
-bool POSTResponse::isFileExist(std::string path)
+bool POSTResponse::isFileExist(std::string const & path)
 {
 	struct stat buf;
 
 	return (stat(path.c_str(), &buf) == 0);
 }
 
-void POSTResponse::createFileName(std::string path)
+void POSTResponse::createFileName(std::string const & path)
 {
 	if (!isFileExist(path))
 	{
