@@ -206,7 +206,7 @@ Response *ResponseFactory::createMethodResponse()
 		return (new POSTResponse(mServerConfig, mLocationConfig));
 	else if (method == web::method[web::OPTIONS])
 		return (new OPTIONSResponse(mServerConfig, mLocationConfig));
-	// else if (method == web::method[web::Method::DELETE])
-	// 	// mResponse = new DELETEResponse(mServerManager, mServerConfig, mLocationConfig));
+	else if (method == web::method[web::DELETE])
+		return (new DELETEResponse(mServerConfig, mLocationConfig));
 	return (NULL);
 }
