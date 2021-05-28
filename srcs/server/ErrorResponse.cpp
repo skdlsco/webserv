@@ -14,26 +14,44 @@ ErrorResponse::~ErrorResponse()
 
 }
 
+ErrorResponse::ErrorResponse(ErrorResponse const & copy)
+: Response(copy), mFile(copy.mFile)
+{
+	*this = copy;
+}
+
+ErrorResponse &ErrorResponse::operator=(ErrorResponse const & rhs)
+{
+	if (this != &rhs)
+	{
+		this->mFile = rhs.mFile;
+		this->mIsDefault = rhs.mIsDefault;
+	}
+	return (*this);
+}
+
 std::string *ErrorResponse::getResponse()
 {
+	std::string *responseContent;
+
 	createUserErrorPage();
-	mResponseContent = new std::string();
 	try
 	{
-		if (mResponseContent)
+		responseContent = new std::string();
+		if (responseContent)
 		{
-			*mResponseContent += createResponseLine();
-			createResponseHeader();
-			createResponseBody();
+			*responseContent += createResponseLine();
+			createResponseHeader(responseContent);
+			createResponseBody(responseContent);
 		}
 	}
 	catch(std::exception const&e)
 	{
 		logger::println(TAG, e.what());
-		delete mResponseContent;
-		mResponseContent = NULL;
+		delete responseContent;
+		responseContent = NULL;
 	}
-	return (mResponseContent);
+	return (responseContent);
 }
 
 void ErrorResponse::createUserErrorPage()
@@ -78,38 +96,38 @@ std::string ErrorResponse::getAllowMethod()
 	return (result);
 }
 
-void ErrorResponse::createResponseHeader()
+void ErrorResponse::createResponseHeader(std::string *responseContent)
 {
-	if (mResponseContent == NULL)
+	if (responseContent == NULL)
 		return ;
-	*mResponseContent += "Date: " + web::getDate() + "\r\n";
-	*mResponseContent += "Server: webserv (chlee, ina)\r\n";
-	*mResponseContent += "Connection: close\r\n";
-	*mResponseContent += "Content-Type: text/html\r\n";
+	*responseContent += "Date: " + web::getDate() + "\r\n";
+	*responseContent += "Server: webserv (chlee, ina)\r\n";
+	*responseContent += "Connection: close\r\n";
+	*responseContent += "Content-Type: text/html\r\n";
 
 	/* 503 timeout */
 	if (getStatusCode() == 503)
-		*mResponseContent += "Retry-After: 120\r\n";
+		*responseContent += "Retry-After: 120\r\n";
 	/* 405 not allowed method */
 	if (getStatusCode() == 405)
-		*mResponseContent += "Allow: " + getAllowMethod() + "\r\n";
+		*responseContent += "Allow: " + getAllowMethod() + "\r\n";
 	/* 401 unauthorized */
 	if (getStatusCode() == 401)
-		*mResponseContent += "WWW-Authenticate: Basic realm=\"webserv\"\r\n";
+		*responseContent += "WWW-Authenticate: Basic realm=\"webserv\"\r\n";
 
 	if (mIsDefault)
-		*mResponseContent += "Content-Length: " + web::toString(web::getErrorPage(getStatusCode()).size()) + "\r\n";
+		*responseContent += "Content-Length: " + web::toString(web::getErrorPage(getStatusCode()).size()) + "\r\n";
 	else
-		*mResponseContent += "Content-Length: " + web::toString(mFile.getBuffer().size() + 2) + "\r\n";
-	*mResponseContent += "\r\n";
+		*responseContent += "Content-Length: " + web::toString(mFile.getBuffer().size()) + "\r\n";
+	*responseContent += "\r\n";
 }
 
-void ErrorResponse::createResponseBody()
+void ErrorResponse::createResponseBody(std::string *responseContent)
 {
-	if (mResponseContent == NULL)
+	if (responseContent == NULL)
 		return ;
 	if (mIsDefault)
-		*mResponseContent += web::getErrorPage(getStatusCode());
+		*responseContent += web::getErrorPage(getStatusCode());
 	else
-		*mResponseContent += mFile.getBuffer();
+		*responseContent += mFile.getBuffer();
 }
