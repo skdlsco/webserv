@@ -3,9 +3,7 @@
 
 #include "Response.hpp"
 #include "utils/Auth.hpp"
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#include "utils/HTTP.hpp"
 
 class PUTResponse : public Response
 {
@@ -18,8 +16,6 @@ class PUTResponse : public Response
 
 		void checkAuthorization();
 		void checkTarget();
-		bool isFolderExist(std::string const & path);
-		bool isFileExist(std::string const & path);
 		void writeFile();
 		void appendResponseHeader(std::string &responseContent);
 		void appendResponseBody(std::string &responseContent);

@@ -81,35 +81,25 @@ void PUTResponse::checkAuthorization()
 	}
 }
 
-bool PUTResponse::isFolderExist(std::string const & path)
-{
-	struct stat buf;
-
-	if (stat(path.c_str(), &buf) == -1)
-		return (false);
-	return (!(buf.st_mode & S_IFDIR));
-}
-
-bool PUTResponse::isFileExist(std::string const & path)
-{
-	struct stat buf;
-
-	return (stat(path.c_str(), &buf) == 0);
-}
-
 void PUTResponse::checkTarget()
 {
 	std::string path = getLocationConfig()->getRoot() + getTarget();
 
 	path = web::removeConsecutiveDuplicate(path, '/');
+
+	if (path.length() == 0)
+	{
+		setStatusCode(404);
+		return ;
+	}
 	if (path[path.length() - 1] == '/')
 		path = path.substr(0, path.length() - 1);
+	
 	int slashIdx = path.find_last_of("/");
-
 	std::string folder = path.substr(0, slashIdx);
 
 	/* 폴더인 경우, 경로가 존재하지 않는 경우 404 */
-	if (!isFolderExist(folder))
+	if (!web::isFilePath(folder))
 	{
 		setStatusCode(404);
 		return ;
@@ -119,7 +109,7 @@ void PUTResponse::checkTarget()
 
 void PUTResponse::writeFile()
 {
-	bool isExist = isFileExist(mFileName);
+	bool isExist = web::isFileExist(mFileName);
 	int fd = open(mFileName.c_str(), O_CREAT | O_WRONLY);
 	if (fd == -1)
 	{

@@ -29,17 +29,18 @@ HEADResponse::~HEADResponse()
 std::string *HEADResponse::getResponse()
 {
 	std::string responseBody;
+	std::string *responseContent;
 
 	try
 	{
-		mResponseContent = new std::string();
-		if (mResponseContent)
+		responseContent = new std::string();
+		if (responseContent)
 		{
 			setContentLocation();
 			responseBody = createResponseBody();
 
-			*mResponseContent += createResponseLine();
-			createResponseHeader(responseBody);
+			*responseContent += createResponseLine();
+			createResponseHeader(responseBody, *responseContent);
 
 			/* HEAD Method Response don't have body content */
 			/* *mResponseContent += createResponseBody(); */
@@ -47,8 +48,8 @@ std::string *HEADResponse::getResponse()
 
 		if (getStatusCode() != 0)
 		{
-			delete mResponseContent;
-			mResponseContent = NULL;
+			delete responseContent;
+			responseContent = NULL;
 		}
 		else
 			setStatusCode(200);
@@ -57,8 +58,13 @@ std::string *HEADResponse::getResponse()
 	{
 		logger::println(TAG, e.what());
 		setStatusCode(500);
+<<<<<<< Updated upstream
 		delete mResponseContent;
 		mResponseContent = NULL;
+=======
+		delete responseContent;
+		responseContent = NULL;
+>>>>>>> Stashed changes
 	}
-	return (mResponseContent);
+	return (responseContent);
 }

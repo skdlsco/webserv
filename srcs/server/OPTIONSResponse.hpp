@@ -12,11 +12,10 @@ class OPTIONSResponse : public Response
 		OPTIONSResponse();
 	protected:
 		std::string mContentLocation;
-		std::string *mResponseContent;
 
 		virtual std::string *getResponse();
-		void appendResponseHeader();
-		void appendResponseBody();
+		void appendResponseHeader(std::string & responseContent);
+		void appendResponseBody(std::string & responseContent);
 	public:
 		static std::string const TAG;
 		OPTIONSResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);

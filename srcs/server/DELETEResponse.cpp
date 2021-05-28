@@ -51,43 +51,20 @@ std::string *DELETEResponse::getResponse()
 	return (responseContent);
 }
 
-bool DELETEResponse::isPathExist(std::string const & path)
-{
-	struct stat buf;
-
-	if (stat(path.c_str(), &buf) == -1)
-		return (false);
-	return (true);
-}
-
-bool DELETEResponse::isFolder(std::string const & path)
-{
-	struct stat buf;
-
-	stat(path.c_str(), &buf);
-	return (buf.st_mode & S_IFDIR);
-}
-
-bool DELETEResponse::isFileExist(std::string const & path)
-{
-	struct stat buf;
-
-	return (stat(path.c_str(), &buf) == 0);
-}
-
 void DELETEResponse::checkTarget()
 {
 	std::string path = getLocationConfig()->getRoot() + getTarget();
 
 	path = web::removeConsecutiveDuplicate(path, '/');
-	if (!isPathExist(path))
+
+	if (!web::isFilePath(path) || !web::isFileExist(path))
 	{
+		/* 폴더인 경우에도 404를 띄우는게 맞을까요? */
 		setStatusCode(404);
 		return ;
 	}
-	else if (isFolder(path) || !isFileExist(path))
+	else if (!web::isFileExist(path))
 	{
-		/* 폴더인 경우에도 404를 띄우는게 맞을까요? */
 		setStatusCode(404);
 		return ;
 	}

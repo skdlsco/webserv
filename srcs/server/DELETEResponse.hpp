@@ -5,9 +5,7 @@
 #include <string>
 #include "Response.hpp"
 #include "file/File.hpp"
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#include "utils/HTTP.hpp"
 
 class DELETEResponse : public Response
 {
@@ -22,9 +20,6 @@ class DELETEResponse : public Response
 		virtual ~DELETEResponse();
 
 		std::string *getResponse();
-		bool isPathExist(std::string const & path);
-		bool isFolder(std::string const & path);
-		bool isFileExist(std::string const & path);
 		void deleteFile();
 		void checkTarget();
 		void appendResponseHeader(std::string &responseContent);

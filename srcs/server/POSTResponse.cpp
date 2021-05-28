@@ -81,29 +81,9 @@ void POSTResponse::checkAuthorization()
 	}
 }
 
-bool POSTResponse::isFolderExist(std::string const & path)
-{
-	struct stat buf;
-
-	/* 경로가 존재하지 않는 경우 */
-	if (stat(path.c_str(), &buf) == -1)
-		return (false);
-	/* 아래 checkTarget()에서 !isFolderExist()를 통해 폴더/경로존재x의 경우에 404를 띄우는데요, */
-	/* 이때 폴더인 경우에 404를 띄우기 위해 AND 연산의 결과가 0이어야 합니다. */
-	/* 아니면 함수를 하나 빼는 것도 나쁘지 않겠네요. 리뷰 달 때 어떤게 좋을지 달아주세요. */
-	return (!(buf.st_mode & S_IFDIR));
-}
-
-bool POSTResponse::isFileExist(std::string const & path)
-{
-	struct stat buf;
-
-	return (stat(path.c_str(), &buf) == 0);
-}
-
 void POSTResponse::createFileName(std::string const & path)
 {
-	if (!isFileExist(path))
+	if (!web::isFileExist(path))
 	{
 		mFileName = path;
 		return ;
@@ -112,7 +92,7 @@ void POSTResponse::createFileName(std::string const & path)
 	while (number > 0)
 	{
 		std::string fileName = path + " (" + web::toString(number) + ")";
-		if (!isFileExist(fileName))
+		if (!web::isFileExist(fileName))
 		{
 			mFileName = fileName;
 			return ;
@@ -131,8 +111,8 @@ void POSTResponse::checkTarget()
 	std::string folder = path.substr(0, slashIdx);
 	std::string file = path.substr(slashIdx + 1);
 
-	/* 폴더인 경우, 경로가 존재하지 않는 경우 404 */
-	if (file.empty() || !isFolderExist(folder))
+	/* 폴더인 경우, 경로가 존재하지 않는 경우 (파일 경로가 아닌경우) 404 */
+	if (file.empty() || !web::isFilePath(folder))
 	{
 		setStatusCode(404);
 		return ;

@@ -4,8 +4,7 @@ std::string const GETResponse::TAG = "GETResponse";
 
 GETResponse::GETResponse(const ServerConfig * serverConfig,
 						const LocationConfig * locationConfig)
-: Response(serverConfig, locationConfig), mState(INDEX_HTML), mContentLocation(""), 
-	mResponseContent(NULL)
+: Response(serverConfig, locationConfig), mState(INDEX_HTML), mContentLocation("")
 {
 	int fd;
 
@@ -40,41 +39,36 @@ GETResponse &GETResponse::operator=(GETResponse const & rhs)
 	{
 		mContentLocation = rhs.mContentLocation;
 		mState = rhs.mState;
-
-		delete mResponseContent;
-		mResponseContent = new std::string();
-		*mResponseContent = *rhs.mResponseContent;
 	}
 	return (*this);
 }
 
 GETResponse::~GETResponse()
 {
-	if (mResponseContent)
-		delete mResponseContent;
+
 }
 
 std::string *GETResponse::getResponse()
 {
 	std::string responseBody;
-
+	std::string *responseContent;
 	try
 	{
-		mResponseContent = new std::string();
-		if (mResponseContent)
+		responseContent = new std::string();
+		if (responseContent)
 		{
 			setContentLocation();
 			responseBody = createResponseBody();
 
-			*mResponseContent += createResponseLine();
-			createResponseHeader(responseBody);
-			*mResponseContent += responseBody;
+			*responseContent += createResponseLine();
+			createResponseHeader(responseBody, *responseContent);
+			*responseContent += responseBody;
 		}
 
 		if (getStatusCode() != 0)
 		{
-			delete mResponseContent;
-			mResponseContent = NULL;
+			delete responseContent;
+			responseContent = NULL;
 		}
 		else
 			setStatusCode(200);
@@ -83,35 +77,40 @@ std::string *GETResponse::getResponse()
 	{
 		logger::println(TAG, e.what());
 		setStatusCode(500);
+<<<<<<< Updated upstream
 		delete mResponseContent;
 		mResponseContent = NULL;
+=======
+		delete responseContent;
+		responseContent = NULL;
+>>>>>>> Stashed changes
 	}
-	return (mResponseContent);
+	return (responseContent);
 }
 
-void GETResponse::createResponseHeader(std::string const & responseBody)
+void GETResponse::createResponseHeader(std::string const & responseBody, std::string & responseContent)
 {
 	/* default header */
-	*mResponseContent += "Date: " + web::getDate() + "\r\n";
-	*mResponseContent += "Server: webserv (chlee, ina)\r\n";
-	*mResponseContent += "Connection: close\r\n";
+	responseContent += "Date: " + web::getDate() + "\r\n";
+	responseContent += "Server: webserv (chlee, ina)\r\n";
+	responseContent += "Connection: close\r\n";
 
 	/* content part */
-	*mResponseContent += "Content-Language: en-US\r\n";
-	*mResponseContent += "Content-Length: " + web::toString(responseBody.length()) + "\r\n";
+	responseContent += "Content-Language: en-US\r\n";
+	responseContent += "Content-Length: " + web::toString(responseBody.length()) + "\r\n";
 
 	if (mState != AUTOINDEX)
-		*mResponseContent += "Content-Location: " + mContentLocation;
+		responseContent += "Content-Location: " + mContentLocation;
 
 	if (mContentLocation.find_last_of('.') != std::string::npos)
-		*mResponseContent += "Content-Type: " + web::getMIMEType(mContentLocation.substr(mContentLocation.find_last_of('.'))) + "\r\n";
+		responseContent += "Content-Type: " + web::getMIMEType(mContentLocation.substr(mContentLocation.find_last_of('.'))) + "\r\n";
 	else
-		*mResponseContent += "Content-Type: text/plain\r\n";
+		responseContent += "Content-Type: text/plain\r\n";
 
 	if (mState != AUTOINDEX)
-		*mResponseContent += "Last-Modified: " + web::getLastModifiedTime(mContentLocation) + "\r\n";
+		responseContent += "Last-Modified: " + web::getLastModifiedTime(mContentLocation) + "\r\n";
 
-	*mResponseContent += "\r\n";
+	responseContent += "\r\n";
 }
 
 void GETResponse::setContentLocation()
