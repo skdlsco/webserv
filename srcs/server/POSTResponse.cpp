@@ -111,8 +111,11 @@ void POSTResponse::checkTarget()
 	std::string folder = path.substr(0, slashIdx);
 	std::string file = path.substr(slashIdx + 1);
 
-	/* 폴더인 경우, 경로가 존재하지 않는 경우 (파일 경로가 아닌경우) 404 */
-	if (file.empty() || !web::isPathExist(path) && web::isDirectory(folder))
+	/* POST가 원래 file을 그냥 생성하는 것이었는데
+	   target이 항상 폴더여야 하고, 이름을 내부에서 정하는 것으로 하는게 맞는 것 같아서 고민이 되네요 */
+	/* file.empty() : 생성할 file 이름이 없는 경우.. */
+	/* isDirectory : folder 경로가 존재하지 않는 경우 404 */
+	if (file.empty() || !web::isDirectory(folder))
 	{
 		setStatusCode(404);
 		return ;
