@@ -109,7 +109,7 @@ void GETResponse::createResponseHeader(std::string const & responseBody)
 		*mResponseContent += "Content-Type: text/plain\r\n";
 
 	if (mState != AUTOINDEX)
-		*mResponseContent += "Last-Modified: " + web::getDate() + "\r\n";
+		*mResponseContent += "Last-Modified: " + web::getLastModifiedTime(mContentLocation) + "\r\n";
 
 	*mResponseContent += "\r\n";
 }
