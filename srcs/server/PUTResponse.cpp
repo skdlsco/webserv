@@ -87,19 +87,13 @@ void PUTResponse::checkTarget()
 
 	path = web::removeConsecutiveDuplicate(path, '/');
 
-	if (path.length() == 0)
-	{
-		setStatusCode(404);
-		return ;
-	}
-	if (path[path.length() - 1] == '/')
-		path = path.substr(0, path.length() - 1);
-	
 	int slashIdx = path.find_last_of("/");
 	std::string folder = path.substr(0, slashIdx);
+	std::string file = path.substr(slashIdx + 1);
 
-	/* 폴더인 경우, 경로가 존재하지 않는 경우 404 */
-	if (!web::isPathExist(path) || web::isDirectory(folder))
+	/* file.empty() : PUT할 file에 대한 input이 없는경우 */
+	/* isDirectory : folder 경로가 존재하지 않는 경우 404 */
+	if (file.empty() || !web::isDirectory(folder))
 	{
 		setStatusCode(404);
 		return ;
