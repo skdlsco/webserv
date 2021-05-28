@@ -11,9 +11,7 @@ std::string *ResponseFactory::create(Request &request, const ServerConfig *confi
 		ResponseFactory responseFactory(request, config);
 		response = responseFactory.createResponse();
 		if (response)
-		{
 			result = response->getResponse();
-		}
 		if (result == NULL)
 		{
 			Response *errorResponse = responseFactory.createErrorResponse();
@@ -44,8 +42,8 @@ std::string *ResponseFactory::create(Request &request, const ServerConfig *confi
 }
 
 ResponseFactory::ResponseFactory(Request &request, const ServerConfig *config)
-: mResponseState(METHOD), mResponse(NULL),
-	mRequest(request), mServerConfig(config), mLocationConfig(NULL), mStatusCode(0)
+: mResponseState(METHOD), mRequest(request),
+	mServerConfig(config), mLocationConfig(NULL), mStatusCode(0)
 {
 	checkRequestErrorCode();
 }
@@ -64,7 +62,7 @@ Response *ResponseFactory::createResponse()
 	checkLocationURI();
 	checkLocationCGI();
 	checkLocationMethodList();
-
+	logger::print(TAG) << mRequest.getMethod() << " " << mRequest.getTarget() << std::endl;
 	try
 	{
 		if (mResponseState == CGI)
@@ -179,8 +177,7 @@ void ResponseFactory::checkLocationMethodList()
 
 Response *ResponseFactory::createErrorResponse()
 {
-	mResponse = new ErrorResponse(mServerConfig, mLocationConfig);
-	return (mResponse);
+	return (new ErrorResponse(mServerConfig, mLocationConfig));
 }
 
 Response *ResponseFactory::createCGIResponse()
@@ -194,23 +191,22 @@ Response *ResponseFactory::createCGIResponse()
 Response *ResponseFactory::createMethodResponse()
 {
 	std::string method = mRequest.getMethod();
-
 	/* Meaningless Code */
 	if (mResponseState != METHOD)
 		return (NULL);
 
 	/* will changed */
-	// if (method == web::method[web::Method::GET])
-	// 	// mResponse = new GETResponse(mServerManager, mServerConfig, mLocationConfig));
-	// else if (method == web::method[web::Method::HEAD])
-	// 	// mResponse = new HEADResponse(mServerManager, mServerConfig, mLocationConfig));
-	// else if (method == web::method[web::Method::PUT])
-	// 	// mResponse = new PUTResponse(mServerManager, mServerConfig, mLocationConfig));
-	// else if (method == web::method[web::Method::POST])
-	// 	// mResponse = new POSTResponse(mServerManager, mServerConfig, mLocationConfig));
-	// else if (method == web::method[web::Method::OPTIONS])
-	// 	// mResponse = new OPTIONSResponse(mServerManager, mServerConfig, mLocationConfig));
-	// else if (method == web::method[web::Method::DELETE])
-	// 	// mResponse = new DELETEResponse(mServerManager, mServerConfig, mLocationConfig));
+	if (method == web::method[web::GET])
+		return (new GETResponse(mServerConfig, mLocationConfig));
+	else if (method == web::method[web::PUT])
+		return (new PUTResponse(mServerConfig, mLocationConfig));
+	else if (method == web::method[web::HEAD])
+		return (new HEADResponse(mServerConfig, mLocationConfig));
+	else if (method == web::method[web::POST])
+		return (new POSTResponse(mServerConfig, mLocationConfig));
+	else if (method == web::method[web::OPTIONS])
+		return (new OPTIONSResponse(mServerConfig, mLocationConfig));
+	else if (method == web::method[web::DELETE])
+		return (new DELETEResponse(mServerConfig, mLocationConfig));
 	return (NULL);
 }

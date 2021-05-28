@@ -7,6 +7,11 @@ SRC_NAME = main.cpp \
 			file/File.cpp \
 			server/Connection.cpp \
 			server/ErrorResponse.cpp \
+			server/GETResponse.cpp \
+			server/HEADResponse.cpp \
+			server/OPTIONSResponse.cpp \
+			server/POSTResponse.cpp \
+			server/PUTResponse.cpp \
 			server/Request.cpp \
 			server/Response.cpp \
 			server/ResponseFactory.cpp \

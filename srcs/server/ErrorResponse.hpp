@@ -11,23 +11,22 @@
 class ErrorResponse : public Response
 {
 	private:
-		std::string *mResponseContent;
 		bool mIsDefault;
 		File mFile;
 
 		ErrorResponse();
-		ErrorResponse(ErrorResponse const & copy);
-		ErrorResponse &operator=(ErrorResponse const & rhs);
 
 		void setErrorToDefault();
 		std::string getAllowMethod();
-		void createResponseHeader();
-		void createResponseBody();
+		void createResponseHeader(std::string *responseContent);
+		void createResponseBody(std::string *responseContent);
 		void createUserErrorPage();
 	public:
 		static std::string const TAG;
 
 		ErrorResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);
+		ErrorResponse(ErrorResponse const & copy);
+		ErrorResponse &operator=(ErrorResponse const & rhs);
 		virtual ~ErrorResponse();
 
 		virtual std::string *getResponse();
