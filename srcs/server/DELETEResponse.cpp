@@ -57,14 +57,9 @@ void DELETEResponse::checkTarget()
 
 	path = web::removeConsecutiveDuplicate(path, '/');
 
-	if (!web::isPathExist(path) || !web::isDirectory(path))
+	if (!web::isPathExist(path) || web::isDirectory(path))
 	{
 		/* 폴더인 경우에도 404를 띄우는게 맞을까요? */
-		setStatusCode(404);
-		return ;
-	}
-	else if (!web::isFileExist(path))
-	{
 		setStatusCode(404);
 		return ;
 	}

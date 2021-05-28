@@ -5,7 +5,7 @@
 #include <string>
 #include "Response.hpp"
 #include "file/File.hpp"
-#include "utils/HTTP.hpp"
+#include "utils/String.hpp"
 
 class DELETEResponse : public Response
 {
