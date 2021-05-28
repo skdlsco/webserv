@@ -60,7 +60,7 @@ bool DELETEResponse::isPathExist(std::string const & path)
 	return (true);
 }
 
-bool DELETEResponse::isFolder(std::string path)
+bool DELETEResponse::isFolder(std::string const & path)
 {
 	struct stat buf;
 
@@ -68,7 +68,7 @@ bool DELETEResponse::isFolder(std::string path)
 	return (buf.st_mode & S_IFDIR);
 }
 
-bool DELETEResponse::isFileExist(std::string path)
+bool DELETEResponse::isFileExist(std::string const & path)
 {
 	struct stat buf;
 
@@ -85,14 +85,9 @@ void DELETEResponse::checkTarget()
 		setStatusCode(404);
 		return ;
 	}
-	if (isFolder(path))
+	else if (isFolder(path) || !isFileExist(path))
 	{
 		/* 폴더인 경우에도 404를 띄우는게 맞을까요? */
-		setStatusCode(404);
-		return ;
-	}
-	else if (!isFileExist(path))
-	{
 		setStatusCode(404);
 		return ;
 	}

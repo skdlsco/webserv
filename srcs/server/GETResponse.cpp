@@ -82,6 +82,7 @@ std::string *GETResponse::getResponse()
 	catch(const std::exception& e)
 	{
 		logger::println(TAG, e.what());
+		setStatusCode(500);
 		delete mResponseContent;
 		mResponseContent = NULL;
 	}
@@ -105,7 +106,7 @@ void GETResponse::createResponseHeader(std::string const & responseBody)
 	if (mContentLocation.find_last_of('.') != std::string::npos)
 		*mResponseContent += "Content-Type: " + web::getMIMEType(mContentLocation.substr(mContentLocation.find_last_of('.'))) + "\r\n";
 	else
-		*mResponseContent += "Content-Type: text/html\r\n";
+		*mResponseContent += "Content-Type: text/plain\r\n";
 
 	if (mState != AUTOINDEX)
 		*mResponseContent += "Last-Modified: " + web::getDate() + "\r\n";
@@ -116,7 +117,10 @@ void GETResponse::createResponseHeader(std::string const & responseBody)
 void GETResponse::setContentLocation()
 {
 	if (mState == INDEX_HTML)
+	{
 		mContentLocation = getLocationConfig()->getRoot() + getLocationConfig()->getIndexFile();
+		mContentLocation = web::removeConsecutiveDuplicate(mContentLocation, '/');
+	}
 	else if (mState == TARGET)
 		mContentLocation = getTarget();
 }
@@ -157,6 +161,7 @@ std::string GETResponse::makeAutoIndexContent()
 		autoIndexContent += "<br>";
 	}
 	autoIndexContent += "</pre><hr></body></html>";
+	closedir(directoryPointer);
 	return (autoIndexContent);
 }
 

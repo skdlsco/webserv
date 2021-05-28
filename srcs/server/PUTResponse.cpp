@@ -87,7 +87,7 @@ bool PUTResponse::isFolderExist(std::string path)
 
 	if (stat(path.c_str(), &buf) == -1)
 		return (false);
-	return (buf.st_mode & S_IFDIR);
+	return (!(buf.st_mode & S_IFDIR));
 }
 
 bool PUTResponse::isFileExist(std::string path)
@@ -102,8 +102,8 @@ void PUTResponse::checkTarget()
 	std::string path = getLocationConfig()->getRoot() + getTarget();
 
 	path = web::removeConsecutiveDuplicate(path, '/');
-	if (path.back() == '/')
-		path.pop_back();
+	if (path[path.length() - 1] == '/')
+		path = path.substr(0, path.length() - 1);
 	int slashIdx = path.find_last_of("/");
 
 	std::string folder = path.substr(0, slashIdx);

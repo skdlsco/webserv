@@ -23,8 +23,8 @@ class DELETEResponse : public Response
 
 		std::string *getResponse();
 		bool isPathExist(std::string const & path);
-		bool isFolder(std::string path);
-		bool isFileExist(std::string path);
+		bool isFolder(std::string const & path);
+		bool isFileExist(std::string const & path);
 		void deleteFile();
 		void checkTarget();
 		void appendResponseHeader(std::string &responseContent);

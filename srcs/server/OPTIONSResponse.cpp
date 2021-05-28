@@ -41,6 +41,7 @@ std::string *OPTIONSResponse::getResponse()
 	catch(const std::exception& e)
 	{
 		logger::println(TAG, e.what());
+		setStatusCode(500);
 		delete mResponseContent;
 		mResponseContent = NULL;
 	}
@@ -56,7 +57,6 @@ void OPTIONSResponse::appendResponseHeader()
 
 	/* content part */
 	*mResponseContent += "Content-Length: 0\r\n";
-	*mResponseContent += "Content-Type: text/html\r\n";
 	*mResponseContent += "Content-Language: en-US\r\n";
 
 	*mResponseContent += "Allow: ";

@@ -56,6 +56,7 @@ std::string *HEADResponse::getResponse()
 	catch(const std::exception& e)
 	{
 		logger::println(TAG, e.what());
+		setStatusCode(500);
 		delete mResponseContent;
 		mResponseContent = NULL;
 	}
