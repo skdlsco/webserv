@@ -14,6 +14,7 @@
 #include "server/POSTResponse.hpp"
 #include "server/PUTResponse.hpp"
 #include "server/OPTIONSResponse.hpp"
+#include "server/DELETEResponse.hpp"
 #include "utils/String.hpp"
 #include "utils/Method.hpp"
 
