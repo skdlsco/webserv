@@ -3,7 +3,7 @@
 
 #include "Response.hpp"
 #include "utils/Auth.hpp"
-#include "utils/HTTP.hpp"
+#include "utils/String.hpp"
 
 class PUTResponse : public Response
 {

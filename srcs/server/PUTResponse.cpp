@@ -99,7 +99,7 @@ void PUTResponse::checkTarget()
 	std::string folder = path.substr(0, slashIdx);
 
 	/* 폴더인 경우, 경로가 존재하지 않는 경우 404 */
-	if (!web::isFilePath(folder))
+	if (web::isDirectory(folder))
 	{
 		setStatusCode(404);
 		return ;
@@ -109,7 +109,7 @@ void PUTResponse::checkTarget()
 
 void PUTResponse::writeFile()
 {
-	bool isExist = web::isFileExist(mFileName);
+	bool isExist = web::isPathExist(mFileName);
 	int fd = open(mFileName.c_str(), O_CREAT | O_WRONLY);
 	if (fd == -1)
 	{

@@ -58,8 +58,8 @@ void OPTIONSResponse::appendResponseHeader(std::string & responseContent)
 	responseContent += "Connection: close\r\n";
 
 	/* content part */
-	*mResponseContent += "Content-Length: 0\r\n";
-	*mResponseContent += "Content-Language: en-US\r\n";
+	responseContent += "Content-Length: 0\r\n";
+	responseContent += "Content-Language: en-US\r\n";
 
 	responseContent += "Allow: ";
 	for (size_t idx = 0; idx < getLocationConfig()->getAllowMethodList().size(); idx++)

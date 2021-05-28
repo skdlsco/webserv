@@ -58,13 +58,8 @@ std::string *HEADResponse::getResponse()
 	{
 		logger::println(TAG, e.what());
 		setStatusCode(500);
-<<<<<<< Updated upstream
-		delete mResponseContent;
-		mResponseContent = NULL;
-=======
 		delete responseContent;
 		responseContent = NULL;
->>>>>>> Stashed changes
 	}
 	return (responseContent);
 }
