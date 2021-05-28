@@ -116,7 +116,6 @@ std::string web::getStatusMessage(int statusCode)
 	return (web::STATUS_MESSAGE_UNDEFINED);
 }
 
-
 std::string web::getErrorPage(int statusCode)
 {
 	switch (statusCode)

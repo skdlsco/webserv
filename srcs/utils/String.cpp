@@ -290,3 +290,20 @@ std::string web::removeConsecutiveDuplicate(std::string const str, char c)
 	}
 	return (result);
 }
+
+bool web::isDirectory(std::string const & path)
+{
+	struct stat buf;
+
+	if (stat(path.c_str(), &buf) == -1)
+		return (false);
+
+	return (buf.st_mode & S_IFDIR);
+}
+
+bool web::isPathExist(std::string const & path)
+{
+	struct stat buf;
+
+	return (stat(path.c_str(), &buf) == 0);
+}

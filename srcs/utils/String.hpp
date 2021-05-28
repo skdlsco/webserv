@@ -5,6 +5,9 @@
 #include <string>
 #include <vector>
 #include <cstring>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 namespace web
 {
@@ -37,6 +40,9 @@ namespace web
 	std::string copyToLower(std::string const &str);
 
 	std::string removeConsecutiveDuplicate(std::string const str, char c);
+
+	bool isDirectory(std::string const & path);
+	bool isPathExist(std::string const & path);
 };
 
 #endif
