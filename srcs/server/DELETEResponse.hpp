@@ -22,6 +22,7 @@ class DELETEResponse : public Response
 		virtual ~DELETEResponse();
 
 		std::string *getResponse();
+		bool isPathExist(std::string const & path);
 		bool isFolder(std::string path);
 		bool isFileExist(std::string path);
 		void deleteFile();

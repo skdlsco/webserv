@@ -43,16 +43,28 @@ std::string *DELETEResponse::getResponse()
 	}
 	catch(const std::exception& e)
 	{
-		std::cerr << e.what() << '\n';
+		logger::println(TAG, e.what());
+		setStatusCode(500);
+		delete responseContent;
+		responseContent = NULL;
 	}
+	return (responseContent);
+}
+
+bool DELETEResponse::isPathExist(std::string const & path)
+{
+	struct stat buf;
+
+	if (stat(path.c_str(), &buf) == -1)
+		return (false);
+	return (true);
 }
 
 bool DELETEResponse::isFolder(std::string path)
 {
 	struct stat buf;
 
-	if (stat(path.c_str(), &buf) == -1)
-		return (false);
+	stat(path.c_str(), &buf);
 	return (buf.st_mode & S_IFDIR);
 }
 
@@ -68,8 +80,18 @@ void DELETEResponse::checkTarget()
 	std::string path = getLocationConfig()->getRoot() + getTarget();
 
 	path = web::removeConsecutiveDuplicate(path, '/');
-	/* 폴더인 경우, 경로가 존재하지 않는 경우 404 */
+	if (!isPathExist(path))
+	{
+		setStatusCode(404);
+		return ;
+	}
 	if (isFolder(path))
+	{
+		/* 폴더인 경우에도 404를 띄우는게 맞을까요? */
+		setStatusCode(404);
+		return ;
+	}
+	else if (!isFileExist(path))
 	{
 		setStatusCode(404);
 		return ;
