@@ -6,6 +6,9 @@
 #include <unistd.h>
 #include <string>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 namespace web
 {
@@ -13,6 +16,7 @@ namespace web
 	long getNowTime();
 	std::string getDate();
 	std::string getFileTime();
+	std::string getLastModifiedTime(std::string & path);
 };
 
 #endif
