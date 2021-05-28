@@ -12,6 +12,7 @@ SRC_NAME = main.cpp \
 			server/OPTIONSResponse.cpp \
 			server/POSTResponse.cpp \
 			server/PUTResponse.cpp \
+			server/DELETEResponse.cpp \
 			server/Request.cpp \
 			server/Response.cpp \
 			server/ResponseFactory.cpp \

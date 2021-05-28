@@ -23,9 +23,7 @@ class GETResponse : public Response
 	protected:
 		enum state mState;
 		std::string mContentLocation;
-		std::string *mResponseContent;
-		virtual std::string *getResponse();
-		void createResponseHeader(std::string const & responseBody);
+		void createResponseHeader(std::string const & responseBody, std::string & responseContent);
 		std::string createResponseBody();
 	public:
 		static std::string const TAG;
@@ -38,6 +36,8 @@ class GETResponse : public Response
 		void setContentLocation();
 		std::string makeAutoIndexContent();
 		std::string readContentLocation();
+
+		virtual std::string *getResponse();
 };
 
 #endif

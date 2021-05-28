@@ -81,25 +81,9 @@ void POSTResponse::checkAuthorization()
 	}
 }
 
-bool POSTResponse::isFolderExist(std::string path)
+void POSTResponse::createFileName(std::string const & path)
 {
-	struct stat buf;
-
-	if (stat(path.c_str(), &buf) == -1)
-		return (false);
-	return (buf.st_mode & S_IFDIR);
-}
-
-bool POSTResponse::isFileExist(std::string path)
-{
-	struct stat buf;
-
-	return (stat(path.c_str(), &buf) == 0);
-}
-
-void POSTResponse::createFileName(std::string path)
-{
-	if (!isFileExist(path))
+	if (!web::isPathExist(path))
 	{
 		mFileName = path;
 		return ;
@@ -108,7 +92,7 @@ void POSTResponse::createFileName(std::string path)
 	while (number > 0)
 	{
 		std::string fileName = path + " (" + web::toString(number) + ")";
-		if (!isFileExist(fileName))
+		if (!web::isPathExist(fileName))
 		{
 			mFileName = fileName;
 			return ;
@@ -127,8 +111,8 @@ void POSTResponse::checkTarget()
 	std::string folder = path.substr(0, slashIdx);
 	std::string file = path.substr(slashIdx + 1);
 
-	/* 폴더인 경우, 경로가 존재하지 않는 경우 404 */
-	if (file.empty() || !isFolderExist(folder))
+	/* 폴더인 경우, 경로가 존재하지 않는 경우 (파일 경로가 아닌경우) 404 */
+	if (file.empty() || web::isDirectory(folder))
 	{
 		setStatusCode(404);
 		return ;
