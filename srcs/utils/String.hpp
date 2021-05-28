@@ -41,8 +41,8 @@ namespace web
 
 	std::string removeConsecutiveDuplicate(std::string const str, char c);
 
-	bool isPathExist(std::string const & path);
 	bool isDirectory(std::string const & path);
+	bool isPathExist(std::string const & path);
 };
 
 #endif

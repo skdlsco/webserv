@@ -291,17 +291,17 @@ std::string web::removeConsecutiveDuplicate(std::string const str, char c)
 	return (result);
 }
 
-bool web::isPathExist(std::string const & path)
+bool web::isDirectory(std::string const & path)
 {
 	struct stat buf;
 
 	if (stat(path.c_str(), &buf) == -1)
 		return (false);
 
-	return (!(buf.st_mode & S_IFDIR));
+	return (buf.st_mode & S_IFDIR);
 }
 
-bool web::isDirectory(std::string const & path)
+bool web::isPathExist(std::string const & path)
 {
 	struct stat buf;
 
