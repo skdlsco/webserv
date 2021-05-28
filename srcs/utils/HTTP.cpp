@@ -116,7 +116,6 @@ std::string web::getStatusMessage(int statusCode)
 	return (web::STATUS_MESSAGE_UNDEFINED);
 }
 
-
 std::string web::getErrorPage(int statusCode)
 {
 	switch (statusCode)
@@ -353,4 +352,23 @@ std::string web::getMIMEType(std::string const & extension)
 		return (web::MIMETYPE_7Z);
 
 	return ("text/plain");
+}
+
+/* 사용법이 검증을 위해 !isFileExist()로 쓰이다 보니.. path가 열리지 않고, file이면 false를 리턴해야 함. */
+/* 함수명에 대해서는 고민을 좀 더 해봐야 할듯.. FileExist인데 DIR이면 true가 아닌 false를 리턴하는 것도 그렇고.. */
+bool web::isFilePath(std::string const & path)
+{
+	struct stat buf;
+
+	if (stat(path.c_str(), &buf) == -1)
+		return (false);
+
+	return (!(buf.st_mode & S_IFDIR));
+}
+
+bool web::isFileExist(std::string const & path)
+{
+	struct stat buf;
+
+	return (stat(path.c_str(), &buf) == 0);
 }

@@ -2,12 +2,17 @@
 # define HTTP_HPP
 
 #include <string>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 namespace web
 {
 	std::string getMIMEType(std::string const & extension);
 	std::string getStatusMessage(int statusCode);
 	std::string getErrorPage(int statusCode);
+	bool isFilePath(std::string const & path);
+	bool isFileExist(std::string const & path);
 
 	std::string const STATUS_MESSAGE_100 = "Continue";
 	std::string const ERROR_PAGE_100 =
