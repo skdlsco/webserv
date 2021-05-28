@@ -39,7 +39,13 @@ void Connection::createResponseBuffer()
 
 void Connection::onRepeat()
 {
-	//getNowTime() - mStartTime > TIMEOUT ? ERROR
+	/* getNowTime() - mStartTime > TIMEOUT ? ERROR */
+	if (web::getNowTime() - mStartTime > TIMEOUT)
+	{
+		mWriteBuffer = ResponseFactory::createTimeoutResponse(mRequest, mRequest.getConfig());
+		if (mWriteBuffer == NULL)
+			finish();
+	}
 }
 
 std::vector<ServerConfig *> const &Connection::getConfig() const
