@@ -41,6 +41,25 @@ std::string *ResponseFactory::create(Request &request, const ServerConfig *confi
 	return (result);
 }
 
+std::string *ResponseFactory::createTimeoutResponse(Request &request, const ServerConfig *config)
+{
+	ResponseFactory responseFactory(request, config);
+	Response *errorResponse = responseFactory.createErrorResponse();
+	std::string *result = NULL;
+	
+	if (errorResponse)
+	{
+		errorResponse->setTarget(request.getTarget());
+		errorResponse->setRequestHeader(request.getField());
+		errorResponse->setRequestBody(request.getBody());
+		errorResponse->setStatusCode(408);
+
+		result = errorResponse->getResponse();
+		delete errorResponse;
+	}
+	return (result);
+}
+
 ResponseFactory::ResponseFactory(Request &request, const ServerConfig *config)
 : mResponseState(METHOD), mRequest(request),
 	mServerConfig(config), mLocationConfig(NULL), mStatusCode(0)

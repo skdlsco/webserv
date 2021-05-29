@@ -39,6 +39,7 @@ class ResponseFactory
 		static std::string const TAG;
 
 		static std::string *create(Request &request, const ServerConfig *config);
+		static std::string *createTimeoutResponse(Request &request, const ServerConfig *config);
 		ResponseFactory(Request &request, const ServerConfig *config);
 		virtual ~ResponseFactory();
 

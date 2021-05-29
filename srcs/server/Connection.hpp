@@ -32,6 +32,7 @@ class Connection : public ServerComponent
 				void onExceptSet();
 		};
 	private:
+		static const int TIMEOUT = 120;
 		static const int BUFFER_SIZE = 1024;
 		ConnectionAction mFDListener;
 		Request mRequest;
