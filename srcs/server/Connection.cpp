@@ -42,6 +42,8 @@ void Connection::onRepeat()
 	/* getNowTime() - mStartTime > TIMEOUT ? ERROR */
 	if (web::getNowTime() - mStartTime > TIMEOUT)
 	{
+		if (mWriteBuffer)
+			delete mWriteBuffer;
 		mWriteBuffer = ResponseFactory::createTimeoutResponse(mRequest, mRequest.getConfig());
 		if (mWriteBuffer == NULL)
 			finish();
