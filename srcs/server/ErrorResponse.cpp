@@ -4,9 +4,9 @@ std::string const ErrorResponse::TAG = "ErrorResponse";
 
 ErrorResponse::ErrorResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig)
 : Response(serverConfig, locationConfig), mIsDefault(false),
-	mFile(getServerConfig()->getDefaultErrorPagePath())
+	mFile(web::removeConsecutiveDuplicate(getServerConfig()->getRoot() + getServerConfig()->getDefaultErrorPagePath(), '/'))
 {
-
+	
 }
 
 ErrorResponse::~ErrorResponse()

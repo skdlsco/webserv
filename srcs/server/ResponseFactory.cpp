@@ -31,6 +31,7 @@ std::string *ResponseFactory::create(Request &request, const ServerConfig *confi
 			response = errorResponse;
 			result = response->getResponse();
 		}
+		logger::println(TAG, *result);
 		return (result);
 	}
 	catch(const std::exception& e)
@@ -176,7 +177,6 @@ void ResponseFactory::checkLocationMethodList()
 		return ;
 
 	bool findMethod = false;
-	logger::print(TAG) << mLocationConfig->getCGIPath() << std::endl;
 	std::vector<std::string> methodList = mLocationConfig->getAllowMethodList();
 	std::string requestMethod = mRequest.getMethod();
 
@@ -201,8 +201,6 @@ Response *ResponseFactory::createErrorResponse()
 
 Response *ResponseFactory::createCGIResponse()
 {
-	if (mResponseState != CGI)
-		return (NULL);
 	// return (new CGIResponse(mServerManager)));
 	return (NULL);
 }
@@ -210,9 +208,6 @@ Response *ResponseFactory::createCGIResponse()
 Response *ResponseFactory::createMethodResponse()
 {
 	std::string method = mRequest.getMethod();
-	/* Meaningless Code */
-	if (mResponseState != METHOD)
-		return (NULL);
 
 	/* will changed */
 	if (method == web::method[web::GET])
