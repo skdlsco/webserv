@@ -62,7 +62,9 @@ bool ConfigValidator::isScopeMatched()
 
 	for (size_t i = 0; i < mEachConfigLine.size(); i++)
 	{
-		currentLine = mEachConfigLine[i];
+		web::ltrim(currentLine, " \t");
+		if (currentLine[0] == '#')
+			continue;
 		if (currentLine.find('{') != std::string::npos || 
 			currentLine.find('}') != std::string::npos)
 		{

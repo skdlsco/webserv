@@ -11,20 +11,11 @@ int main(void)
 
 	try
 	{
-		ConfigManager configManager("configs/validate_ina.conf");
+		ConfigManager configManager("configs/validate.conf");
 		if (configManager.isConfigValidate())
 		{
 			configList = configManager.parseConfigFile();
 			std::cout << "configList size : " << configList.size() << std::endl;
-
-			for (size_t i = 0; i < configList.size(); i++)
-			{
-				std::cout << configList[i].size() << std::endl;
-			}
-
-			logger::print("MAIN") << std::endl;
-			logger::print("MAIN") << "configList[0][0].index : " << configList[0][0]->isAutoIndex() << std::endl;
-			logger::print("MAIN") << "configList[0][1].index : " << (configList[0][1]->getLocationList())["/test/"]->isAutoIndex() << std::endl;
 		}
 
 		for (size_t idx = 0; idx < configList.size(); idx++)
