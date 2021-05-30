@@ -202,6 +202,7 @@ void ConfigParser::setLocationConfigCommonDirective(LocationConfig * locationCon
 void ConfigParser::readConfigFileByLine()
 {
 	File file(mFilePath);
+	size_t commentIndex;
 	std::ifstream configFile;
 	std::string line;
 
@@ -209,9 +210,10 @@ void ConfigParser::readConfigFileByLine()
 	while (!file.isStateDone())
 	{
 		line = file.getLine();
-		web::trim(line);
-		if (line[0] == '#')
-			continue;
+		web::trim(line, " \t");
+		commentIndex = line.find('#');
+		if (commentIndex != std::string::npos)
+			line.erase(commentIndex);
 		if (line != "")
 			mEachConfigLine.push_back(line);
 	}
