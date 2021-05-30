@@ -72,7 +72,7 @@ long web::getNowTime()
 
 std::string web::getDate()
 {
-	char buffer[32];
+	char buffer[33];
 
 	bzero(buffer, sizeof(buffer));
 	struct timeval time;
@@ -87,7 +87,7 @@ std::string web::getDate()
 std::string web::getLastModifiedTime(std::string & path)
 {
 	struct stat sb;
-	char buffer[32];
+	char buffer[33];
 
 	bzero(buffer, sizeof(buffer));
 	stat(path.c_str(), &sb);
@@ -95,8 +95,8 @@ std::string web::getLastModifiedTime(std::string & path)
 	struct timeval time;
 	struct tm t;
 
-	time.tv_sec = sb.st_mtim.tv_sec;
-	time.tv_usec = sb.st_mtim.tv_nsec / 1000;
+	time.tv_sec = sb.st_mtimespec.tv_sec;
+	time.tv_usec = sb.st_mtimespec.tv_nsec / 1000;
 
 	t = web::timevalToTm(time);
 	strftime(buffer, sizeof(buffer), "%a, %d %b %Y %X GMT", &t);
@@ -111,7 +111,7 @@ std::string web::getFileTime()
 
 	struct timeval time;
 	struct tm t;
-	
+
 	gettimeofday(&time, NULL);
 	t = web::timevalToTm(time);
 	strftime(buffer, sizeof(buffer), "%d-%b-%Y %H:%M", &t);

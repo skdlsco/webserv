@@ -172,7 +172,14 @@ void Request::analyzeRequestLine(std::string line)
 		return ;
 	}
 	mMethod = lineElements[0];
-	mTarget = web::removeConsecutiveDuplicate(lineElements[1], '/');
+	std::string url = web::removeConsecutiveDuplicate(lineElements[1], '/');
+	size_t queryIdx = url.find("?");
+	mTarget = url;
+	if (queryIdx != url.npos)
+	{
+		mTarget = url.substr(0, queryIdx);
+		mQuery = url.substr(queryIdx + 1);
+	}
 	mAnalyzeLevel = HEADER;
 }
 
@@ -189,12 +196,12 @@ void Request::analyzeHeaderField(std::string line)
 	std::string value = line.substr(colonIndex + 1);
 
 	web::trim(value);
+	web::toUpper(key);
 	if (mField.find(key) != mField.end())
 	{
 		badRequest();
 		return ;
 	}
-	web::toUpper(key);
 	mField.insert(std::pair<std::string, std::string>(key, value));
 }
 
@@ -268,6 +275,11 @@ std::string Request::getMethod() const
 std::string Request::getTarget() const
 {
 	return (mTarget);
+}
+
+std::string Request::getQuery() const
+{
+	return (mQuery);
 }
 
 std::map<std::string, std::string> Request::getField() const

@@ -10,7 +10,7 @@ Response::Response(const ServerConfig * serverConfig, const LocationConfig * loc
 
 Response::~Response()
 {
-
+	mRequestHeader.clear();
 }
 
 Response::Response(Response const & copy)
@@ -55,6 +55,17 @@ void Response::setStatusCode(int statusCode)
 	mStatusCode = statusCode;
 }
 
+struct sockaddr_in Response::getClientAddr() const
+{
+	return (mClientAddr);
+}
+
+void Response::setClientAddr(struct sockaddr_in clientAddr)
+{
+	mClientAddr = clientAddr;
+}
+
+
 std::string Response::getTarget() const
 {
 	return (mTarget);
@@ -65,7 +76,27 @@ void Response::setTarget(std::string target)
 	mTarget = target;
 }
 
-std::map<std::string, std::string> Response::getRequestHeader() const
+std::string Response::getMethod() const
+{
+	return (mMethod);
+}
+
+void Response::setMethod(std::string method)
+{
+	mMethod = method;
+}
+
+std::string Response::getQuery() const
+{
+	return (mQuery);
+}
+
+void Response::setQuery(std::string query)
+{
+	mQuery = query;
+}
+
+std::map<std::string, std::string> const & Response::getRequestHeader() const
 {
 	return (mRequestHeader);
 }

@@ -1,6 +1,9 @@
 #ifndef RESPONSE_HPP
 # define RESPONSE_HPP
 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include <string>
 #include "ServerManager.hpp"
 #include "server/ServerComponent.hpp"
@@ -20,7 +23,10 @@ class Response
 	private:
 		int mStatusCode;
 		std::string mStatusMessage;
+		struct sockaddr_in mClientAddr;
 		std::string mTarget;
+		std::string mMethod;
+		std::string mQuery;
 		std::map<std::string, std::string> mRequestHeader;
 		std::string mRequestBody;
 		const ServerConfig *mServerConfig;
@@ -39,9 +45,15 @@ class Response
 
 		int getStatusCode() const;
 		void setStatusCode(int statusCode);
+		struct sockaddr_in getClientAddr() const;
+		void setClientAddr(struct sockaddr_in clientAddr);
 		std::string getTarget() const;
 		void setTarget(std::string target);
-		std::map<std::string, std::string> getRequestHeader() const;
+		std::string getMethod() const;
+		void setMethod(std::string method);
+		std::string getQuery() const;
+		void setQuery(std::string query);
+		std::map<std::string, std::string> const &getRequestHeader() const;
 		void setRequestHeader(std::map<std::string, std::string> requestHeader);
 		std::string getRequestBody() const;
 		void setRequestBody(std::string requestBody);

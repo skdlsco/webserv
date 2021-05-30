@@ -2,13 +2,15 @@
 
 std::string const ResponseFactory::TAG = "ResponseFactory";
 
-std::string *ResponseFactory::create(Request &request, const ServerConfig *config)
+std::string *ResponseFactory::create(struct sockaddr_in clientAddr,
+										Request &request,
+										const ServerConfig *config)
 {
 	std::string *result = NULL;
 	Response *response = NULL;
 	try
 	{
-		ResponseFactory responseFactory(request, config);
+		ResponseFactory responseFactory(clientAddr, request, config);
 		response = responseFactory.createResponse();
 		if (response)
 			result = response->getResponse();
@@ -41,12 +43,14 @@ std::string *ResponseFactory::create(Request &request, const ServerConfig *confi
 	return (result);
 }
 
-std::string *ResponseFactory::createTimeoutResponse(Request &request, const ServerConfig *config)
+std::string *ResponseFactory::createTimeoutResponse(struct sockaddr_in clientAddr,
+														Request &request,
+														const ServerConfig *config)
 {
-	ResponseFactory responseFactory(request, config);
+	ResponseFactory responseFactory(clientAddr, request, config);
 	Response *errorResponse = responseFactory.createErrorResponse();
 	std::string *result = NULL;
-	
+
 	if (errorResponse)
 	{
 		errorResponse->setTarget(request.getTarget());
@@ -60,8 +64,8 @@ std::string *ResponseFactory::createTimeoutResponse(Request &request, const Serv
 	return (result);
 }
 
-ResponseFactory::ResponseFactory(Request &request, const ServerConfig *config)
-: mResponseState(METHOD), mRequest(request),
+ResponseFactory::ResponseFactory(struct sockaddr_in clientAddr, Request &request, const ServerConfig *config)
+: mResponseState(METHOD), mRequest(request), mClientAddr(clientAddr),
 	mServerConfig(config), mLocationConfig(NULL), mStatusCode(0)
 {
 	checkRequestErrorCode();
@@ -81,7 +85,7 @@ Response *ResponseFactory::createResponse()
 	checkLocationURI();
 	checkLocationCGI();
 	checkLocationMethodList();
-	logger::print(TAG) << mRequest.getMethod() << " " << mRequest.getTarget() << std::endl;
+	logger::print(TAG) << web::toAddr(mClientAddr.sin_addr.s_addr) << " " << mRequest.getMethod() << " " << mRequest.getTarget() << mRequest.getQuery() << std::endl;
 	try
 	{
 		if (mResponseState == CGI)
@@ -98,6 +102,9 @@ Response *ResponseFactory::createResponse()
 		response->setTarget(mRequest.getTarget());
 		response->setRequestHeader(mRequest.getField());
 		response->setRequestBody(mRequest.getBody());
+		response->setQuery(mRequest.getQuery());
+		response->setMethod(mRequest.getMethod());
+		response->setClientAddr(mClientAddr);
 	}
 	return (response);
 }
@@ -203,8 +210,7 @@ Response *ResponseFactory::createCGIResponse()
 {
 	if (mResponseState != CGI)
 		return (NULL);
-	// return (new CGIResponse(mServerManager)));
-	return (NULL);
+	return (new CGIResponse(mServerConfig, mLocationConfig));
 }
 
 Response *ResponseFactory::createMethodResponse()

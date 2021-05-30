@@ -135,6 +135,21 @@ std::string web::toString(int val)
 	return (str);
 }
 
+/* toAddr */
+std::string web::toAddr(unsigned int addr)
+{
+	std::string result;
+	unsigned char *p = reinterpret_cast<unsigned char*>(&addr);
+
+	for (size_t i = 0; i < 4; i++, p++)
+	{
+		result += toString((int)*p);
+		if (i != 3)
+			result += ".";
+	}
+	return (result);
+}
+
 /* split */
 std::vector<std::string> web::split(std::string target, std::string token)
 {

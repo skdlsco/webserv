@@ -1,6 +1,9 @@
 #ifndef RESPONSE_FACTORY_HPP
 # define RESPONSE_FACTORY_HPP
 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include <iostream>
 #include <string>
 #include "logger/Logger.hpp"
@@ -9,6 +12,7 @@
 #include "server/Request.hpp"
 #include "server/Response.hpp"
 #include "server/ErrorResponse.hpp"
+#include "server/CGIResponse.hpp"
 #include "server/GETResponse.hpp"
 #include "server/HEADResponse.hpp"
 #include "server/POSTResponse.hpp"
@@ -32,15 +36,20 @@ class ResponseFactory
 
 		enum ResponseType mResponseState;
 		Request &mRequest;
+		struct sockaddr_in mClientAddr;
 		const ServerConfig *mServerConfig;
 		const LocationConfig *mLocationConfig;
 		int mStatusCode;
 	public:
 		static std::string const TAG;
 
-		static std::string *create(Request &request, const ServerConfig *config);
-		static std::string *createTimeoutResponse(Request &request, const ServerConfig *config);
-		ResponseFactory(Request &request, const ServerConfig *config);
+		static std::string *create(struct sockaddr_in clientAddr,
+												Request &request,
+												const ServerConfig *config);
+		static std::string *createTimeoutResponse(struct sockaddr_in clientAddr,
+													Request &request,
+													const ServerConfig *config);
+		ResponseFactory(struct sockaddr_in clientAddr, Request &request, const ServerConfig *config);
 		virtual ~ResponseFactory();
 
 		Response *createResponse();
