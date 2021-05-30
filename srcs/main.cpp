@@ -18,6 +18,9 @@ int main(void)
 			std::cout << "configList size : " << configList.size() << std::endl;
 		}
 
+		logger::println("MAIN", "server   size : " + web::toString(configList[0][0]->getClientMaxBodySize()));
+		logger::println("MAIN", "location size : " + web::toString(configList[0][0]->getLocationList()["/"]->getClientMaxBodySize()));
+		logger::println("MAIN", "URI : " + configList[0][0]->getLocationList()["/"]->getURI());
 		for (size_t idx = 0; idx < configList.size(); idx++)
 		{
 			Server::create(serverManager, configList[idx]);
