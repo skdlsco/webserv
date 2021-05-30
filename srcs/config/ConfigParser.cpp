@@ -89,6 +89,8 @@ ServerConfig *ConfigParser::parseServerDirective(size_t & lineIndex)
 			serverConfig->setRoot(currentDirectiveValue);
 		if (currentDirective == web::commonDirective[web::CommonDirective::AUTOINDEX] && currentDirectiveValue == "on")
 			serverConfig->setAutoIndex(true);
+		if (currentDirective == web::serverDirective[web::CommonDirective::CLIENT_MAX_BODY_SIZE])
+			serverConfig->setClientMaxBodySize(web::stoi(currentDirectiveValue));
 
 		/* find server directive */
 		if (currentDirective == web::serverDirective[web::ServerDirective::IP])
@@ -97,8 +99,6 @@ ServerConfig *ConfigParser::parseServerDirective(size_t & lineIndex)
 			serverConfig->setPort(web::stoi(currentDirectiveValue));
 		if (currentDirective == web::serverDirective[web::ServerDirective::SERVER_NAME])
 			serverConfig->setServerName(currentDirectiveValue);
-		if (currentDirective == web::serverDirective[web::ServerDirective::CLIENT_MAX_BODY_SIZE])
-			serverConfig->setClientMaxBodySize(web::stoi(currentDirectiveValue));
 		if (currentDirective == web::serverDirective[web::ServerDirective::DEFAULT_ERROR_PAGE])
 			serverConfig->setDefaultErrorPagePath(currentDirectiveValue);
 
@@ -125,10 +125,14 @@ LocationConfig *ConfigParser::parseLocationDirective(size_t & lineIndex)
 		mEachConfigLine[lineIndex].find("}") == std::string::npos)
 	{
 		currentLine = mEachConfigLine[lineIndex];
-		splitResult = web::split(currentLine, " \t");
+		splitResult = web::split(currentLine, " \t{");
 
 		currentDirective = splitResult.front();
 		currentDirectiveValue = splitResult.back();
+
+		/* set Location URI */
+		if (currentDirective == "location")
+			locationConfig->setURI(currentDirectiveValue);
 
 		/* find common directive */
 		if (currentDirective == web::commonDirective[web::CommonDirective::INDEX])
@@ -139,6 +143,8 @@ LocationConfig *ConfigParser::parseLocationDirective(size_t & lineIndex)
 			locationConfig->setAutoIndex(true);
 		if (currentDirective == web::commonDirective[web::CommonDirective::AUTOINDEX] && currentDirectiveValue == "off")
 			locationConfig->setAutoIndex(false);
+		if (currentDirective == web::commonDirective[web::CommonDirective::CLIENT_MAX_BODY_SIZE])
+			locationConfig->setClientMaxBodySize(web::stoi(currentDirectiveValue));
 
 		/* find location directive */
 		if (currentDirective == web::locationDirective[web::LocationDirective::ALLOW_METHOD])
@@ -197,11 +203,13 @@ void ConfigParser::setLocationConfigCommonDirective(LocationConfig * locationCon
 	locationConfig->setIndexFile(mCurrentServerConfig->getIndexFile());
 	locationConfig->setRoot(mCurrentServerConfig->getRoot());
 	locationConfig->setAutoIndex(mCurrentServerConfig->isAutoIndex());
+	locationConfig->setClientMaxBodySize(mCurrentServerConfig->getClientMaxBodySize());
 }
 
 void ConfigParser::readConfigFileByLine()
 {
 	File file(mFilePath);
+	size_t commentIndex;
 	std::ifstream configFile;
 	std::string line;
 
@@ -209,9 +217,10 @@ void ConfigParser::readConfigFileByLine()
 	while (!file.isStateDone())
 	{
 		line = file.getLine();
-		web::trim(line);
-		if (line[0] == '#')
-			continue;
+		web::trim(line, " \t");
+		commentIndex = line.find('#');
+		if (commentIndex != std::string::npos)
+			line.erase(commentIndex);
 		if (line != "")
 			mEachConfigLine.push_back(line);
 	}
@@ -237,6 +246,7 @@ std::string const ConfigParser::addSlashToURI(std::string const & URI)
 
 std::vector<std::vector<ServerConfig *> > ConfigParser::classifyServerListByAddress(std::vector<ServerConfig *> & serverList)
 {
+	/* double vector to classify address */
 	std::vector<std::vector<ServerConfig *> > Result;
 	std::vector<ServerConfig *> sameAddressConfig;
 	std::vector<std::string> addressList;

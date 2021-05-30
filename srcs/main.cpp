@@ -11,22 +11,16 @@ int main(void)
 
 	try
 	{
-		ConfigManager configManager("configs/validate_ina.conf");
+		ConfigManager configManager("configs/test.conf");
 		if (configManager.isConfigValidate())
 		{
 			configList = configManager.parseConfigFile();
 			std::cout << "configList size : " << configList.size() << std::endl;
-
-			for (size_t i = 0; i < configList.size(); i++)
-			{
-				std::cout << configList[i].size() << std::endl;
-			}
-
-			logger::print("MAIN") << std::endl;
-			logger::print("MAIN") << "configList[0][0].index : " << configList[0][0]->isAutoIndex() << std::endl;
-			logger::print("MAIN") << "configList[0][1].index : " << (configList[0][1]->getLocationList())["/test/"]->isAutoIndex() << std::endl;
 		}
 
+		logger::println("MAIN", "server   size : " + web::toString(configList[0][0]->getClientMaxBodySize()));
+		logger::println("MAIN", "location size : " + web::toString(configList[0][0]->getLocationList()["/"]->getClientMaxBodySize()));
+		logger::println("MAIN", "URI : " + configList[0][0]->getLocationList()["/"]->getURI());
 		for (size_t idx = 0; idx < configList.size(); idx++)
 		{
 			Server::create(serverManager, configList[idx]);

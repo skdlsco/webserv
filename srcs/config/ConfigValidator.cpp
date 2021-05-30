@@ -62,7 +62,6 @@ bool ConfigValidator::isScopeMatched()
 
 	for (size_t i = 0; i < mEachConfigLine.size(); i++)
 	{
-		currentLine = mEachConfigLine[i];
 		if (currentLine.find('{') != std::string::npos || 
 			currentLine.find('}') != std::string::npos)
 		{
@@ -106,7 +105,7 @@ bool ConfigValidator::isConfigSequenceMatched()
 			if (!hasMandatoryDirective(FLAG_LOCATION) || !hasEachDirectiveOnlyOne(FLAG_LOCATION))
 				return (false);
 		}
-		else if (splitResult.front() == "}" || mEachConfigLine[lineIndex][0] == '#')
+		else if (splitResult.front() == "}")
 			lineIndex++;
 		else
 			return (false);
@@ -151,7 +150,7 @@ bool ConfigValidator::isServerInfoAlreadyExisted()
 			serverInfoLine = ip + port + serverName;
 
 			/* port range check */
-			if (web::stoi(port) < 0 && web::stoi(port) > 65535)
+			if (web::stoi(port) < 0 || web::stoi(port) > 65535)
 				return (true);
 
 			if (std::find(serverInfoList.begin(), serverInfoList.end(), serverInfoLine) != serverInfoList.end())
@@ -408,6 +407,7 @@ void ConfigValidator::initializeCountLocationDirective()
 void ConfigValidator::readConfigFileByLine()
 {
 	File file(mFilePath);
+	size_t commentIndex;
 	std::ifstream configFile;
 	std::string line;
 
@@ -415,9 +415,10 @@ void ConfigValidator::readConfigFileByLine()
 	while (!file.isStateDone())
 	{
 		line = file.getLine();
-		web::trim(line);
-		if (line[0] == '#')
-			continue;
+		web::trim(line, " \t");
+		commentIndex = line.find('#');
+		if (commentIndex != std::string::npos)
+			line.erase(commentIndex);
 		if (line != "")
 			mEachConfigLine.push_back(line);
 	}
