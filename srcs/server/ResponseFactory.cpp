@@ -31,8 +31,6 @@ std::string *ResponseFactory::create(Request &request, const ServerConfig *confi
 			response = errorResponse;
 			result = response->getResponse();
 		}
-		logger::println(TAG, *result);
-		return (result);
 	}
 	catch(const std::exception& e)
 	{
