@@ -144,10 +144,7 @@ LocationConfig *ConfigParser::parseLocationDirective(size_t & lineIndex)
 		if (currentDirective == web::commonDirective[web::CommonDirective::AUTOINDEX] && currentDirectiveValue == "off")
 			locationConfig->setAutoIndex(false);
 		if (currentDirective == web::commonDirective[web::CommonDirective::CLIENT_MAX_BODY_SIZE])
-		{
-			std::cout << "??" << std::endl;
 			locationConfig->setClientMaxBodySize(web::stoi(currentDirectiveValue));
-		}
 
 		/* find location directive */
 		if (currentDirective == web::locationDirective[web::LocationDirective::ALLOW_METHOD])
