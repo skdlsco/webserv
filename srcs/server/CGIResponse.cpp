@@ -29,9 +29,9 @@ void CGIResponse::freeEnv(char **env)
 {
 	for (size_t i = 0; i < 17; i++)
 	{
-		free(env[i]);
+		delete (env[i]);
 	}
-	free(env);
+	delete[] (env);
 }
 
 void CGIResponse::initCGIInfo()
@@ -46,10 +46,10 @@ void CGIResponse::initCGIInfo()
 			target.erase(0, idx + 1);
 			size_t scriptIdx = target.find('/');
 			if (scriptIdx == target.npos)
-				mScriptName = target;
+				mScriptName = "/" + target;
 			else
 			{
-				mScriptName = target.substr(0, scriptIdx);
+				mScriptName = "/" + target.substr(0, scriptIdx);
 				target.erase(0, scriptIdx);
 				mPathInfo = target;
 			}
