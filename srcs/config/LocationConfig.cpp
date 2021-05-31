@@ -4,7 +4,7 @@ std::string const LocationConfig::TAG = "LocationConfig";
 
 LocationConfig::LocationConfig()
 : mCommonDirective(), mAllowMethodList(), mCGIExtensionList(),
-	mCGIPath(""), mAuthUserName(""), mAuthUserPassword("")
+	mCGIPath(""), mAuthUserName(""), mAuthUserPassword(""), mURI("")
 {
 	/* to avoid nested name specifier */
 	mAllowMethodList.push_back(web::method[web::GET]);
@@ -23,8 +23,10 @@ LocationConfig &LocationConfig::operator=(LocationConfig const & rhs)
 	{
 		mCommonDirective = rhs.mCommonDirective;
 		mAllowMethodList = rhs.mAllowMethodList;
+		mCGIMethodList = rhs.mCGIMethodList;
 		mCGIExtensionList = rhs.mCGIExtensionList;
 		mCGIPath = rhs.mCGIPath;
+		mURI = rhs.mURI;
 	}
 	return (*this);
 }
@@ -32,6 +34,7 @@ LocationConfig &LocationConfig::operator=(LocationConfig const & rhs)
 LocationConfig::~LocationConfig()
 {
 	mAllowMethodList.clear();
+	mCGIMethodList.clear();
 	mCGIExtensionList.clear();
 }
 
@@ -45,6 +48,11 @@ std::string const &LocationConfig::getRoot() const
 	return (mCommonDirective.getRoot());
 }
 
+size_t LocationConfig::getClientMaxBodySize() const
+{
+	return (mCommonDirective.getClientMaxBodySize());
+}
+
 bool LocationConfig::isAutoIndex() const
 {
 	return (mCommonDirective.isAutoIndex());
@@ -53,6 +61,11 @@ bool LocationConfig::isAutoIndex() const
 std::vector<std::string> LocationConfig::getAllowMethodList() const
 {
 	return (mAllowMethodList);
+}
+
+std::vector<std::string> LocationConfig::getCGIMethodList() const
+{
+	return (mCGIMethodList);
 }
 
 std::vector<std::string> LocationConfig::getCGIExtensionList() const
@@ -75,6 +88,11 @@ std::string const &LocationConfig::getAuthUserPassword() const
 	return (mAuthUserPassword);
 }
 
+std::string const &LocationConfig::getURI() const
+{
+	return (mURI);
+}
+
 void LocationConfig::setIndexFile(std::string const & indexFile)
 {
 	mCommonDirective.setIndexFile(indexFile);
@@ -83,6 +101,11 @@ void LocationConfig::setIndexFile(std::string const & indexFile)
 void LocationConfig::setRoot(std::string const & root)
 {
 	mCommonDirective.setRoot(root);
+}
+
+void LocationConfig::setClientMaxBodySize(size_t clientMaxBodySize)
+{
+	mCommonDirective.setClientMaxBodySize(clientMaxBodySize);
 }
 
 void LocationConfig::setAutoIndex(bool autoIndex)
@@ -100,9 +123,19 @@ void LocationConfig::setAuthUserPassword(std::string const & userPassword)
 	mAuthUserPassword = userPassword;
 }
 
+void LocationConfig::setURI(std::string const & URI)
+{
+	mURI = URI;
+}
+
 void LocationConfig::addAllowMethod(std::string const & allowMethod)
 {
 	mAllowMethodList.push_back(allowMethod);
+}
+
+void LocationConfig::addCGIMethod(std::string const & CGIMethod)
+{
+	mCGIMethodList.push_back(CGIMethod);
 }
 
 void LocationConfig::addCGIExtension(std::string const & CGIExtension)

@@ -131,8 +131,23 @@ std::string web::toString(int val)
 	std::string str(CStr);
 
 	/* I don't have certainty below delete code.. */
-	delete CStr;
+	delete[] CStr;
 	return (str);
+}
+
+/* toAddr */
+std::string web::toAddr(unsigned int addr)
+{
+	std::string result;
+	unsigned char *p = reinterpret_cast<unsigned char*>(&addr);
+
+	for (size_t i = 0; i < 4; i++, p++)
+	{
+		result += toString((int)*p);
+		if (i != 3)
+			result += ".";
+	}
+	return (result);
 }
 
 /* split */
@@ -289,4 +304,21 @@ std::string web::removeConsecutiveDuplicate(std::string const str, char c)
 		prev = *iter;
 	}
 	return (result);
+}
+
+bool web::isDirectory(std::string const & path)
+{
+	struct stat buf;
+
+	if (stat(path.c_str(), &buf) == -1)
+		return (false);
+
+	return (buf.st_mode & S_IFDIR);
+}
+
+bool web::isPathExist(std::string const & path)
+{
+	struct stat buf;
+
+	return (stat(path.c_str(), &buf) == 0);
 }

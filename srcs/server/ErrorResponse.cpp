@@ -2,26 +2,73 @@
 
 std::string const ErrorResponse::TAG = "ErrorResponse";
 
-ErrorResponse::ErrorResponse(ServerManager &serverManager, const ServerConfig * serverConfig,
-								const LocationConfig * locationConfig)
-: Response(serverManager, serverConfig, locationConfig), mIsDefault(false),
-	mFile(getServerConfig()->getDefaultErrorPagePath()), mFDListener(*this)
+ErrorResponse::ErrorResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig)
+: Response(serverConfig, locationConfig), mIsDefault(false),
+	mFile(web::removeConsecutiveDuplicate(getServerConfig()->getRoot() + getServerConfig()->getDefaultErrorPagePath(), '/'))
 {
-	try
-	{
-		mFile.openFile();
-		getServerManager().addFD(mFile.getFD(), mFDListener);
-	}
-	catch(const std::exception& e)
-	{
-		mIsDefault = true;
-		setState(Response::DONE);
-	}
+	
 }
 
 ErrorResponse::~ErrorResponse()
 {
-	setErrorToDefault();
+
+}
+
+ErrorResponse::ErrorResponse(ErrorResponse const & copy)
+: Response(copy), mFile(copy.mFile)
+{
+	*this = copy;
+}
+
+ErrorResponse &ErrorResponse::operator=(ErrorResponse const & rhs)
+{
+	if (this != &rhs)
+	{
+		this->mFile = rhs.mFile;
+		this->mIsDefault = rhs.mIsDefault;
+	}
+	return (*this);
+}
+
+std::string *ErrorResponse::getResponse()
+{
+	std::string *responseContent;
+
+	createUserErrorPage();
+	try
+	{
+		responseContent = new std::string();
+		if (responseContent)
+		{
+			*responseContent += createResponseLine();
+			createResponseHeader(responseContent);
+			createResponseBody(responseContent);
+		}
+	}
+	catch(std::exception const&e)
+	{
+		logger::println(TAG, e.what());
+		delete responseContent;
+		responseContent = NULL;
+	}
+	return (responseContent);
+}
+
+void ErrorResponse::createUserErrorPage()
+{
+	try
+	{
+		mFile.openFile();
+		while (mFile.getState() == File::CONTENT_LEFT)
+		{
+			mFile.readFile();
+		}
+	}
+	catch(std::exception const &e)
+	{
+		setErrorToDefault();
+		logger::println(TAG, e.what());
+	}
 }
 
 void ErrorResponse::setErrorToDefault()
@@ -29,9 +76,7 @@ void ErrorResponse::setErrorToDefault()
 	if (!mIsDefault)
 	{
 		mIsDefault = true;
-		getServerManager().removeFD(mFile.getFD());
 		mFile.closeFile();
-		setState(Response::DONE);
 	}
 }
 
@@ -51,76 +96,38 @@ std::string ErrorResponse::getAllowMethod()
 	return (result);
 }
 
-std::string ErrorResponse::createResponseHeader()
+void ErrorResponse::createResponseHeader(std::string *responseContent)
 {
-	std::string responseHeader;
-
-	responseHeader += "Date: " + web::getDate() + "\r\n";
-	responseHeader += "Server: webserv (chlee, ina)\r\n";
-	responseHeader += "Connection: close\r\n";
-	responseHeader += "Content-Type: text/html\r\n";
+	if (responseContent == NULL)
+		return ;
+	*responseContent += "Date: " + web::getDate() + "\r\n";
+	*responseContent += "Server: webserv (chlee, ina)\r\n";
+	*responseContent += "Connection: close\r\n";
+	*responseContent += "Content-Type: text/html\r\n";
 
 	/* 503 timeout */
 	if (getStatusCode() == 503)
-		responseHeader += "Retry-After: 120\r\n";
+		*responseContent += "Retry-After: 120\r\n";
 	/* 405 not allowed method */
 	if (getStatusCode() == 405)
-		responseHeader += "Allow: " + getAllowMethod() + "\r\n";
+		*responseContent += "Allow: " + getAllowMethod() + "\r\n";
 	/* 401 unauthorized */
 	if (getStatusCode() == 401)
-		responseHeader += "WWW-Authenticate: Basic realm=\"webserv\"\r\n";
+		*responseContent += "WWW-Authenticate: Basic realm=\"webserv\"\r\n";
 
 	if (mIsDefault)
-		responseHeader += "Content-Length: " + web::toString(web::getErrorPage(getStatusCode()).size()) + "\r\n";
+		*responseContent += "Content-Length: " + web::toString(web::getErrorPage(getStatusCode()).size()) + "\r\n";
 	else
-		responseHeader += "Content-Length: " + web::toString(mFile.getBuffer().size() + 2) + "\r\n";
-	responseHeader += "\r\n";
-	return (responseHeader);
+		*responseContent += "Content-Length: " + web::toString(mFile.getBuffer().size()) + "\r\n";
+	*responseContent += "\r\n";
 }
 
-std::string ErrorResponse::createResponseBody()
+void ErrorResponse::createResponseBody(std::string *responseContent)
 {
-	if (mIsDefault)
-	{
-		return (web::getErrorPage(getStatusCode()));
-	}
-	return (mFile.getBuffer() + "\r\n");
-}
-
-ErrorResponse::ErrorResponseFDListener::ErrorResponseFDListener(ErrorResponse &errorResponse)
-: mErrorResponse(errorResponse)
-{
-
-}
-
-ErrorResponse::ErrorResponseFDListener::~ErrorResponseFDListener()
-{
-
-}
-
-void ErrorResponse::ErrorResponseFDListener::onReadSet()
-{
-	if (mErrorResponse.mIsDefault || mErrorResponse.getState() != ON_WORKING)
+	if (responseContent == NULL)
 		return ;
-	try
-	{
-		mErrorResponse.mFile.readFile();
-		if (mErrorResponse.mFile.getState() != File::CONTENT_LEFT)
-			mErrorResponse.setState(Response::DONE);
-	}
-	catch(const std::exception& e)
-	{
-		mErrorResponse.setErrorToDefault();
-	}
+	if (mIsDefault)
+		*responseContent += web::getErrorPage(getStatusCode());
+	else
+		*responseContent += mFile.getBuffer();
 }
-
-void ErrorResponse::ErrorResponseFDListener::onWriteSet()
-{
-
-}
-
-void ErrorResponse::ErrorResponseFDListener::onExceptSet()
-{
-	mErrorResponse.setErrorToDefault();
-}
-

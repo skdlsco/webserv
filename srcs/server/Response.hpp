@@ -1,6 +1,9 @@
 #ifndef RESPONSE_HPP
 # define RESPONSE_HPP
 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include <string>
 #include "ServerManager.hpp"
 #include "server/ServerComponent.hpp"
@@ -10,45 +13,47 @@
 #include "utils/HTTP.hpp"
 #include "logger/Logger.hpp"
 
-class Response : public ServerComponent
+class Response
 {
 	public:
 		enum ResponseState
 		{
-			ON_WORKING, DONE, ERROR
+			READY, ON_WORKING, DONE, ERROR
 		};
 	private:
 		int mStatusCode;
 		std::string mStatusMessage;
+		struct sockaddr_in mClientAddr;
 		std::string mTarget;
+		std::string mMethod;
+		std::string mQuery;
 		std::map<std::string, std::string> mRequestHeader;
 		std::string mRequestBody;
 		const ServerConfig *mServerConfig;
 		const LocationConfig *mLocationConfig;
-		enum ResponseState mState;
 		Response();
 	protected:
-		virtual std::string createResponseLine();
-		virtual std::string createResponseHeader() = 0;
-		virtual std::string createResponseBody() = 0;
-
-		void setState(Response::ResponseState state);
+		std::string createResponseLine();
 	public:
 		static std::string const TAG;
-		Response(ServerManager &serverManager, const ServerConfig * serverConfig,
-					const LocationConfig * locationConfig);
+		Response(const ServerConfig * serverConfig, const LocationConfig * locationConfig);
 		virtual ~Response();
 		Response(Response const & copy);
 		Response &operator=(Response const & rhs);
 
-		std::string *getResponse();
+		virtual std::string *getResponse() = 0;
 
-		virtual void onRepeat();
 		int getStatusCode() const;
 		void setStatusCode(int statusCode);
+		struct sockaddr_in getClientAddr() const;
+		void setClientAddr(struct sockaddr_in clientAddr);
 		std::string getTarget() const;
 		void setTarget(std::string target);
-		std::map<std::string, std::string> getRequestHeader() const;
+		std::string getMethod() const;
+		void setMethod(std::string method);
+		std::string getQuery() const;
+		void setQuery(std::string query);
+		std::map<std::string, std::string> const &getRequestHeader() const;
 		void setRequestHeader(std::map<std::string, std::string> requestHeader);
 		std::string getRequestBody() const;
 		void setRequestBody(std::string requestBody);
@@ -56,7 +61,6 @@ class Response : public ServerComponent
 		void setServerConfig(const ServerConfig *config);
 		const LocationConfig *getLocationConfig() const;
 		void setLocationConfig(const LocationConfig *config);
-		Response::ResponseState getState() const;
 };
 
 #endif

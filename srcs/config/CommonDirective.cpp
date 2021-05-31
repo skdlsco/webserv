@@ -3,7 +3,7 @@
 std::string const CommonDirective::TAG = "CommonDirective";
 
 CommonDirective::CommonDirective()
-: mIndexFile(""), mRoot("/"), mIsAutoIndex(false)
+: mIndexFile(""), mRoot("/"), mClientMaxBodySize(10000000), mIsAutoIndex(false)
 {
 
 }
@@ -20,6 +20,7 @@ CommonDirective &CommonDirective::operator=(CommonDirective const & rhs)
 		this->mIndexFile = rhs.mIndexFile;
 		this->mRoot = rhs.mRoot;
 		this->mIsAutoIndex = rhs.mIsAutoIndex;
+		this->mClientMaxBodySize = rhs.mClientMaxBodySize;
 	}
 	return (*this);
 }
@@ -39,6 +40,11 @@ std::string const &CommonDirective::getRoot() const
 	return (mRoot);
 }
 
+size_t CommonDirective::getClientMaxBodySize() const
+{
+	return (mClientMaxBodySize);
+}
+
 bool CommonDirective::isAutoIndex() const
 {
 	return (mIsAutoIndex);
@@ -52,6 +58,11 @@ void CommonDirective::setIndexFile(std::string const & indexFile)
 void CommonDirective::setRoot(std::string const & root)
 {
 	mRoot = root;
+}
+
+void CommonDirective::setClientMaxBodySize(size_t clientMaxBodySize)
+{
+	mClientMaxBodySize = clientMaxBodySize;
 }
 
 void CommonDirective::setAutoIndex(bool autoIndex)

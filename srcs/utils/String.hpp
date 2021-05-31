@@ -4,6 +4,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cstring>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 namespace web
 {
@@ -13,7 +17,7 @@ namespace web
 
 	char *itoa(int val);
 	std::string toString(int val);
-
+	std::string toAddr(unsigned int addr);
 	std::vector<std::string> split(std::string target, std::string token);
 
 	void ltrim(std::string &s, std::string const set);
@@ -36,6 +40,9 @@ namespace web
 	std::string copyToLower(std::string const &str);
 
 	std::string removeConsecutiveDuplicate(std::string const str, char c);
+
+	bool isDirectory(std::string const & path);
+	bool isPathExist(std::string const & path);
 };
 
 #endif

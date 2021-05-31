@@ -1,6 +1,9 @@
 #ifndef RESPONSE_FACTORY_HPP
 # define RESPONSE_FACTORY_HPP
 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include <iostream>
 #include <string>
 #include "logger/Logger.hpp"
@@ -9,6 +12,13 @@
 #include "server/Request.hpp"
 #include "server/Response.hpp"
 #include "server/ErrorResponse.hpp"
+#include "server/CGIResponse.hpp"
+#include "server/GETResponse.hpp"
+#include "server/HEADResponse.hpp"
+#include "server/POSTResponse.hpp"
+#include "server/PUTResponse.hpp"
+#include "server/OPTIONSResponse.hpp"
+#include "server/DELETEResponse.hpp"
 #include "utils/String.hpp"
 #include "utils/Method.hpp"
 
@@ -24,36 +34,32 @@ class ResponseFactory
 		ResponseFactory(ResponseFactory const & copy);
 		ResponseFactory &operator=(ResponseFactory const & rhs);
 
-		ServerManager &mServerManager;
 		enum ResponseType mResponseState;
-		Response *mResponse;
 		Request &mRequest;
+		struct sockaddr_in mClientAddr;
 		const ServerConfig *mServerConfig;
 		const LocationConfig *mLocationConfig;
 		int mStatusCode;
 	public:
 		static std::string const TAG;
-		static Response *create(ServerManager &serverManager, Request &request, const ServerConfig *config);
-		ResponseFactory(ServerManager &serverManager, Request &request, const ServerConfig *config);
+
+		static std::string *create(struct sockaddr_in clientAddr,
+												Request &request);
+		static std::string *createTimeoutResponse(struct sockaddr_in clientAddr,
+													Request &request);
+		ResponseFactory(struct sockaddr_in clientAddr, Request &request);
 		virtual ~ResponseFactory();
 
 		Response *createResponse();
 
-		/* 0 or 400(Bad Request) */
-		void checkRequestErrorCode();
+		/* check response type with request info */
+		void checkResponseType();
 
-		/* find specific URI */
-		void checkLocationURI();
+		Response *createErrorResponse();
+		Response *createCGIResponse();
+		Response *createMethodResponse();
 
-		/* find method */
-		void checkLocationMethodList();
-
-		/* is have CGI? */
-		void checkLocationCGI();
-
-		void createErrorResponse();
-		void createCGIResponse();
-		void createMethodResponse();
+		void initResponseValue();
 
 		void setResponseServerConfig(Response *response);
 		void setResponseLocationConfig(Response *response);
