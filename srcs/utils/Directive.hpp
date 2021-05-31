@@ -6,7 +6,7 @@
 
 # define NUM_COMMON_DIRECTIVE 4
 # define NUM_SERVER_DIRECTIVE 8
-# define NUM_LOCATION_DIRECTIVE 8
+# define NUM_LOCATION_DIRECTIVE 9
 
 # include <iostream>
 # include <string>
@@ -42,6 +42,7 @@ namespace web
 		"allow_method",
 		"cgi_extension",
 		"cgi_path",
+		"cgi_method",
 		"auth"
 	};
 
@@ -82,6 +83,7 @@ namespace web
 			ALLOW_METHOD,
 			CGI_EXTENSION,
 			CGI_PATH,
+			CGI_METHOD,
 			AUTH
 		};
 	}
