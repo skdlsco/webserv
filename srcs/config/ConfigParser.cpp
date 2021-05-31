@@ -168,7 +168,7 @@ LocationConfig *ConfigParser::parseLocationDirective(size_t & lineIndex)
 				if (std::find(CGIMethodList.begin(),
 								CGIMethodList.end(),
 								splitResult[idx]) == CGIMethodList.end())
-					locationConfig->addAllowMethod(splitResult[idx]);
+					locationConfig->addCGIMethod(splitResult[idx]);
 			}
 		}
 		if (currentDirective == web::locationDirective[web::LocationDirective::CGI_EXTENSION])
