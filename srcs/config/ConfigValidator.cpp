@@ -361,7 +361,7 @@ bool ConfigValidator::hasMandatoryDirective(size_t flag)
 
 		/* is CGI Vector & CGI Path are existed or non-existed */
 		if ((!mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_PATH]] && mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_METHOD]])
-			|| (!mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_PATH]] && !mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_METHOD]]))
+			|| (mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_PATH]] && !mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_METHOD]]))
 			return (false);
 	}
 	return (true);
