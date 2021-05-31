@@ -157,16 +157,16 @@ void ResponseFactory::checkLocationCGI()
 
 	if (mResponseState == ERROR)
 		return ;
-
 	if (mLocationConfig->getCGIPath() != "")
 	{
 		CGIExtensionList = mLocationConfig->getCGIExtensionList();
+		targetBackElement = web::split(mRequest.getTarget(), "/").back();
+		dotIndex = targetBackElement.find('.');
+		if (dotIndex == std::string::npos)
+			return ;
 		for (std::vector<std::string>::iterator iter = CGIExtensionList.begin(); iter != CGIExtensionList.end(); iter++)
 		{
-			targetBackElement = web::split(mRequest.getTarget(), "/").back();
-			dotIndex = targetBackElement.find('.');
-			if (dotIndex != std::string::npos)
-				targetFileExtension = targetBackElement.substr(dotIndex);
+			targetFileExtension = targetBackElement.substr(dotIndex);
 			if (targetFileExtension == *iter)
 			{
 				mResponseState = CGI;
@@ -209,8 +209,6 @@ Response *ResponseFactory::createCGIResponse()
 	if (mResponseState != CGI)
 		return (NULL);
 	return (new CGIResponse(mServerConfig, mLocationConfig));
-	// return (new CGIResponse(mServerManager)));
-	return (NULL);
 }
 
 Response *ResponseFactory::createMethodResponse()
