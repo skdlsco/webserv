@@ -27,6 +27,7 @@ class Request
 		std::string mBody;
 		std::string mMethod;
 		std::string mTarget;
+		std::string mQuery;
 		std::map<std::string, std::string> mField;
 
 		bool mHasBody;
@@ -67,6 +68,7 @@ class Request
 		std::string getBody() const;
 		std::string getMethod() const;
 		std::string getTarget() const;
+		std::string getQuery() const;
 		std::map<std::string, std::string> getField() const;
 		int getErrorCode() const;
 };

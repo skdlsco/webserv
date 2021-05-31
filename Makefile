@@ -6,6 +6,7 @@ SRC_NAME = main.cpp \
 			fdmanager/FileDiscriptorManager.cpp \
 			file/File.cpp \
 			server/Connection.cpp \
+			server/CGIResponse.cpp \
 			server/ErrorResponse.cpp \
 			server/GETResponse.cpp \
 			server/HEADResponse.cpp \

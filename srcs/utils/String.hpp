@@ -17,7 +17,7 @@ namespace web
 
 	char *itoa(int val);
 	std::string toString(int val);
-
+	std::string toAddr(unsigned int addr);
 	std::vector<std::string> split(std::string target, std::string token);
 
 	void ltrim(std::string &s, std::string const set);
