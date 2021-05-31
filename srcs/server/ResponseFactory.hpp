@@ -44,27 +44,16 @@ class ResponseFactory
 		static std::string const TAG;
 
 		static std::string *create(struct sockaddr_in clientAddr,
-												Request &request,
-												const ServerConfig *config);
+												Request &request);
 		static std::string *createTimeoutResponse(struct sockaddr_in clientAddr,
-													Request &request,
-													const ServerConfig *config);
-		ResponseFactory(struct sockaddr_in clientAddr, Request &request, const ServerConfig *config);
+													Request &request);
+		ResponseFactory(struct sockaddr_in clientAddr, Request &request);
 		virtual ~ResponseFactory();
 
 		Response *createResponse();
 
-		/* 0 or 400(Bad Request) */
-		void checkRequestErrorCode();
-
-		/* find specific URI */
-		void checkLocationURI();
-
-		/* find method */
-		void checkLocationMethodList();
-
-		/* is have CGI? */
-		void checkLocationCGI();
+		/* check response type with request info */
+		void checkResponseType();
 
 		Response *createErrorResponse();
 		Response *createCGIResponse();

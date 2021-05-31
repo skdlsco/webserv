@@ -32,7 +32,7 @@ Connection *Connection::create(ServerManager &serverManager,
 
 void Connection::createResponseBuffer()
 {
-	mWriteBuffer = ResponseFactory::create(mAddr, mRequest, mRequest.getConfig());
+	mWriteBuffer = ResponseFactory::create(mAddr, mRequest);
 	if (mWriteBuffer == NULL)
 		finish();
 }
@@ -44,7 +44,7 @@ void Connection::onRepeat()
 	{
 		if (mWriteBuffer)
 			delete mWriteBuffer;
-		mWriteBuffer = ResponseFactory::createTimeoutResponse(mAddr, mRequest, mRequest.getConfig());
+		mWriteBuffer = ResponseFactory::createTimeoutResponse(mAddr, mRequest);
 		if (mWriteBuffer == NULL)
 			finish();
 	}

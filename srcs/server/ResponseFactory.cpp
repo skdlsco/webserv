@@ -3,14 +3,13 @@
 std::string const ResponseFactory::TAG = "ResponseFactory";
 
 std::string *ResponseFactory::create(struct sockaddr_in clientAddr,
-										Request &request,
-										const ServerConfig *config)
+										Request &request)
 {
 	std::string *result = NULL;
 	Response *response = NULL;
 	try
 	{
-		ResponseFactory responseFactory(clientAddr, request, config);
+		ResponseFactory responseFactory(clientAddr, request);
 		response = responseFactory.createResponse();
 		if (response)
 			result = response->getResponse();
@@ -43,10 +42,9 @@ std::string *ResponseFactory::create(struct sockaddr_in clientAddr,
 }
 
 std::string *ResponseFactory::createTimeoutResponse(struct sockaddr_in clientAddr,
-														Request &request,
-														const ServerConfig *config)
+														Request &request)
 {
-	ResponseFactory responseFactory(clientAddr, request, config);
+	ResponseFactory responseFactory(clientAddr, request);
 	Response *errorResponse = responseFactory.createErrorResponse();
 	std::string *result = NULL;
 
@@ -63,13 +61,12 @@ std::string *ResponseFactory::createTimeoutResponse(struct sockaddr_in clientAdd
 	return (result);
 }
 
-ResponseFactory::ResponseFactory(struct sockaddr_in clientAddr, Request &request, const ServerConfig *config)
+ResponseFactory::ResponseFactory(struct sockaddr_in clientAddr, Request &request)
 : mResponseState(METHOD), mRequest(request), mClientAddr(clientAddr),
-	mServerConfig(config), mLocationConfig(NULL), mStatusCode(0)
+	mServerConfig(request.getServerConfig()), mLocationConfig(request.getLocationConfig()), mStatusCode(0)
 {
-	checkRequestErrorCode();
+	checkResponseType();
 }
-
 
 ResponseFactory::~ResponseFactory()
 {
@@ -80,14 +77,10 @@ Response *ResponseFactory::createResponse()
 {
 	Response *response = NULL;
 
-	checkRequestErrorCode();
-	checkLocationURI();
-	checkLocationCGI();
-	checkLocationMethodList();
 	logger::print(TAG) << web::toAddr(mClientAddr.sin_addr.s_addr) << " " << mRequest.getMethod() << " " << mRequest.getTarget() << mRequest.getQuery() << std::endl;
 	try
 	{
-		if (mResponseState == CGI)
+		if (mRequest.isCGI())
 			response = createCGIResponse();
 		if (mResponseState == METHOD)
 			response = createMethodResponse();
@@ -108,100 +101,16 @@ Response *ResponseFactory::createResponse()
 	return (response);
 }
 
-void ResponseFactory::checkRequestErrorCode()
+void ResponseFactory::checkResponseType()
 {
-	/* 400 bad request */
 	if (mRequest.getErrorCode())
 	{
+		mStatusCode = mRequest.getErrorCode();
 		mResponseState = ERROR;
-		mStatusCode = 400;
-	}
-}
-
-void ResponseFactory::checkLocationURI()
-{
-	std::map<std::string, LocationConfig *> locationConfig = mServerConfig->getLocationList();
-	std::vector<std::string> locationURIList;
-	std::string currentLocationURI = "";
-	std::string requestTarget = mRequest.getTarget();
-
-	if (mResponseState == ERROR)
-		return ;
-
-	for (std::map<std::string, LocationConfig *>::iterator iter = locationConfig.begin(); iter != locationConfig.end(); iter++)
-	{
-		locationURIList.push_back((*iter).first);
-	}
-	for (std::vector<std::string>::iterator iter = locationURIList.begin(); iter != locationURIList.end(); iter++)
-	{
-		if ((requestTarget.find(*iter) != std::string::npos) && ((*iter).length() > currentLocationURI.length()))
-			currentLocationURI = *iter;
-	}
-
-	/* 404 not found */
-	if (currentLocationURI == "")
-	{
-		mResponseState = ERROR;
-		mStatusCode = 404;
-	}
+	} else if (mRequest.isCGI())
+		mResponseState = CGI;
 	else
-		mLocationConfig = locationConfig[currentLocationURI];
-}
-
-void ResponseFactory::checkLocationCGI()
-{
-	if (mResponseState == ERROR)
-		return ;
-
-	std::vector<std::string> CGIExtensionList;
-	std::string targetBackElement;
-	std::string targetFileExtension;
-	size_t dotIndex;
-
-	if (mLocationConfig->getCGIPath() != "")
-	{
-		CGIExtensionList = mLocationConfig->getCGIExtensionList();
-		targetBackElement = web::split(mRequest.getTarget(), "/").back();
-		dotIndex = targetBackElement.find('.');
-		if (dotIndex == std::string::npos)
-			return ;
-		for (std::vector<std::string>::iterator iter = CGIExtensionList.begin(); iter != CGIExtensionList.end(); iter++)
-		{
-			targetFileExtension = targetBackElement.substr(dotIndex);
-			if (targetFileExtension == *iter)
-			{
-				mResponseState = CGI;
-				checkLocationMethodList();
-				return ;
-			}
-		}
-	}
-}
-
-void ResponseFactory::checkLocationMethodList()
-{
-	if (mResponseState == ERROR)
-		return ;
-
-	bool findMethod = false;
-	std::string requestMethod = mRequest.getMethod();
-	std::vector<std::string> methodList = mLocationConfig->getAllowMethodList();;
-
-	if (mResponseState == CGI)
-		methodList = mLocationConfig->getCGIMethodList();
-
-	for (std::vector<std::string>::iterator iter = methodList.begin(); iter != methodList.end(); iter++)
-	{
-		if (requestMethod == *iter)
-			findMethod = true;
-	}
-
-	/* 405 method not allowed */
-	if (!findMethod)
-	{
-		mResponseState = ERROR;
-		mStatusCode = 405;
-	}
+		mResponseState = METHOD;
 }
 
 Response *ResponseFactory::createErrorResponse()

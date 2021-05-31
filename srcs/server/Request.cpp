@@ -4,8 +4,8 @@ std::string const Request::TAG = "Request";
 std::string const Request::HTTP_VERSION = "HTTP/1.1";
 
 Request::Request(std::vector<ServerConfig *> const & configVec)
-: mConfigVec(configVec), mConfig(web::getDefaultServerConfig(configVec)), mAnalyzeLevel(REQUEST_LINE),
-	mHasBody(false), mIsChunked(false), mIsReadData(false),
+: mConfigVec(configVec), mServerConfig(web::getDefaultServerConfig(configVec)), mLocationConfig(NULL),
+	mAnalyzeLevel(REQUEST_LINE), mHasBody(false), mIsChunked(false), mIsReadData(false),
 	mContentLength(0), mErrorCode(0)
 {
 
@@ -25,7 +25,8 @@ Request &Request::operator=(Request const & rhs)
 {
 	if (this != &rhs)
 	{
-		mConfig = rhs.mConfig;
+		mServerConfig = rhs.mServerConfig;
+		mLocationConfig = rhs.mLocationConfig;
 		mAnalyzeLevel = rhs.mAnalyzeLevel;
 		mBuffer = rhs.mBuffer;
 		mBody = rhs.mBody;
@@ -37,9 +38,9 @@ Request &Request::operator=(Request const & rhs)
 	return (*this);
 }
 
-void Request::badRequest()
+void Request::badRequest(int errorCode)
 {
-	mErrorCode = 400;
+	mErrorCode = errorCode;
 	mAnalyzeLevel = DONE;
 }
 
@@ -53,6 +54,8 @@ void Request::appendChunkedBody()
 				break ;
 			mBody.append(mBuffer.substr(0, mContentLength));
 			mBuffer.erase(0, mContentLength);
+			if (mBody.length() > mLocationConfig->getClientMaxBodySize())
+				badRequest(413);
 			if (mContentLength == 0)
 				mAnalyzeLevel = DONE;
 			mIsReadData = false;
@@ -64,12 +67,12 @@ void Request::appendChunkedBody()
 			{
 				line = mBuffer.substr(0, lineIndex);
 				if (line.empty())
-					badRequest();
+					badRequest(400);
 				mContentLength = web::axtoi(line.c_str());
 				if (mContentLength < 0)
-					badRequest();
+					badRequest(400);
 			} else
-				badRequest();
+				badRequest(400);
 			mIsReadData = true;
 		}
 	}
@@ -105,10 +108,9 @@ void Request::checkHost()
 	FieldIter iter = mField.find("HOST");
 
 	if (iter != mField.end())
-	{
-		mConfig = web::getConfigMatchedWithHost(iter->second, mConfigVec);
-	} else
-		badRequest();
+		mServerConfig = web::getConfigMatchedWithHost(iter->second, mConfigVec);
+	else
+		badRequest(400);
 }
 
 void Request::checkContentLength()
@@ -118,8 +120,10 @@ void Request::checkContentLength()
 	if (iter != mField.end())
 	{
 		mContentLength = web::atoi(iter->second.c_str());
-		if (mContentLength < 0 || mConfig->getClientMaxBodySize() < static_cast<unsigned long>(mContentLength))
-			badRequest();
+		if (mContentLength < 0)
+			badRequest(400);
+		else if (mLocationConfig->getClientMaxBodySize() < static_cast<unsigned long>(mContentLength))
+			badRequest(413);
 		mHasBody = true;
 	};
 }
@@ -133,15 +137,97 @@ void Request::checkTransferEncoding()
 		if (iter->second == "Chunked")
 			mIsChunked = true;
 		else
-			badRequest();
+			badRequest(400);
 		mContentLength = 0;
 		mHasBody = true;
 	}
 }
 
-void Request::checkHeaderForBody()
+void Request::checkLocationURI()
+{
+	std::map<std::string, LocationConfig *> locationConfig = mServerConfig->getLocationList();
+	std::vector<std::string> locationURIList;
+	std::string currentLocationURI = "";
+	std::string requestTarget = mTarget;
+
+	if (mErrorCode)
+		return ;
+
+	for (std::map<std::string, LocationConfig *>::iterator iter = locationConfig.begin(); iter != locationConfig.end(); iter++)
+	{
+		locationURIList.push_back((*iter).first);
+	}
+	for (std::vector<std::string>::iterator iter = locationURIList.begin(); iter != locationURIList.end(); iter++)
+	{
+		if ((requestTarget.find(*iter) != std::string::npos) && ((*iter).length() > currentLocationURI.length()))
+			currentLocationURI = *iter;
+	}
+
+	/* 404 not found */
+	if (currentLocationURI == "")
+		badRequest(404);
+	else
+		mLocationConfig = locationConfig[currentLocationURI];
+}
+
+
+void Request::checkLocationCGI()
+{
+	if (mErrorCode)
+		return ;
+
+	mIsCGI = false;
+	if (mLocationConfig->getCGIPath() != "")
+	{
+		std::vector<std::string> CGIExtensionList = mLocationConfig->getCGIExtensionList();
+		std::string targetFileExtension = mTarget.substr(mLocationConfig->getURI().length());
+		size_t dotIdx = targetFileExtension.find('.');
+		if (dotIdx == std::string::npos)
+			return ;
+		targetFileExtension.erase(0, dotIdx);
+		size_t slashIdx = targetFileExtension.find("/");
+		if (slashIdx != std::string::npos)
+			targetFileExtension.erase(slashIdx);
+		for (std::vector<std::string>::iterator iter = CGIExtensionList.begin(); iter != CGIExtensionList.end(); iter++)
+		{
+			if (targetFileExtension == *iter)
+			{
+				mIsCGI = true;
+				return ;
+			}
+		}
+	}
+}
+
+void Request::checkLocationMethodList()
+{
+	if (mErrorCode)
+		return ;
+
+	bool findMethod = false;
+	std::string requestMethod = getMethod();
+	std::vector<std::string> methodList = mLocationConfig->getAllowMethodList();;
+
+	if (mIsCGI)
+		methodList = mLocationConfig->getCGIMethodList();
+
+	for (std::vector<std::string>::iterator iter = methodList.begin(); iter != methodList.end(); iter++)
+	{
+		if (requestMethod == *iter)
+			findMethod = true;
+	}
+
+	/* 405 method not allowed */
+	if (!findMethod)
+		badRequest(405);
+}
+
+void Request::checkHeader()
 {
 	checkHost();
+	checkLocationURI();
+	checkLocationCGI();
+	checkLocationMethodList();
 	checkContentLength();
 	checkTransferEncoding();
 }
@@ -168,7 +254,7 @@ void Request::analyzeRequestLine(std::string line)
 	if (lineElements.size() != 3 || !isValidMethod(lineElements[0]) ||
 		!isValidTarget(lineElements[1])	|| lineElements[2] != HTTP_VERSION)
 	{
-		badRequest();
+		badRequest(400);
 		return ;
 	}
 	mMethod = lineElements[0];
@@ -189,7 +275,7 @@ void Request::analyzeHeaderField(std::string line)
 
 	if (colonIndex == std::string::npos)
 	{
-		badRequest();
+		badRequest(400);
 		return ;
 	}
 	std::string key = line.substr(0, colonIndex);
@@ -199,7 +285,7 @@ void Request::analyzeHeaderField(std::string line)
 	web::toUpper(key);
 	if (mField.find(key) != mField.end())
 	{
-		badRequest();
+		badRequest(400);
 		return ;
 	}
 	mField.insert(std::pair<std::string, std::string>(key, value));
@@ -218,7 +304,7 @@ void Request::analyzeHeader()
 		{
 			if (mAnalyzeLevel == HEADER && !mErrorCode)
 			{
-				checkHeaderForBody();
+				checkHeader();
 				mAnalyzeLevel = BODY;
 				return ;
 			}
@@ -247,9 +333,19 @@ std::vector<ServerConfig *> const &Request::getConfigVec() const
 	return (mConfigVec);
 }
 
-ServerConfig *Request::getConfig() const
+ServerConfig *Request::getServerConfig() const
 {
-	return (mConfig);
+	return (mServerConfig);
+}
+
+LocationConfig *Request::getLocationConfig() const
+{
+	return (mLocationConfig);
+}
+
+bool Request::isCGI() const
+{
+	return (mIsCGI);
 }
 
 enum Request::AnalyzeLevel Request::getAnalyzeLevel() const
