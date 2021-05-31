@@ -8,6 +8,7 @@
 #include "utils/Method.hpp"
 #include "utils/Config.hpp"
 #include "config/ServerConfig.hpp"
+#include "config/LocationConfig.hpp"
 
 class Request
 {
@@ -21,7 +22,8 @@ class Request
 		static std::string const HTTP_VERSION;
 
 		std::vector<ServerConfig *> const &mConfigVec;
-		ServerConfig *mConfig;
+		ServerConfig *mServerConfig;
+		LocationConfig *mLocationConfig;
 		enum AnalyzeLevel mAnalyzeLevel;
 		std::string mBuffer;
 		std::string mBody;
@@ -30,6 +32,7 @@ class Request
 		std::string mQuery;
 		std::map<std::string, std::string> mField;
 
+		bool mIsCGI;
 		bool mHasBody;
 		bool mIsChunked;
 		bool mIsReadData;
@@ -40,13 +43,23 @@ class Request
 		Request(Request const & copy);
 		Request &operator=(Request const & rhs);
 
-		void badRequest();
+		void badRequest(int errorCode);
 		void appendChunkedBody();
 		void appendContentBody();
 		void checkHost();
 		void checkContentLength();
 		void checkTransferEncoding();
-		void checkHeaderForBody();
+
+		/* find specific URI */
+		void checkLocationURI();
+
+		/* find method */
+		void checkLocationMethodList();
+
+		/* is have CGI? */
+		void checkLocationCGI();
+
+		void checkHeader();
 		void analyzeHeader();
 		void analyzeRequestLine(std::string line);
 		void analyzeHeaderField(std::string line);
@@ -62,7 +75,9 @@ class Request
 		void analyzeBuffer(char * buffer);
 
 		std::vector<ServerConfig *> const &getConfigVec() const;
-		ServerConfig *getConfig() const;
+		ServerConfig *getServerConfig() const;
+		LocationConfig *getLocationConfig() const;
+		bool isCGI() const;
 		enum Request::AnalyzeLevel getAnalyzeLevel() const;
 		std::string getBuffer() const;
 		std::string getBody() const;
