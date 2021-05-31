@@ -283,7 +283,6 @@ void CGIResponse::runCGI()
 			close(mOutPipe[0]);
 			close(mOutPipe[1]);
 			waitpid(mPid, NULL, 0);
-
 		}
 		else
 			setStatusCode(500);

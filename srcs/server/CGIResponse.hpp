@@ -4,6 +4,7 @@
 #include "server/Response.hpp"
 #include "utils/CGI.hpp"
 #include <signal.h>
+#include <sys/wait.h>
 
 class CGIResponse : public Response
 {
