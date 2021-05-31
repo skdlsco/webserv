@@ -53,6 +53,8 @@ void Request::appendChunkedBody()
 				break ;
 			mBody.append(mBuffer.substr(0, mContentLength));
 			mBuffer.erase(0, mContentLength);
+			if (mBody.length() > mLocationConfig->getClientMaxBodySize())
+				badRequest(413);
 			if (mContentLength == 0)
 				mAnalyzeLevel = DONE;
 			mIsReadData = false;
@@ -119,7 +121,7 @@ void Request::checkContentLength()
 		mContentLength = web::atoi(iter->second.c_str());
 		if (mContentLength < 0)
 			badRequest(400);
-		else if (mServerConfig->getClientMaxBodySize() < static_cast<unsigned long>(mContentLength))
+		else if (mLocationConfig->getClientMaxBodySize() < static_cast<unsigned long>(mContentLength))
 			badRequest(413);
 		mHasBody = true;
 	};
@@ -162,7 +164,7 @@ void Request::checkLocationURI()
 
 	/* 404 not found */
 	if (currentLocationURI == "")
-		mErrorCode = 404;
+		badRequest(404);
 	else
 		mLocationConfig = locationConfig[currentLocationURI];
 }
@@ -216,7 +218,7 @@ void Request::checkLocationMethodList()
 
 	/* 405 method not allowed */
 	if (!findMethod)
-		mErrorCode = 405;
+		badRequest(405);
 }
 
 void Request::checkHeader()
