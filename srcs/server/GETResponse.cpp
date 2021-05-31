@@ -147,8 +147,9 @@ std::string GETResponse::makeAutoIndexContent()
 	while ((file = readdir(directoryPointer)) != NULL)
 	{
 		fileName = file->d_name;
-		filePath = locationURI + fileName;
-		autoIndexContent += "<a href=\"" + filePath + "\">" + fileName + "</a>";
+		if (file->d_name == "." || file->d_name == "..")
+			continue;
+		autoIndexContent += "<a href=\"" + fileName + "\">" + fileName + "</a>";
 		for (size_t idx = 0; idx < 70 - fileName.length(); idx++)
 		{
 			autoIndexContent += " ";
