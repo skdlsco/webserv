@@ -159,6 +159,18 @@ LocationConfig *ConfigParser::parseLocationDirective(size_t & lineIndex)
 					locationConfig->addAllowMethod(splitResult[idx]);
 			}
 		}
+		if (currentDirective == web::locationDirective[web::LocationDirective::CGI_METHOD])
+		{
+			std::vector<std::string> CGIMethodList = locationConfig->getCGIMethodList();
+
+			for (size_t idx = 1; idx < splitResult.size(); idx++)
+			{
+				if (std::find(CGIMethodList.begin(),
+								CGIMethodList.end(),
+								splitResult[idx]) == CGIMethodList.end())
+					locationConfig->addAllowMethod(splitResult[idx]);
+			}
+		}
 		if (currentDirective == web::locationDirective[web::LocationDirective::CGI_EXTENSION])
 		{
 			for (size_t idx = 1; idx < splitResult.size(); idx++)

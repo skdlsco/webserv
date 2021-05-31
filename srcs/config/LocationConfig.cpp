@@ -23,6 +23,7 @@ LocationConfig &LocationConfig::operator=(LocationConfig const & rhs)
 	{
 		mCommonDirective = rhs.mCommonDirective;
 		mAllowMethodList = rhs.mAllowMethodList;
+		mCGIMethodList = rhs.mCGIMethodList;
 		mCGIExtensionList = rhs.mCGIExtensionList;
 		mCGIPath = rhs.mCGIPath;
 		mURI = rhs.mURI;
@@ -33,6 +34,7 @@ LocationConfig &LocationConfig::operator=(LocationConfig const & rhs)
 LocationConfig::~LocationConfig()
 {
 	mAllowMethodList.clear();
+	mCGIMethodList.clear();
 	mCGIExtensionList.clear();
 }
 
@@ -59,6 +61,11 @@ bool LocationConfig::isAutoIndex() const
 std::vector<std::string> LocationConfig::getAllowMethodList() const
 {
 	return (mAllowMethodList);
+}
+
+std::vector<std::string> LocationConfig::getCGIMethodList() const
+{
+	return (mCGIMethodList);
 }
 
 std::vector<std::string> LocationConfig::getCGIExtensionList() const
@@ -124,6 +131,11 @@ void LocationConfig::setURI(std::string const & URI)
 void LocationConfig::addAllowMethod(std::string const & allowMethod)
 {
 	mAllowMethodList.push_back(allowMethod);
+}
+
+void LocationConfig::addCGIMethod(std::string const & CGIMethod)
+{
+	mCGIMethodList.push_back(CGIMethod);
 }
 
 void LocationConfig::addCGIExtension(std::string const & CGIExtension)

@@ -150,13 +150,14 @@ void ResponseFactory::checkLocationURI()
 
 void ResponseFactory::checkLocationCGI()
 {
+	if (mResponseState == ERROR)
+		return ;
+
 	std::vector<std::string> CGIExtensionList;
 	std::string targetBackElement;
 	std::string targetFileExtension;
 	size_t dotIndex;
 
-	if (mResponseState == ERROR)
-		return ;
 	if (mLocationConfig->getCGIPath() != "")
 	{
 		CGIExtensionList = mLocationConfig->getCGIExtensionList();
@@ -170,6 +171,7 @@ void ResponseFactory::checkLocationCGI()
 			if (targetFileExtension == *iter)
 			{
 				mResponseState = CGI;
+				checkLocationMethodList();
 				return ;
 			}
 		}
@@ -178,12 +180,15 @@ void ResponseFactory::checkLocationCGI()
 
 void ResponseFactory::checkLocationMethodList()
 {
-	if (mResponseState == ERROR || mResponseState == CGI)
+	if (mResponseState == ERROR)
 		return ;
 
 	bool findMethod = false;
-	std::vector<std::string> methodList = mLocationConfig->getAllowMethodList();
 	std::string requestMethod = mRequest.getMethod();
+	std::vector<std::string> methodList = mLocationConfig->getAllowMethodList();;
+
+	if (mResponseState == CGI)
+		methodList = mLocationConfig->getCGIMethodList();
 
 	for (std::vector<std::string>::iterator iter = methodList.begin(); iter != methodList.end(); iter++)
 	{

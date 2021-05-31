@@ -235,7 +235,8 @@ bool ConfigValidator::isValidateMethodName()
 
 	while (lineIndex < mEachConfigLine.size())
 	{
-		if (mEachConfigLine[lineIndex].find("allow_method") != std::string::npos)
+		if (mEachConfigLine[lineIndex].find("allow_method") != std::string::npos ||
+			mEachConfigLine[lineIndex].find("cgi_method") != std::string::npos)
 		{
 			methodVector = web::split(mEachConfigLine[lineIndex], " \t");
 			
@@ -356,6 +357,11 @@ bool ConfigValidator::hasMandatoryDirective(size_t flag)
 		/* is CGI path & extension are existed or non-existed */
 		if ((!mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_EXTENSION]] && mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_PATH]])
 			|| (mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_EXTENSION]] && !mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_PATH]]))
+			return (false);
+
+		/* is CGI Vector & CGI Path are existed or non-existed */
+		if ((!mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_PATH]] && mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_METHOD]])
+			|| (!mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_PATH]] && !mCountLocationDirective[web::locationDirective[web::LocationDirective::CGI_METHOD]]))
 			return (false);
 	}
 	return (true);

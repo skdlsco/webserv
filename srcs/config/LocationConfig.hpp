@@ -12,6 +12,7 @@ class LocationConfig
 	private:
 		CommonDirective mCommonDirective;
 		std::vector<std::string> mAllowMethodList;
+		std::vector<std::string> mCGIMethodList;
 		std::vector<std::string> mCGIExtensionList;
 		std::string mCGIPath;
 		std::string mAuthUserName;
@@ -31,6 +32,7 @@ class LocationConfig
 		bool isAutoIndex() const;
 
 		std::vector<std::string> getAllowMethodList() const;
+		std::vector<std::string> getCGIMethodList() const;
 		std::vector<std::string> getCGIExtensionList() const;
 		std::string const &getCGIPath() const;
 		std::string const &getAuthUserName() const;
@@ -47,6 +49,7 @@ class LocationConfig
 		void setURI(std::string const & URI);
 
 		void addAllowMethod(std::string const & allowMethod);
+		void addCGIMethod(std::string const & CGIMethod);
 		void addCGIExtension(std::string const & CGIExtension);
 		void setCGIPath(std::string CGIPath);
 };
