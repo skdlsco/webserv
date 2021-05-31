@@ -95,8 +95,13 @@ std::string web::getLastModifiedTime(std::string & path)
 	struct timeval time;
 	struct tm t;
 
-	time.tv_sec = sb.st_mtimespec.tv_sec;
-	time.tv_usec = sb.st_mtimespec.tv_nsec / 1000;
+	#ifdef __APPLE__
+		time.tv_sec = sb.st_mtimespec.tv_sec;
+		time.tv_usec = sb.st_mtimespec.tv_nsec / 1000;
+	#else
+		time.tv_sec = sb.st_mtim.tv_sec;
+		time.tv_usec = sb.st_mtim.tv_nsec / 1000;
+	#endif
 
 	t = web::timevalToTm(time);
 	strftime(buffer, sizeof(buffer), "%a, %d %b %Y %X GMT", &t);
@@ -104,15 +109,25 @@ std::string web::getLastModifiedTime(std::string & path)
 }
 
 /* for autoindex */
-std::string web::getFileTime()
+std::string web::getFileTime(std::string & path)
 {
+	struct stat sb;
 	char buffer[32];
+
 	bzero(buffer, sizeof(buffer));
+	stat(path.c_str(), &sb);
 
 	struct timeval time;
 	struct tm t;
 
-	gettimeofday(&time, NULL);
+	#ifdef __APPLE__
+		time.tv_sec = sb.st_mtimespec.tv_sec;
+		time.tv_usec = sb.st_mtimespec.tv_nsec / 1000;
+	#else
+		time.tv_sec = sb.st_mtim.tv_sec;
+		time.tv_usec = sb.st_mtim.tv_nsec / 1000;
+	#endif
+
 	t = web::timevalToTm(time);
 	strftime(buffer, sizeof(buffer), "%d-%b-%Y %H:%M", &t);
 	return (buffer);
