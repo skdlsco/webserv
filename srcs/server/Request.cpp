@@ -26,6 +26,7 @@ Request &Request::operator=(Request const & rhs)
 	if (this != &rhs)
 	{
 		mServerConfig = rhs.mServerConfig;
+		mLocationConfig = rhs.mLocationConfig;
 		mAnalyzeLevel = rhs.mAnalyzeLevel;
 		mBuffer = rhs.mBuffer;
 		mBody = rhs.mBody;
