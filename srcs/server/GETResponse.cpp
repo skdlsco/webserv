@@ -148,12 +148,17 @@ std::string GETResponse::makeAutoIndexContent()
 	{
 		fileName = file->d_name;
 		filePath = locationURI + fileName;
-		autoIndexContent += "<a href=\"" + filePath + "\">" + fileName + "</a>";
+
+		if (file->d_name != "." && file->d_name != "..")
+			autoIndexContent += "<a href=\"" + filePath + "\">" + fileName + "</a>";
+		else
+			autoIndexContent += "<a href=\"" + fileName + "\">" + fileName + "</a>";
 		for (size_t idx = 0; idx < 70 - fileName.length(); idx++)
 		{
 			autoIndexContent += " ";
 		}
-		autoIndexContent += web::getFileTime(filePath);
+		if (file->d_name != "." && file->d_name != "..")
+			autoIndexContent += web::getFileTime(filePath);
 		autoIndexContent += "<br>";
 	}
 	autoIndexContent += "</pre><hr></body></html>";
