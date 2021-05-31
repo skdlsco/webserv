@@ -163,10 +163,6 @@ char **CGIResponse::createCGIEnv()
 			break ;
 		}
 	}
-	for (int i = 0; i < NUM_CGI_ENV; i++)
-	{
-		logger::println(TAG, mEnv[i]);
-	}
 	if (isError)
 	{
 		freeEnv(mEnv);
@@ -192,22 +188,17 @@ void CGIResponse::execveCGI()
 	argv[1] = NULL;
 	if (execve(getLocationConfig()->getCGIPath().c_str(), argv, mEnv) == -1)
 		setStatusCode(500);
-	logger::print(TAG) << errno << std::endl;
 	free(argv[0]);
-	logger::println(TAG, "execve failed");
 	exit(1);
 }
 
 void CGIResponse::forkCGI()
 {
 	mPid = fork();
-	logger::print(TAG) << "before fork " << getStatusCode() << std::endl;
 	if (mPid == -1)
 		setStatusCode(500);
 	else if (mPid == 0)
 		execveCGI();
-	logger::print(TAG) << "after fork pid :" << mPid<< std::endl;
-	logger::print(TAG) << "after fork " << getStatusCode() << std::endl;
 	close(mInPipe[1]);
 	close(mOutPipe[0]);
 }
@@ -233,15 +224,36 @@ void CGIResponse::sendBody()
 	}
 	if (writeN == -1)
 		setStatusCode(500);
-	logger::print(TAG) << idx << std::endl;
 	close(mOutPipe[1]);
+}
+
+bool CGIResponse::responseToHeader()
+{
+	std::string line;
+	size_t lineIdx = mCGIResponse.find("\r\n");
+
+	while (lineIdx != std::string::npos)
+	{
+		line = mCGIResponse.substr(0, lineIdx);
+		mCGIResponse.erase(0, lineIdx + 2);
+		if (line.empty())
+			return (false);
+		web::trim(line);
+		size_t coloneIdx = line.find(":");
+		std::string key = line.substr(0, coloneIdx);
+		std::string value = line.substr(coloneIdx + 1);
+		web::trim(value);
+		mResponseHeader.insert(std::pair<std::string, std::string>(key, value));
+		lineIdx = mCGIResponse.find("\r\n");
+	}
+	return (true);
 }
 
 void CGIResponse::readCGI()
 {
 	if (getStatusCode())
 		return ;
-
+	bool isHeader = true;
 	char buffer[BUFFER_SIZE + 1];
 	ssize_t readN;
 
@@ -249,6 +261,8 @@ void CGIResponse::readCGI()
 	{
 		buffer[readN] = 0;
 		mCGIResponse.append(buffer);
+		if (isHeader)
+			isHeader = responseToHeader();
 	}
 	if (readN == -1)
 	{
@@ -280,6 +294,48 @@ void CGIResponse::runCGI()
 		setStatusCode(500);
 }
 
+void CGIResponse::appendResponseHeader(std::string &responseContent)
+{
+	std::map<std::string, std::string>::iterator iter;
+
+	iter = mResponseHeader.find("Status");
+	if (iter == mResponseHeader.end())
+		throw std::exception();
+	responseContent += "HTTP/1.1 " + iter->second + "\r\n";
+	mResponseHeader.erase("Status");
+	responseContent += "Date: " + web::getDate() + "\r\n";
+	responseContent += "Server: webserv (chlee, ina)\r\n";
+	responseContent += "Connection: close\r\n";
+	iter = mResponseHeader.find("Content-Length");
+	if (iter == mResponseHeader.end())
+		responseContent += "Content-Length: " + web::toString(mCGIResponse.length()) + "\r\n";
+	for (iter = mResponseHeader.begin(); iter != mResponseHeader.end(); iter++)
+	{
+		responseContent += iter->first + ": " + iter->second + "\r\n";
+	}
+	responseContent += "\r\n";
+}
+
+std::string *CGIResponse::createResponseContent()
+{
+	std::string *responseContent = NULL;
+	try
+	{
+		responseContent = new std::string;
+		if (responseContent == NULL)
+			return (NULL);
+		appendResponseHeader(*responseContent);
+		*responseContent += mCGIResponse;
+	}
+	catch(const std::exception& e)
+	{
+		logger::println(TAG, e.what());
+		delete (responseContent);
+		responseContent = NULL;
+	}
+	return (responseContent);
+}
+
 std::string *CGIResponse::getResponse()
 {
 	initCGIInfo();
@@ -296,10 +352,9 @@ std::string *CGIResponse::getResponse()
 		return (NULL);
 	}
 	runCGI();
-	logger::println(TAG, mCGIResponse);
-	// createResponseContent();
+	std::string *response = createResponseContent();
 	freeEnv(mEnv);
 	mEnv = NULL;
-	return (NULL);
+	return (response);
 }
 

@@ -17,6 +17,9 @@ class CGIResponse : public Response
 		std::string mScriptName;
 		std::string mCGIResponse;
 
+		std::map<std::string, std::string> mResponseHeader;
+		std::string mResponseBody;
+
 		char **mEnv;
 		int mInPipe[2];
 		int mOutPipe[2];
@@ -33,6 +36,9 @@ class CGIResponse : public Response
 		void runCGI();
 		void sendBody();
 		void readCGI();
+		bool responseToHeader();
+		void appendResponseHeader(std::string &responseContent);
+		std::string *createResponseContent();
 	public:
 		static std::string const TAG;
 
