@@ -37,6 +37,7 @@ std::string *ResponseFactory::create(struct sockaddr_in clientAddr,
 	{
 		logger::println(TAG, e.what());
 	}
+	logger::print(TAG) << response->getStatusCode() << std::endl;
 	delete response;
 	return (result);
 }
@@ -77,10 +78,10 @@ Response *ResponseFactory::createResponse()
 {
 	Response *response = NULL;
 
-	logger::print(TAG) << web::toAddr(mClientAddr.sin_addr.s_addr) << " " << mRequest.getMethod() << " " << mRequest.getTarget() << mRequest.getQuery() << std::endl;
+	logger::print(TAG) << web::toAddr(mClientAddr.sin_addr.s_addr) << " " << mRequest.getMethod() << " " << mRequest.getTarget() << "?" << mRequest.getQuery() << std::endl;
 	try
 	{
-		if (mRequest.isCGI())
+		if (mResponseState == CGI)
 			response = createCGIResponse();
 		if (mResponseState == METHOD)
 			response = createMethodResponse();

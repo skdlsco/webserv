@@ -28,31 +28,30 @@ HEADResponse::~HEADResponse()
 
 std::string *HEADResponse::getResponse()
 {
+	initState();
+	if (getStatusCode() != 0)
+		return (NULL);
 	std::string responseBody;
 	std::string *responseContent;
-
 	try
 	{
 		responseContent = new std::string();
 		if (responseContent)
 		{
-			setContentLocation();
+			initContentLocation();
 			responseBody = createResponseBody();
-
+			if (getStatusCode() == 0)
+				setStatusCode(200);
 			*responseContent += createResponseLine();
 			createResponseHeader(responseBody, *responseContent);
-
 			/* HEAD Method Response don't have body content */
 			/* *mResponseContent += createResponseBody(); */
 		}
-
-		if (getStatusCode() != 0)
+		if (getStatusCode() != 200)
 		{
 			delete responseContent;
 			responseContent = NULL;
 		}
-		else
-			setStatusCode(200);
 	}
 	catch(const std::exception& e)
 	{

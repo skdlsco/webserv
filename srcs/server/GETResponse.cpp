@@ -6,25 +6,7 @@ GETResponse::GETResponse(const ServerConfig * serverConfig,
 						const LocationConfig * locationConfig)
 : Response(serverConfig, locationConfig), mState(INDEX_HTML), mContentLocation("")
 {
-	int fd;
 
-	if (isDirectory(getTarget().c_str()))
-	{
-		if (getLocationConfig()->isAutoIndex())
-			mState = AUTOINDEX;
-		else
-			mState = INDEX_HTML;
-	}
-	else
-	{
-		if ((fd = open(getTarget().c_str(), O_RDONLY)) < 0)
-			mState = INDEX_HTML;
-		else
-		{
-			mState = TARGET;
-			close(fd);
-		}
-	}
 }
 
 GETResponse::GETResponse(GETResponse const & copy)
@@ -50,6 +32,9 @@ GETResponse::~GETResponse()
 
 std::string *GETResponse::getResponse()
 {
+	initState();
+	if (getStatusCode() != 0)
+		return (NULL);
 	std::string responseBody;
 	std::string *responseContent;
 	try
@@ -57,21 +42,19 @@ std::string *GETResponse::getResponse()
 		responseContent = new std::string();
 		if (responseContent)
 		{
-			setContentLocation();
+			initContentLocation();
 			responseBody = createResponseBody();
-
+			if (getStatusCode() == 0)
+				setStatusCode(200);
 			*responseContent += createResponseLine();
 			createResponseHeader(responseBody, *responseContent);
 			*responseContent += responseBody;
 		}
-
-		if (getStatusCode() != 0)
+		if (getStatusCode() != 200)
 		{
 			delete responseContent;
 			responseContent = NULL;
 		}
-		else
-			setStatusCode(200);
 	}
 	catch(const std::exception& e)
 	{
@@ -108,15 +91,32 @@ void GETResponse::createResponseHeader(std::string const & responseBody, std::st
 	responseContent += "\r\n";
 }
 
-void GETResponse::setContentLocation()
+void GETResponse::initState()
+{
+	std::string contentLocation = getLocationConfig()->getRoot() + getTarget();
+	contentLocation = web::removeConsecutiveDuplicate(contentLocation, '/');
+	logger::println(TAG, contentLocation);
+	if (isDirectory(contentLocation.c_str()))
+	{
+		logger::println(TAG, contentLocation);
+		if (getLocationConfig()->isAutoIndex())
+			mState = AUTOINDEX;
+		else
+			mState = INDEX_HTML;
+	}
+	else if (web::isPathExist(contentLocation.c_str()))
+			mState = TARGET;
+	else
+		setStatusCode(404);
+}
+
+void GETResponse::initContentLocation()
 {
 	if (mState == INDEX_HTML)
-	{
 		mContentLocation = getLocationConfig()->getRoot() + getLocationConfig()->getIndexFile();
-		mContentLocation = web::removeConsecutiveDuplicate(mContentLocation, '/');
-	}
 	else if (mState == TARGET)
-		mContentLocation = getTarget();
+		mContentLocation = getLocationConfig()->getRoot() + getTarget();
+	mContentLocation = web::removeConsecutiveDuplicate(mContentLocation, '/');
 }
 
 std::string GETResponse::createResponseBody()
@@ -169,6 +169,7 @@ std::string GETResponse::makeAutoIndexContent()
 std::string GETResponse::readContentLocation()
 {
 	File file(mContentLocation);
+	logger::println(TAG, mContentLocation);
 	std::string content = "";
 
 	try

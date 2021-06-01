@@ -6,10 +6,7 @@ LocationConfig::LocationConfig()
 : mCommonDirective(), mAllowMethodList(), mCGIExtensionList(),
 	mCGIPath(""), mAuthUserName(""), mAuthUserPassword(""), mURI("")
 {
-	/* to avoid nested name specifier */
-	mAllowMethodList.push_back(web::method[web::GET]);
-	mAllowMethodList.push_back(web::method[web::HEAD]);
-	mAllowMethodList.push_back(web::method[web::OPTIONS]);
+
 }
 
 LocationConfig::LocationConfig(LocationConfig const & copy)
