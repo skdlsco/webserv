@@ -1,4 +1,5 @@
 #include "Request.hpp"
+#include <stdio.h>
 
 std::string const Request::TAG = "Request";
 std::string const Request::HTTP_VERSION = "HTTP/1.1";
@@ -50,7 +51,7 @@ void Request::appendChunkedBody()
 	{
 		if (mIsReadData)
 		{
-			if (mBuffer.size() < static_cast<unsigned long>(mContentLength))
+			if (mBuffer.size() < static_cast<unsigned long>(mContentLength + 2))
 				break ;
 			mBody.append(mBuffer.substr(0, mContentLength));
 			mBuffer.erase(0, mContentLength + 2);
@@ -63,15 +64,15 @@ void Request::appendChunkedBody()
 		{
 			std::string line;
 			size_t lineIndex = mBuffer.find("\r\n");
+
 			if (lineIndex != std::string::npos)
 			{
 				line = mBuffer.substr(0, lineIndex);
-				logger::println(TAG, "initial Buffer: |" + mBuffer + "|");
 				mBuffer.erase(0, lineIndex + 2);
-				logger::println(TAG, "Erase After Buffer: |" + mBuffer + "|");
-				if (line.empty())
+				if (!line.empty())
+					mContentLength = web::axtoi(line.c_str());
+				else
 					badRequest(400);
-				mContentLength = web::axtoi(line.c_str());
 				if (mContentLength < 0)
 					badRequest(400);
 				mIsReadData = true;
@@ -178,8 +179,6 @@ void Request::checkLocationURI()
 			mTargetContent = mTarget.substr(currentLocationURI.length() - 1);
 		else
 			mTargetContent = "";
-		logger::print(TAG) << "currentLocationURI: " << currentLocationURI << std::endl;
-		logger::print(TAG) << "mTargetContent: " << mTargetContent << std::endl;
 	}
 }
 
@@ -254,11 +253,6 @@ void Request::checkHeader()
 	checkLocationMethodList();
 	checkContentLength();
 	checkTransferEncoding();
-	// std::map<std::string, std::string>::iterator iter = mField.begin();
-	// for (; iter != mField.end(); iter++)
-	// {
-	// 	logger::print(TAG) << iter->first << ": " << iter->second << std::endl;
-	// }
 }
 
 bool Request::isValidMethod(std::string method)
@@ -348,7 +342,8 @@ void Request::analyzeHeader()
 
 void Request::analyzeBuffer(char *buffer)
 {
-	mBuffer.append(buffer);
+	if (buffer[0] != '\0')
+		mBuffer.append(buffer);
 	if (mAnalyzeLevel == REQUEST_LINE || mAnalyzeLevel == HEADER)
 		analyzeHeader();
 	if (mAnalyzeLevel == BODY)
