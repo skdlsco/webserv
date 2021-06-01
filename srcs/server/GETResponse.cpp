@@ -113,12 +113,10 @@ void GETResponse::initState()
 void GETResponse::initContentLocation()
 {
 	if (mState == INDEX_HTML)
-	{
 		mContentLocation = getLocationConfig()->getRoot() + getLocationConfig()->getIndexFile();
-		mContentLocation = web::removeConsecutiveDuplicate(mContentLocation, '/');
-	}
 	else if (mState == TARGET)
 		mContentLocation = getLocationConfig()->getRoot() + getTarget();
+	mContentLocation = web::removeConsecutiveDuplicate(mContentLocation, '/');
 }
 
 std::string GETResponse::createResponseBody()
