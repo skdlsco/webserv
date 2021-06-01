@@ -1,5 +1,4 @@
 #include "Request.hpp"
-#include <stdio.h>
 
 std::string const Request::TAG = "Request";
 std::string const Request::HTTP_VERSION = "HTTP/1.1";
