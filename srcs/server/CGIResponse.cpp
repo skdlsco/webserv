@@ -222,10 +222,7 @@ void CGIResponse::sendBody()
 		idx += writeN;
 		if (bufferSize > requestBody.length() - idx)
 			bufferSize =  requestBody.length() - idx;
-		logger::print(TAG) << "idx : " << idx << std::endl;
 	}
-	logger::print(TAG) << "idx : " << idx << std::endl;
-	logger::print(TAG) << "writeN : " << writeN << std::endl;
 	if (writeN == -1)
 		setStatusCode(500);
 	close(mOutPipe[1]);
@@ -341,9 +338,7 @@ std::string *CGIResponse::createResponseContent()
 
 std::string *CGIResponse::getResponse()
 {
-	logger::println(TAG, "hello");
 	initCGIInfo();
-	logger::println(TAG, mScriptFileName);
 	if (!web::isPathExist(mScriptFileName))
 	{
 		/* 여기서 체크 해서 404 띄우는게 맞을까 */
