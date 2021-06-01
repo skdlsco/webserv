@@ -82,7 +82,7 @@ void Request::appendChunkedBody()
 
 void Request::appendContentBody()
 {
-	if (mBody.size() + mBuffer.size() > static_cast<unsigned long>(mContentLength))
+	if (mBody.size() + mBuffer.size() > static_cast<unsigned long>(mContentLength + 2))
 		mBody.append(mBuffer.substr(0, mContentLength - mBody.size()));
 	else
 		mBody.append(mBuffer);
@@ -252,11 +252,12 @@ void Request::checkHeader()
 	checkLocationMethodList();
 	checkContentLength();
 	checkTransferEncoding();
-	// std::map<std::string, std::string>::iterator iter = mField.begin();
-	// for (; iter != mField.end(); iter++)
-	// {
-	// 	logger::print(TAG) << iter->first << ": " << iter->second << std::endl;
-	// }
+	std::map<std::string, std::string>::iterator iter = mField.begin();
+	for (; iter != mField.end(); iter++)
+	{
+		logger::print(TAG) << iter->first << ": " << iter->second << std::endl;
+	}
+	logger::print(TAG) << mErrorCode << std::endl;
 }
 
 bool Request::isValidMethod(std::string method)
