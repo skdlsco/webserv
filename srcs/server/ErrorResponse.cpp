@@ -6,7 +6,7 @@ ErrorResponse::ErrorResponse(const ServerConfig * serverConfig, const LocationCo
 : Response(serverConfig, locationConfig), mIsDefault(false),
 	mFile(web::removeConsecutiveDuplicate(getServerConfig()->getRoot() + getServerConfig()->getDefaultErrorPagePath(), '/'))
 {
-	
+
 }
 
 ErrorResponse::~ErrorResponse()
