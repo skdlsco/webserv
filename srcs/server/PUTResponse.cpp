@@ -83,10 +83,12 @@ void PUTResponse::checkAuthorization()
 
 void PUTResponse::checkTarget()
 {
-	std::string path = getLocationConfig()->getRoot() + getTarget();
+	std::string path = getLocationConfig()->getRoot() + getTargetContent();
 
 	path = web::removeConsecutiveDuplicate(path, '/');
 
+	if (path[path.length() - 1] == '/')
+		path.erase(path.length() - 1);
 	int slashIdx = path.find_last_of("/");
 	std::string folder = path.substr(0, slashIdx);
 	std::string file = path.substr(slashIdx + 1);
