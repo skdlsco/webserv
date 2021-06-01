@@ -172,7 +172,7 @@ void Request::checkLocationURI()
 	{
 		mLocationConfig = locationConfig[currentLocationURI];
 		if (mTarget.length() > currentLocationURI.length())
-			mTargetContent = requestTarget.substr(currentLocationURI.length() - 1);
+			mTargetContent = mTarget.substr(currentLocationURI.length() - 1);
 		else
 			mTargetContent = "";
 		logger::print(TAG) << "currentLocationURI: " << currentLocationURI << std::endl;
@@ -246,17 +246,11 @@ void Request::checkLocationMethodList()
 void Request::checkHeader()
 {
 	checkHost();
-	logger::print(TAG) << "test1" << std::endl;
 	checkLocationURI();
-	logger::print(TAG) << "test2"<< std::endl;
 	checkLocationCGI();
-	logger::print(TAG) << "test3"<< std::endl;
 	checkLocationMethodList();
-	logger::print(TAG) << "test4"<< std::endl;
 	checkContentLength();
-	logger::print(TAG) << "test5"<< std::endl;;
 	checkTransferEncoding();
-	logger::print(TAG) << "test6"<< std::endl;
 }
 
 bool Request::isValidMethod(std::string method)
