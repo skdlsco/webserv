@@ -64,6 +64,7 @@ class Request
 		void analyzeRequestLine(std::string line);
 		void analyzeHeaderField(std::string line);
 		void analyzeBody();
+		bool isCGIMethod();
 		bool isValidMethod(std::string method);
 		bool isValidTarget(std::string target);
 	public:
