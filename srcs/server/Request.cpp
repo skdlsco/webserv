@@ -204,7 +204,7 @@ void Request::checkLocationMethodList()
 	if (mErrorCode)
 		return ;
 
-	bool findMethod = false;
+	bool isFindMethod = false;
 	std::string requestMethod = getMethod();
 	std::vector<std::string> methodList = mLocationConfig->getAllowMethodList();;
 
@@ -214,11 +214,19 @@ void Request::checkLocationMethodList()
 	for (std::vector<std::string>::iterator iter = methodList.begin(); iter != methodList.end(); iter++)
 	{
 		if (requestMethod == *iter)
-			findMethod = true;
+			isFindMethod = true;
+	}
+
+	/* to check CGI */
+	if (!isFindMethod && mIsCGI)
+	{
+		mIsCGI = false;
+		checkLocationMethodList();
+		return ;
 	}
 
 	/* 405 method not allowed */
-	if (!findMethod)
+	if (!isFindMethod)
 		badRequest(405);
 }
 
