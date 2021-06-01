@@ -83,7 +83,7 @@ std::string Response::getTargetContent() const
 
 void Response::setTargetContent(std::string targetContent)
 {
-	mTarget = targetContent;
+	mTargetContent = targetContent;
 }
 
 std::string Response::getMethod() const
