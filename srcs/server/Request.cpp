@@ -150,7 +150,7 @@ void Request::checkLocationURI()
 	std::map<std::string, LocationConfig *> locationConfig = mServerConfig->getLocationList();
 	std::vector<std::string> locationURIList;
 	std::string currentLocationURI = "";
-	std::string requestTarget = mTarget;
+	std::string requestTarget = web::removeConsecutiveDuplicate(mTarget + '/', '/');
 
 	if (mErrorCode)
 		return ;
@@ -169,7 +169,15 @@ void Request::checkLocationURI()
 	if (currentLocationURI == "")
 		badRequest(404);
 	else
+	{
 		mLocationConfig = locationConfig[currentLocationURI];
+		if (mTarget.length() > currentLocationURI.length())
+			mTargetContent = requestTarget.substr(currentLocationURI.length() - 1);
+		else
+			mTargetContent = "";
+		logger::print(TAG) << "currentLocationURI: " << currentLocationURI << std::endl;
+		logger::print(TAG) << "mTargetContent: " << mTargetContent << std::endl;
+	}
 }
 
 
@@ -182,6 +190,9 @@ void Request::checkLocationCGI()
 	if (mLocationConfig->getCGIPath() != "")
 	{
 		std::vector<std::string> CGIExtensionList = mLocationConfig->getCGIExtensionList();
+		/* substr error */
+		if (mLocationConfig->getURI().length() > mTarget.length())
+			return ;
 		std::string targetFileExtension = mTarget.substr(mLocationConfig->getURI().length());
 		size_t dotIdx = targetFileExtension.find('.');
 		if (dotIdx == std::string::npos)
@@ -235,11 +246,17 @@ void Request::checkLocationMethodList()
 void Request::checkHeader()
 {
 	checkHost();
+	logger::print(TAG) << "test1" << std::endl;
 	checkLocationURI();
+	logger::print(TAG) << "test2"<< std::endl;
 	checkLocationCGI();
+	logger::print(TAG) << "test3"<< std::endl;
 	checkLocationMethodList();
+	logger::print(TAG) << "test4"<< std::endl;
 	checkContentLength();
+	logger::print(TAG) << "test5"<< std::endl;;
 	checkTransferEncoding();
+	logger::print(TAG) << "test6"<< std::endl;
 }
 
 bool Request::isValidMethod(std::string method)
@@ -381,6 +398,11 @@ std::string Request::getMethod() const
 std::string Request::getTarget() const
 {
 	return (mTarget);
+}
+
+std::string Request::getTargetContent() const
+{
+	return (mTargetContent);
 }
 
 std::string Request::getQuery() const
