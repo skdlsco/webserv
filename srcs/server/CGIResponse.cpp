@@ -36,9 +36,9 @@ void CGIResponse::freeEnv(char **env)
 
 void CGIResponse::initCGIInfo()
 {
-	std::string target = getTarget();
+	std::string target = getTargetContent();
 
-	for (size_t idx = target.find("."); idx > 0 ; idx--)
+	for (size_t idx = target.find("."); idx >= 0 ; idx--)
 	{
 		if (target[idx] == '/')
 		{
@@ -57,8 +57,7 @@ void CGIResponse::initCGIInfo()
 			break ;
 		}
 	}
-	mScriptFileName = mDocumentRoot + mScriptName;
-	logger::print(TAG) << "mScriptFileName: " + mScriptFileName;
+	mScriptFileName = web::removeConsecutiveDuplicate(mDocumentRoot + mScriptName, '/');
 }
 
 std::string CGIResponse::getCGIVariableContentType()
