@@ -33,7 +33,8 @@ class GETResponse : public Response
 		virtual ~GETResponse();
 
 		bool isDirectory(const char *target);
-		void setContentLocation();
+		void initState();
+		void initContentLocation();
 		std::string makeAutoIndexContent();
 		std::string readContentLocation();
 

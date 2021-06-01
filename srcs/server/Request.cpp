@@ -227,12 +227,6 @@ void Request::checkLocationMethodList()
 		return ;
 	}
 
-	if (!findMethod && mIsCGI)
-	{
-		mIsCGI = false;
-		checkLocationMethodList();
-		return ;
-	}
 	/* 405 method not allowed */
 	if (!isFindMethod)
 		badRequest(405);

@@ -28,15 +28,17 @@ HEADResponse::~HEADResponse()
 
 std::string *HEADResponse::getResponse()
 {
+	initState();
+	if (getStatusCode() != 0)
+		return (NULL);
 	std::string responseBody;
 	std::string *responseContent;
-
 	try
 	{
 		responseContent = new std::string();
 		if (responseContent)
 		{
-			setContentLocation();
+			initContentLocation();
 			responseBody = createResponseBody();
 			if (getStatusCode() == 0)
 				setStatusCode(200);
