@@ -87,8 +87,14 @@ void PUTResponse::checkTarget()
 	std::string path = getLocationConfig()->getRoot() + getTargetContent();
 
 	path = web::removeConsecutiveDuplicate(path, '/');
+<<<<<<< HEAD
 	
 	logger::print(TAG) << "path: " << path << std::endl;
+=======
+
+	if (path[path.length() - 1] == '/')
+		path.erase(path.length() - 1);
+>>>>>>> 0fa402c68b89dfa72ab27a9eca27b631ba7e2dc6
 	int slashIdx = path.find_last_of("/");
 	std::string folder = path.substr(0, slashIdx);
 	std::string file = path.substr(slashIdx + 1);

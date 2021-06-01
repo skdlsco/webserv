@@ -80,10 +80,10 @@ void Request::appendChunkedBody()
 				mContentLength = web::axtoi(line.c_str());
 				if (mContentLength < 0)
 					badRequest(400);
-				logger::println(TAG, "mContentLength: " + web::toString(mContentLength));
-			} else
-				badRequest(400);
-			mIsReadData = true;
+				mIsReadData = true;
+			}
+			else
+				break ;
 		}
 	}
 }
@@ -260,6 +260,11 @@ void Request::checkHeader()
 	checkLocationMethodList();
 	checkContentLength();
 	checkTransferEncoding();
+	// std::map<std::string, std::string>::iterator iter = mField.begin();
+	// for (; iter != mField.end(); iter++)
+	// {
+	// 	logger::print(TAG) << iter->first << ": " << iter->second << std::endl;
+	// }
 }
 
 bool Request::isValidMethod(std::string method)

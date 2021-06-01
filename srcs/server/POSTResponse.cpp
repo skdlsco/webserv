@@ -103,7 +103,7 @@ void POSTResponse::createFileName(std::string const & path)
 
 void POSTResponse::checkTarget()
 {
-	std::string path = getLocationConfig()->getRoot() + getTarget();
+	std::string path = getLocationConfig()->getRoot() + getTargetContent();
 
 	path = web::removeConsecutiveDuplicate(path, '/');
 	int slashIdx = path.find_last_of("/");
