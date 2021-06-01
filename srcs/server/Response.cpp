@@ -81,7 +81,7 @@ std::string Response::getTargetContent() const
 	return (mTargetContent);
 }
 
-void Response::setTarget(std::string targetContent)
+void Response::setTargetContent(std::string targetContent)
 {
 	mTarget = targetContent;
 }
