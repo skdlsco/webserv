@@ -38,21 +38,18 @@ std::string *HEADResponse::getResponse()
 		{
 			setContentLocation();
 			responseBody = createResponseBody();
-
+			if (getStatusCode() == 0)
+				setStatusCode(200);
 			*responseContent += createResponseLine();
 			createResponseHeader(responseBody, *responseContent);
-
 			/* HEAD Method Response don't have body content */
 			/* *mResponseContent += createResponseBody(); */
 		}
-
-		if (getStatusCode() != 0)
+		if (getStatusCode() != 200)
 		{
 			delete responseContent;
 			responseContent = NULL;
 		}
-		else
-			setStatusCode(200);
 	}
 	catch(const std::exception& e)
 	{

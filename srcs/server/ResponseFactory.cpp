@@ -37,6 +37,7 @@ std::string *ResponseFactory::create(struct sockaddr_in clientAddr,
 	{
 		logger::println(TAG, e.what());
 	}
+	logger::print(TAG) << response->getStatusCode() << std::endl;
 	delete response;
 	return (result);
 }

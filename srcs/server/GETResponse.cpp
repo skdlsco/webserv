@@ -8,7 +8,7 @@ GETResponse::GETResponse(const ServerConfig * serverConfig,
 {
 	int fd;
 
-	if (isDirectory(getTarget().c_str()))
+	if (isDirectory((getLocationConfig()->getRoot() + getTarget()).c_str()))
 	{
 		if (getLocationConfig()->isAutoIndex())
 			mState = AUTOINDEX;
@@ -59,19 +59,17 @@ std::string *GETResponse::getResponse()
 		{
 			setContentLocation();
 			responseBody = createResponseBody();
-
+			if (getStatusCode() == 0)
+				setStatusCode(200);
 			*responseContent += createResponseLine();
 			createResponseHeader(responseBody, *responseContent);
 			*responseContent += responseBody;
 		}
-
-		if (getStatusCode() != 0)
+		if (getStatusCode() != 200)
 		{
 			delete responseContent;
 			responseContent = NULL;
 		}
-		else
-			setStatusCode(200);
 	}
 	catch(const std::exception& e)
 	{

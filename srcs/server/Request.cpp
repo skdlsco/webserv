@@ -53,7 +53,7 @@ void Request::appendChunkedBody()
 			if (mBuffer.size() < static_cast<unsigned long>(mContentLength))
 				break ;
 			mBody.append(mBuffer.substr(0, mContentLength));
-			mBuffer.erase(0, mContentLength);
+			mBuffer.erase(0, mContentLength + 2);
 			if (mBody.length() > mLocationConfig->getClientMaxBodySize())
 				badRequest(413);
 			if (mContentLength == 0)
@@ -66,6 +66,7 @@ void Request::appendChunkedBody()
 			if (lineIndex != std::string::npos)
 			{
 				line = mBuffer.substr(0, lineIndex);
+				mBuffer.erase(0, lineIndex + 2);
 				if (line.empty())
 					badRequest(400);
 				mContentLength = web::axtoi(line.c_str());
@@ -134,7 +135,8 @@ void Request::checkTransferEncoding()
 
 	if (iter != mField.end())
 	{
-		if (iter->second == "Chunked")
+
+		if (iter->second == "chunked")
 			mIsChunked = true;
 		else
 			badRequest(400);
@@ -217,6 +219,12 @@ void Request::checkLocationMethodList()
 			findMethod = true;
 	}
 
+	if (!findMethod && mIsCGI)
+	{
+		mIsCGI = false;
+		checkLocationMethodList();
+		return ;
+	}
 	/* 405 method not allowed */
 	if (!findMethod)
 		badRequest(405);
