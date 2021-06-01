@@ -51,13 +51,7 @@ void Request::appendChunkedBody()
 		if (mIsReadData)
 		{
 			if (mBuffer.size() < static_cast<unsigned long>(mContentLength))
-			{
-				mBody.append(mBuffer);
-				mBuffer.clear();
-				mAnalyzeLevel = DONE;
-				logger::print(TAG) << "mBuffer read all" << std::endl;
 				break ;
-			}
 			mBody.append(mBuffer.substr(0, mContentLength));
 			mBuffer.erase(0, mContentLength + 2);
 			if (mBody.length() > mLocationConfig->getClientMaxBodySize())
