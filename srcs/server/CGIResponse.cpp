@@ -58,6 +58,7 @@ void CGIResponse::initCGIInfo()
 		}
 	}
 	mScriptFileName = mDocumentRoot + mScriptName;
+	logger::print(TAG) << "mScriptFileName: " + mScriptFileName;
 }
 
 std::string CGIResponse::getCGIVariableContentType()

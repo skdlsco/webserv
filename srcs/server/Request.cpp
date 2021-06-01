@@ -51,7 +51,13 @@ void Request::appendChunkedBody()
 		if (mIsReadData)
 		{
 			if (mBuffer.size() < static_cast<unsigned long>(mContentLength))
+			{
+				mBody.append(mBuffer);
+				mBuffer.clear();
+				mAnalyzeLevel = DONE;
+				logger::print(TAG) << "mBuffer read all" << std::endl;
 				break ;
+			}
 			mBody.append(mBuffer.substr(0, mContentLength));
 			mBuffer.erase(0, mContentLength + 2);
 			if (mBody.length() > mLocationConfig->getClientMaxBodySize())
@@ -66,12 +72,15 @@ void Request::appendChunkedBody()
 			if (lineIndex != std::string::npos)
 			{
 				line = mBuffer.substr(0, lineIndex);
+				logger::println(TAG, "initial Buffer: |" + mBuffer + "|");
 				mBuffer.erase(0, lineIndex + 2);
+				logger::println(TAG, "Erase After Buffer: |" + mBuffer + "|");
 				if (line.empty())
 					badRequest(400);
 				mContentLength = web::axtoi(line.c_str());
 				if (mContentLength < 0)
 					badRequest(400);
+				logger::println(TAG, "mContentLength: " + web::toString(mContentLength));
 			} else
 				badRequest(400);
 			mIsReadData = true;

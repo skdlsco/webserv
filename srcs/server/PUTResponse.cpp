@@ -64,6 +64,7 @@ void PUTResponse::checkAuthorization()
 {
 	if (getLocationConfig()->getAuthUserName().empty() || getLocationConfig()->getAuthUserPassword().empty())
 		return ;
+	logger::print(TAG) << "this PUT Request have AuthInfo";
 	std::map<std::string, std::string> requestHeader = getRequestHeader();
 	if (requestHeader.find("Authorization") == requestHeader.end())
 	{
@@ -83,10 +84,11 @@ void PUTResponse::checkAuthorization()
 
 void PUTResponse::checkTarget()
 {
-	std::string path = getLocationConfig()->getRoot() + getTarget();
+	std::string path = getLocationConfig()->getRoot() + getTargetContent();
 
 	path = web::removeConsecutiveDuplicate(path, '/');
-
+	
+	logger::print(TAG) << "path: " << path << std::endl;
 	int slashIdx = path.find_last_of("/");
 	std::string folder = path.substr(0, slashIdx);
 	std::string file = path.substr(slashIdx + 1);
@@ -104,9 +106,16 @@ void PUTResponse::checkTarget()
 void PUTResponse::writeFile()
 {
 	bool isExist = web::isPathExist(mFileName);
+
+	//to log
+	if (isExist)
+		logger::println(TAG, "isFileExist");
+
+	logger::println(TAG, "mFilename: "  + mFileName);
 	int fd = open(mFileName.c_str(), O_CREAT | O_WRONLY);
 	if (fd == -1)
 	{
+		logger::println(TAG, "file not open");
 		setStatusCode(500);
 		return ;
 	}
