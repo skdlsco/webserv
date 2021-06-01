@@ -93,6 +93,7 @@ Response *ResponseFactory::createResponse()
 	if (response)
 	{
 		response->setTarget(mRequest.getTarget());
+		response->setTargetContent(mRequest.getTargetContent());
 		response->setRequestHeader(mRequest.getField());
 		response->setRequestBody(mRequest.getBody());
 		response->setQuery(mRequest.getQuery());

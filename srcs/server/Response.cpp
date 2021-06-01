@@ -76,6 +76,16 @@ void Response::setTarget(std::string target)
 	mTarget = target;
 }
 
+std::string Response::getTargetContent() const
+{
+	return (mTargetContent);
+}
+
+void Response::setTarget(std::string targetContent)
+{
+	mTarget = targetContent;
+}
+
 std::string Response::getMethod() const
 {
 	return (mMethod);

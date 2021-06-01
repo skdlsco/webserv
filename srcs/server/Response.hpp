@@ -25,6 +25,7 @@ class Response
 		std::string mStatusMessage;
 		struct sockaddr_in mClientAddr;
 		std::string mTarget;
+		std::string mTargetContent;
 		std::string mMethod;
 		std::string mQuery;
 		std::map<std::string, std::string> mRequestHeader;
@@ -49,6 +50,8 @@ class Response
 		void setClientAddr(struct sockaddr_in clientAddr);
 		std::string getTarget() const;
 		void setTarget(std::string target);
+		std::string getTargetContent() const;
+		void setTargetContent(std::string target);
 		std::string getMethod() const;
 		void setMethod(std::string method);
 		std::string getQuery() const;
