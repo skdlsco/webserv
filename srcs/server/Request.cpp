@@ -190,7 +190,7 @@ void Request::checkLocationCGI()
 			targetFileExtension.erase(slashIdx);
 		for (std::vector<std::string>::iterator iter = CGIExtensionList.begin(); iter != CGIExtensionList.end(); iter++)
 		{
-			if (targetFileExtension == *iter && isCGIMethod())
+			if (targetFileExtension == *iter)
 			{
 				mIsCGI = true;
 				return ;
@@ -201,17 +201,28 @@ void Request::checkLocationCGI()
 
 void Request::checkLocationMethodList()
 {
-	if (mErrorCode || mIsCGI)
+	if (mErrorCode)
 		return ;
 
 	bool isFindMethod = false;
 	std::string requestMethod = getMethod();
-	std::vector<std::string> methodList = mLocationConfig->getAllowMethodList();
+	std::vector<std::string> methodList = mLocationConfig->getAllowMethodList();;
+
+	if (mIsCGI)
+		methodList = mLocationConfig->getCGIMethodList();
 
 	for (std::vector<std::string>::iterator iter = methodList.begin(); iter != methodList.end(); iter++)
 	{
 		if (requestMethod == *iter)
 			isFindMethod = true;
+	}
+
+	/* to check CGI */
+	if (!isFindMethod && mIsCGI)
+	{
+		mIsCGI = false;
+		checkLocationMethodList();
+		return ;
 	}
 
 	/* 405 method not allowed */
@@ -227,24 +238,6 @@ void Request::checkHeader()
 	checkLocationMethodList();
 	checkContentLength();
 	checkTransferEncoding();
-}
-
-bool Request::isCGIMethod()
-{
-	bool isFindMethod = false;
-	std::string requestMethod = getMethod();
-	std::vector<std::string> methodList = mLocationConfig->getAllowMethodList();
-
-	for (std::vector<std::string>::iterator iter = methodList.begin(); iter != methodList.end(); iter++)
-	{
-		if (requestMethod == *iter)
-		{
-			isFindMethod = true;
-			break;
-		}
-	}
-
-	return (isFindMethod);
 }
 
 bool Request::isValidMethod(std::string method)
