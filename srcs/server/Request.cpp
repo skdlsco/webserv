@@ -68,10 +68,9 @@ void Request::appendChunkedBody()
 			{
 				line = mBuffer.substr(0, lineIndex);
 				mBuffer.erase(0, lineIndex + 2);
-				if (!line.empty())
-					mContentLength = web::axtoi(line.c_str());
-				else
+				if (line.empty())
 					badRequest(400);
+				mContentLength = web::axtoi(line.c_str());
 				if (mContentLength < 0)
 					badRequest(400);
 				mIsReadData = true;
@@ -341,8 +340,7 @@ void Request::analyzeHeader()
 
 void Request::analyzeBuffer(char *buffer)
 {
-	if (buffer[0] != '\0')
-		mBuffer.append(buffer);
+	mBuffer.append(buffer);
 	if (mAnalyzeLevel == REQUEST_LINE || mAnalyzeLevel == HEADER)
 		analyzeHeader();
 	if (mAnalyzeLevel == BODY)
