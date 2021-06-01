@@ -57,7 +57,6 @@ void CGIResponse::initCGIInfo()
 			break ;
 		}
 	}
-	mScriptFileName = mDocumentRoot + mScriptName;
 	mScriptFileName = web::removeConsecutiveDuplicate(mDocumentRoot + mScriptName, '/');
 }
 
