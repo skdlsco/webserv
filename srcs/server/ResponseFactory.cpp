@@ -83,9 +83,15 @@ Response *ResponseFactory::createResponse()
 	try
 	{
 		if (mResponseState == CGI)
+		{
+			logger::print(TAG) << "is CGI" << std::endl;
 			response = createCGIResponse();
+		}
 		if (mResponseState == METHOD)
+		{
+			logger::print(TAG) << "is METHOD" << std::endl;
 			response = createMethodResponse();
+		}
 	}
 	catch(const std::exception& e)
 	{
@@ -123,8 +129,6 @@ Response *ResponseFactory::createErrorResponse()
 
 Response *ResponseFactory::createCGIResponse()
 {
-	if (mResponseState != CGI)
-		return (NULL);
 	return (new CGIResponse(mServerConfig, mLocationConfig));
 }
 

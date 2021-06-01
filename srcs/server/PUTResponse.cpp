@@ -64,6 +64,7 @@ void PUTResponse::checkAuthorization()
 {
 	if (getLocationConfig()->getAuthUserName().empty() || getLocationConfig()->getAuthUserPassword().empty())
 		return ;
+	logger::print(TAG) << "this PUT Request have AuthInfo";
 	std::map<std::string, std::string> requestHeader = getRequestHeader();
 	if (requestHeader.find("Authorization") == requestHeader.end())
 	{
@@ -106,9 +107,16 @@ void PUTResponse::checkTarget()
 void PUTResponse::writeFile()
 {
 	bool isExist = web::isPathExist(mFileName);
+
+	//to log
+	if (isExist)
+		logger::println(TAG, "isFileExist");
+
+	logger::println(TAG, "mFilename: "  + mFileName);
 	int fd = open(mFileName.c_str(), O_CREAT | O_WRONLY);
 	if (fd == -1)
 	{
+		logger::println(TAG, "file not open");
 		setStatusCode(500);
 		return ;
 	}
