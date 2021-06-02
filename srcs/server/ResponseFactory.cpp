@@ -15,7 +15,7 @@ std::string *ResponseFactory::create(struct sockaddr_in clientAddr,
 			result = response->getResponse();
 		if (result == NULL)
 		{
-			logger::println(TAG, "currentStatusCode: " + web::toString(responseFactory.mStatusCode));
+			logger::println(TAG, "Error currentStatusCode: " + web::toString(responseFactory.mStatusCode));
 			Response *errorResponse = responseFactory.createErrorResponse();
 			if (errorResponse)
 			{

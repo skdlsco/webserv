@@ -90,9 +90,9 @@ void PUTResponse::checkTarget()
 
 	if (path[path.length() - 1] == '/')
 		path.erase(path.length() - 1);
-	int slashIdx = path.find_last_of("/");
-	std::string folder = path.substr(0, slashIdx);
-	std::string file = path.substr(slashIdx + 1);
+	int lastSlashIdx = path.find_last_of("/");
+	std::string folder = path.substr(0, lastSlashIdx);
+	std::string file = path.substr(lastSlashIdx + 1);
 
 	/* file.empty() : PUT할 file에 대한 input이 없는경우 */
 	/* isDirectory : folder 경로가 존재하지 않는 경우 404 */

@@ -55,7 +55,11 @@ void Request::appendChunkedBody()
 			mBody.append(mBuffer.substr(0, mContentLength));
 			mBuffer.erase(0, mContentLength + 2);
 			if (mBody.length() > mLocationConfig->getClientMaxBodySize())
+			{
+				logger::print(TAG) << "mBody.length(): " << mBody.length() << std::endl;
+				logger::print(TAG) << "mLocationConfig->getClientMaxBodySize(): " << mLocationConfig->getClientMaxBodySize() << std::endl;
 				badRequest(413);
+			}
 			if (mContentLength == 0)
 				mAnalyzeLevel = DONE;
 			mIsReadData = false;
@@ -63,14 +67,18 @@ void Request::appendChunkedBody()
 		{
 			std::string line;
 			size_t lineIndex = mBuffer.find("\r\n");
-
+			logger::print(TAG) << "F mBuffer: |" << mBuffer << "|" << std::endl;
 			if (lineIndex != std::string::npos)
 			{
+				logger::print(TAG) << "F lineIndex: " << lineIndex << std::endl;
+				logger::print(TAG) << "F BufferLength: " << mBuffer.length() << std::endl;
 				line = mBuffer.substr(0, lineIndex);
 				mBuffer.erase(0, lineIndex + 2);
-				if (line.empty())
+				logger::print(TAG) << "F line: " << line << std::endl;
+				logger::print(TAG) << "F BufferLength: " << mBuffer.length() << std::endl;				if (line.empty())
 					badRequest(400);
 				mContentLength = web::axtoi(line.c_str());
+				logger::print(TAG) << "F mContentLength: " << mContentLength << std::endl;
 				if (mContentLength < 0)
 					badRequest(400);
 				mIsReadData = true;
@@ -126,7 +134,11 @@ void Request::checkContentLength()
 		if (mContentLength < 0)
 			badRequest(400);
 		else if (mLocationConfig->getClientMaxBodySize() < static_cast<unsigned long>(mContentLength))
+		{
+			logger::print(TAG) << "clientMaxBodySize(): " << mLocationConfig->getClientMaxBodySize() << std::endl;
+			logger::print(TAG) << "mContentLength(): " << mContentLength << std::endl;
 			badRequest(413);
+		}
 		mHasBody = true;
 	};
 }
@@ -251,6 +263,10 @@ void Request::checkHeader()
 	checkLocationMethodList();
 	checkContentLength();
 	checkTransferEncoding();
+	for (std::map<std::string, std::string>::iterator i = mField.begin(); i != mField.end(); i++)
+	{
+		logger::print(TAG) << i->first << ": " << i->second << std::endl;
+	}
 }
 
 bool Request::isValidMethod(std::string method)

@@ -105,17 +105,25 @@ void POSTResponse::checkTarget()
 {
 	std::string path = getLocationConfig()->getRoot() + getTargetContent();
 
+	// logger::print(TAG) << "Root: " << getLocationConfig()->getRoot() << std::endl;
+	// logger::print(TAG) << "TargetContent: " << getTargetContent() << std::endl;
+	// logger::print(TAG) << "path: " << path << std::endl;
 	path = web::removeConsecutiveDuplicate(path, '/');
-	int slashIdx = path.find_last_of("/");
+	int lastSlashIdx = path.find_last_of("/");
 
-	std::string folder = path.substr(0, slashIdx);
-	std::string file = path.substr(slashIdx + 1);
+	std::string folder = path.substr(0, lastSlashIdx);
+	std::string file = path.substr(lastSlashIdx + 1);
 
 	/* POST가 원래 file을 그냥 생성하는 것이었는데
 	   target이 항상 폴더여야 하고, 이름을 내부에서 정하는 것으로 하는게 맞는 것 같아서 고민이 되네요 */
 	/* file.empty() : 생성할 file 이름이 없는 경우.. */
 	/* isDirectory : folder 경로가 존재하지 않는 경우 404 */
-	if (file.empty() || !web::isDirectory(folder))
+
+	/* 06.03 그래서 추가했습니다. 파일명은 "New File + (N)" 입니다.*/
+	/* file이 empty()인 경우는 path 뒷부분이 무조건 / 이므로.. path 뒤에 붙이면 됩니다. */
+	if (file.empty())
+		path += "New File";
+	if (!web::isDirectory(folder))
 	{
 		setStatusCode(404);
 		return ;
