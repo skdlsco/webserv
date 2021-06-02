@@ -75,7 +75,8 @@ void Request::appendChunkedBody()
 				line = mBuffer.substr(0, lineIndex);
 				mBuffer.erase(0, lineIndex + 2);
 				logger::print(TAG) << "F line: " << line << std::endl;
-				logger::print(TAG) << "F BufferLength: " << mBuffer.length() << std::endl;				if (line.empty())
+				logger::print(TAG) << "F BufferLength: " << mBuffer.length() << std::endl;
+				if (line.empty())
 					badRequest(400);
 				mContentLength = web::axtoi(line.c_str());
 				logger::print(TAG) << "F mContentLength: " << mContentLength << std::endl;
