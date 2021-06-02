@@ -7,7 +7,7 @@ Server::Server(ServerManager &serverManager, std::vector<ServerConfig *> const &
 {
 	mConfig[0]->getPort();
 	mSocket.bind(mConfig[0]->getPort());
-	mSocket.listen(100);
+	mSocket.listen(100000);
 	getServerManager().addFD(mSocket.getSocketFD(), mFDListener);
 	logger::print(TAG) << "listening port = " << mConfig[0]->getPort() << std::endl;
 }

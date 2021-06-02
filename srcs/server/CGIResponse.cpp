@@ -27,12 +27,15 @@ CGIResponse &CGIResponse::operator=(CGIResponse const & rhs)
 CGIResponse::~CGIResponse()
 {
 	freeEnv(mEnv);
+	mEnv = NULL;
 	if (mInPipe[0] != -1)
 		mServerManager.removeFD(mInPipe[0]);
+	close(mInPipe[0]);
 	close(mInPipe[1]);
 	close(mOutPipe[0]);
 	if (mOutPipe[1] != -1)
 		mServerManager.removeFD(mOutPipe[1]);
+	close(mOutPipe[0]);
 	close(mOutPipe[1]);
 }
 
@@ -177,7 +180,7 @@ char **CGIResponse::createCGIEnv()
 	for (std::map<std::string, std::string>::const_iterator iter = getRequestHeader().begin(); iter != getRequestHeader().end(); iter++)
 	{
 		if (iter->first.find("X-") == 0)
-			customHeaderVec.push_back("HTTP_" + dashToUnderBar(iter->first) + ":" +iter->second);
+			customHeaderVec.push_back("HTTP_" + dashToUnderBar(iter->first) + "=" +iter->second);
 	}
 	int envSize = NUM_CGI_ENV + customHeaderVec.size();
 	env = new char *[envSize + 1];
@@ -312,7 +315,13 @@ void CGIResponse::readCGI()
 	if (mIsCGIReadHeader)
 		mIsCGIReadHeader = responseToHeader();
 	if (readN == 0)
+	{
 		mState = DONE;
+		mServerManager.removeFD(mInPipe[0]);
+		mInPipe[0] = -1;
+		mServerManager.removeFD(mOutPipe[1]);
+		mOutPipe[1] = -1;
+	}
 }
 
 void CGIResponse::runCGI()

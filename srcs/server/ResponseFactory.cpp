@@ -97,14 +97,11 @@ Response *ResponseFactory::createResponse()
 {
 	Response *response = NULL;
 
-	logger::print(TAG) << web::toAddr(mClientAddr.sin_addr.s_addr) << " " << mRequest.getMethod() << " " << mRequest.getTarget() << "?" << mRequest.getQuery() << std::endl;
+	// logger::print(TAG) << web::toAddr(mClientAddr.sin_addr.s_addr) << " " << mRequest.getMethod() << " " << mRequest.getTarget() << "?" << mRequest.getQuery() << std::endl;
 	try
 	{
 		if (mResponseState == METHOD)
-		{
-			logger::print(TAG) << "is METHOD" << std::endl;
 			response = createMethodResponse();
-		}
 	}
 	catch(const std::exception& e)
 	{

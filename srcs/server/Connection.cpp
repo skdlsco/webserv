@@ -14,6 +14,7 @@ Connection::~Connection()
 {
 	getServerManager().removeFD(mFD);
 	delete mWriteBuffer;
+	delete mCGIResponse;
 }
 
 Connection *Connection::create(ServerManager &serverManager,
@@ -149,7 +150,7 @@ void Connection::ConnectionAction::onWriteSet()
 
 		if (BUFFER_SIZE > mConnection.mWriteBuffer->length() - mConnection.mWriteIdx)
 			bufferSize = mConnection.mWriteBuffer->length() - mConnection.mWriteIdx;
-		int writeN = write(mConnection.mFD, mConnection.mWriteBuffer->c_str() + mConnection.mWriteIdx, bufferSize);
+		int writeN = send(mConnection.mFD, mConnection.mWriteBuffer->c_str() + mConnection.mWriteIdx, bufferSize, MSG_NOSIGNAL);
 		if (writeN < 0)
 		{
 			mConnection.finish();

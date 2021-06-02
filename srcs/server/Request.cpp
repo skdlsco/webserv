@@ -256,11 +256,6 @@ void Request::checkHeader()
 	checkLocationMethodList();
 	checkContentLength();
 	checkTransferEncoding();
-
-	for (std::map<std::string, std::string>::iterator i = mField.begin(); i != mField.end(); i++)
-	{
-		logger::print(TAG) << i->first << ":" << i->second << std::endl;
-	}
 }
 
 bool Request::isValidMethod(std::string method)
