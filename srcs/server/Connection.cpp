@@ -4,15 +4,14 @@ std::string const Connection::TAG = "Connection";
 
 Connection::Connection(ServerManager &serverManager, std::vector<ServerConfig *> const &config,
 						struct sockaddr_in addr, int fd)
-: ServerComponent(serverManager), mFDListener(*this), mRequest(config),
-	mWriteBuffer(NULL), mConfig(config), mAddr(addr), mFD(fd), mStartTime(web::getNowTime())
+: ServerComponent(serverManager), mFDListener(*this), mRequest(config), mCGIResponse(NULL),
+	mWriteBuffer(NULL), mConfig(config), mAddr(addr), mFD(fd), mStartTime(web::getNowTime()), mWriteIdx(0)
 {
 	getServerManager().addFD(fd, mFDListener);
 }
 
 Connection::~Connection()
 {
-	logger::println(TAG, "byebye");
 	getServerManager().removeFD(mFD);
 	delete mWriteBuffer;
 }
@@ -33,21 +32,69 @@ Connection *Connection::create(ServerManager &serverManager,
 
 void Connection::createResponseBuffer()
 {
-	mWriteBuffer = ResponseFactory::create(mAddr, mRequest);
-	if (mWriteBuffer == NULL)
-		finish();
+	if (mRequest.isCGI())
+	{
+		mCGIResponse = ResponseFactory::createCGIResponse(getServerManager(), mAddr, mRequest);
+		if (mCGIResponse == NULL)
+		{
+			mWriteBuffer = ResponseFactory::createErrorResponse(mAddr, mRequest, 500);
+			if (mWriteBuffer == NULL)
+				finish();
+		}
+	}
+	else
+	{
+		mWriteBuffer = ResponseFactory::create(mAddr, mRequest);
+		if (mWriteBuffer == NULL)
+			finish();
+	}
 }
 
 void Connection::onRepeat()
 {
-	/* getNowTime() - mStartTime > TIMEOUT ? ERROR */
-	if (web::getNowTime() - mStartTime > TIMEOUT)
+	try
 	{
-		if (mWriteBuffer)
+		/* getNowTime() - mStartTime > TIMEOUT ? ERROR */
+		if (web::getNowTime() - mStartTime > TIMEOUT)
+		{
 			delete mWriteBuffer;
-		mWriteBuffer = ResponseFactory::createTimeoutResponse(mAddr, mRequest);
-		if (mWriteBuffer == NULL)
-			finish();
+			delete mCGIResponse;
+			mCGIResponse = NULL;
+			mWriteBuffer = ResponseFactory::createErrorResponse(mAddr, mRequest, 408);
+			if (mWriteBuffer == NULL)
+				finish();
+		}
+		if (mCGIResponse)
+		{
+			if (mCGIResponse->getState() == CGIResponse::READY)
+				mCGIResponse->run();
+			if (mCGIResponse->getState() == CGIResponse::DONE)
+			{
+				mWriteBuffer = mCGIResponse->getResponse();
+				delete mCGIResponse;
+				mCGIResponse = NULL;
+				if (mWriteBuffer == NULL)
+				{
+					mWriteBuffer = ResponseFactory::createErrorResponse(mAddr, mRequest, 500);
+					if (mWriteBuffer == NULL)
+						finish();
+				}
+				return ;
+			}
+			if (mCGIResponse->getState() == CGIResponse::ERROR)
+			{
+				mWriteBuffer = ResponseFactory::createErrorResponse(mAddr, mRequest, mCGIResponse->getStatusCode());
+				delete mCGIResponse;
+				mCGIResponse = NULL;
+				if (mWriteBuffer == NULL)
+					finish();
+			}
+		}
+	}
+	catch(const std::exception& e)
+	{
+		logger::println(TAG, e.what());
+		finish();
 	}
 }
 
@@ -71,7 +118,7 @@ void Connection::ConnectionAction::onReadSet()
 {
 	char buffer[BUFFER_SIZE];
 
-	if (mConnection.mWriteBuffer)
+	if (mConnection.mRequest.getAnalyzeLevel() == Request::DONE)
 		return ;
 	int n = recv(mConnection.mFD, buffer, BUFFER_SIZE - 1, 0);
 	if (n == -1)
@@ -100,16 +147,16 @@ void Connection::ConnectionAction::onWriteSet()
 	{
 		int bufferSize = BUFFER_SIZE;
 
-		if (BUFFER_SIZE > mConnection.mWriteBuffer->size())
-			bufferSize = mConnection.mWriteBuffer->size();
-		int writeN = write(mConnection.mFD, mConnection.mWriteBuffer->c_str(), bufferSize);
+		if (BUFFER_SIZE > mConnection.mWriteBuffer->length() - mConnection.mWriteIdx)
+			bufferSize = mConnection.mWriteBuffer->length() - mConnection.mWriteIdx;
+		int writeN = write(mConnection.mFD, mConnection.mWriteBuffer->c_str() + mConnection.mWriteIdx, bufferSize);
 		if (writeN < 0)
 		{
 			mConnection.finish();
 			return ;
 		}
-		mConnection.mWriteBuffer->erase(0, writeN);
-		if (mConnection.mWriteBuffer->empty())
+		mConnection.mWriteIdx += writeN;
+		if ((mConnection.mWriteBuffer->length() - mConnection.mWriteIdx) <= 0)
 			mConnection.finish();
 	}
 }

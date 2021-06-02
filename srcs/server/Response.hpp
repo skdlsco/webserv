@@ -15,11 +15,6 @@
 
 class Response
 {
-	public:
-		enum ResponseState
-		{
-			READY, ON_WORKING, DONE, ERROR
-		};
 	private:
 		int mStatusCode;
 		std::string mStatusMessage;

@@ -43,24 +43,42 @@ std::string *ResponseFactory::create(struct sockaddr_in clientAddr,
 	return (result);
 }
 
-std::string *ResponseFactory::createTimeoutResponse(struct sockaddr_in clientAddr,
-														Request &request)
+std::string *ResponseFactory::createErrorResponse(struct sockaddr_in clientAddr,
+														Request &request, int errorCode)
 {
 	ResponseFactory responseFactory(clientAddr, request);
 	Response *errorResponse = responseFactory.createErrorResponse();
 	std::string *result = NULL;
 
+	logger::println(TAG, "error: " + web::toString(errorCode));
 	if (errorResponse)
 	{
 		errorResponse->setTarget(request.getTarget());
 		errorResponse->setRequestHeader(request.getField());
 		errorResponse->setRequestBody(request.getBody());
-		errorResponse->setStatusCode(408);
+		errorResponse->setStatusCode(errorCode);
 
 		result = errorResponse->getResponse();
 		delete errorResponse;
 	}
 	return (result);
+}
+
+CGIResponse *ResponseFactory::createCGIResponse(ServerManager &serverManager,struct sockaddr_in clientAddr,
+														Request &request)
+{
+	CGIResponse *response = new CGIResponse(serverManager, request.getServerConfig(), request.getLocationConfig());
+	if (response)
+	{
+		response->setTarget(request.getTarget());
+		response->setTargetContent(request.getTargetContent());
+		response->setRequestHeader(request.getField());
+		response->setRequestBody(request.getBody());
+		response->setQuery(request.getQuery());
+		response->setMethod(request.getMethod());
+		response->setClientAddr(clientAddr);
+	}
+	return (response);
 }
 
 ResponseFactory::ResponseFactory(struct sockaddr_in clientAddr, Request &request)
@@ -82,11 +100,6 @@ Response *ResponseFactory::createResponse()
 	logger::print(TAG) << web::toAddr(mClientAddr.sin_addr.s_addr) << " " << mRequest.getMethod() << " " << mRequest.getTarget() << "?" << mRequest.getQuery() << std::endl;
 	try
 	{
-		if (mResponseState == CGI)
-		{
-			logger::print(TAG) << "is CGI" << std::endl;
-			response = createCGIResponse();
-		}
 		if (mResponseState == METHOD)
 		{
 			logger::print(TAG) << "is METHOD" << std::endl;
@@ -125,11 +138,6 @@ void ResponseFactory::checkResponseType()
 Response *ResponseFactory::createErrorResponse()
 {
 	return (new ErrorResponse(mServerConfig, mLocationConfig));
-}
-
-Response *ResponseFactory::createCGIResponse()
-{
-	return (new CGIResponse(mServerConfig, mLocationConfig));
 }
 
 Response *ResponseFactory::createMethodResponse()
