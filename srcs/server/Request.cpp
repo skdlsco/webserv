@@ -55,7 +55,9 @@ void Request::appendChunkedBody()
 			mBody.append(mBuffer.substr(0, mContentLength));
 			mBuffer.erase(0, mContentLength + 2);
 			if (mBody.length() > mLocationConfig->getClientMaxBodySize())
+			{
 				badRequest(413);
+			}
 			if (mContentLength == 0)
 				mAnalyzeLevel = DONE;
 			mIsReadData = false;
@@ -63,7 +65,6 @@ void Request::appendChunkedBody()
 		{
 			std::string line;
 			size_t lineIndex = mBuffer.find("\r\n");
-
 			if (lineIndex != std::string::npos)
 			{
 				line = mBuffer.substr(0, lineIndex);
@@ -126,7 +127,11 @@ void Request::checkContentLength()
 		if (mContentLength < 0)
 			badRequest(400);
 		else if (mLocationConfig->getClientMaxBodySize() < static_cast<unsigned long>(mContentLength))
+		{
+			logger::print(TAG) << "clientMaxBodySize(): " << mLocationConfig->getClientMaxBodySize() << std::endl;
+			logger::print(TAG) << "mContentLength(): " << mContentLength << std::endl;
 			badRequest(413);
+		}
 		mHasBody = true;
 	};
 }
@@ -251,6 +256,10 @@ void Request::checkHeader()
 	checkLocationMethodList();
 	checkContentLength();
 	checkTransferEncoding();
+	for (std::map<std::string, std::string>::iterator i = mField.begin(); i != mField.end(); i++)
+	{
+		logger::print(TAG) << i->first << ": " << i->second << std::endl;
+	}
 }
 
 bool Request::isValidMethod(std::string method)
