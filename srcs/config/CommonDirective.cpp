@@ -3,7 +3,7 @@
 std::string const CommonDirective::TAG = "CommonDirective";
 
 CommonDirective::CommonDirective()
-: mIndexFile(""), mRoot("/"), mClientMaxBodySize(10000000), mIsAutoIndex(false)
+: mIndexFile(""), mRoot("/"), mClientMaxBodySize(1000000000), mIsAutoIndex(false)
 {
 
 }

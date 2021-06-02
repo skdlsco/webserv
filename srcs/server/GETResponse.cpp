@@ -102,12 +102,11 @@ void GETResponse::initState()
 	{
 		/* Test GET Expected 404 on http://localhost:8080/directory/Yeah
 			FATAL ERROR ON LAST TEST: bad status code */
-		/* 이 테스트를 어떻게 처리할까 생각하다 autoindex, index의 관계를 생각했고.. 
+		/* 이 테스트를 어떻게 처리할까 생각하다 autoindex, index의 관계를 생각했고..
 			아래처럼 수정했습니다. 참고해주세요.*/
 		if (contentLocation[contentLocation.length() - 1] != '/')
 			contentLocation += "/";
 		std::string indexPath = contentLocation + getLocationConfig()->getIndexFile();
-		logger::print(TAG) << "indexPath: " << indexPath << std::endl;
 		if (web::isPathExist(indexPath.c_str()))
 			mState = INDEX_HTML;
 		else if (getLocationConfig()->isAutoIndex())

@@ -83,7 +83,7 @@ void Request::appendChunkedBody()
 
 void Request::appendContentBody()
 {
-	if (mBody.size() + mBuffer.size() > static_cast<unsigned long>(mContentLength))
+	if (mBody.size() + mBuffer.size() > static_cast<unsigned long>(mContentLength + 2))
 		mBody.append(mBuffer.substr(0, mContentLength - mBody.size()));
 	else
 		mBody.append(mBuffer);

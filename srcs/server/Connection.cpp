@@ -12,6 +12,7 @@ Connection::Connection(ServerManager &serverManager, std::vector<ServerConfig *>
 
 Connection::~Connection()
 {
+	logger::println(TAG, "byebye");
 	getServerManager().removeFD(mFD);
 	delete mWriteBuffer;
 }

@@ -107,13 +107,10 @@ void PUTResponse::checkTarget()
 void PUTResponse::writeFile()
 {
 	bool isExist = web::isPathExist(mFileName);
+	int fd = open(mFileName.c_str(), O_CREAT | O_WRONLY, 0777);
 
-	//to log
 	if (isExist)
 		logger::println(TAG, "isFileExist");
-
-	logger::println(TAG, "mFilename: "  + mFileName);
-	int fd = open(mFileName.c_str(), O_CREAT | O_WRONLY);
 	if (fd == -1)
 	{
 		logger::println(TAG, "file not open");

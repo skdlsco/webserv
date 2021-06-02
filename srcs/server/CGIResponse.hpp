@@ -9,7 +9,7 @@
 class CGIResponse : public Response
 {
 	private:
-		static const int BUFFER_SIZE = 1024;
+		static const int BUFFER_SIZE = 8192;
 		CGIResponse();
 
 		std::string mScriptFileName;

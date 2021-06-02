@@ -125,7 +125,7 @@ void POSTResponse::checkTarget()
 
 void POSTResponse::writeFile()
 {
-	int fd = open(mFileName.c_str(), O_CREAT | O_WRONLY);
+	int fd = open(mFileName.c_str(), O_CREAT | O_WRONLY, 0777);
 	if (fd == -1)
 	{
 		setStatusCode(500);
