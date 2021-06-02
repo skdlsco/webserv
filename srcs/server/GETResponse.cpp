@@ -82,6 +82,8 @@ void GETResponse::createResponseHeader(std::string const & responseBody, std::st
 
 	if (mContentLocation.find_last_of('.') != std::string::npos)
 		responseContent += "Content-Type: " + web::getMIMEType(mContentLocation.substr(mContentLocation.find_last_of('.'))) + "\r\n";
+	else if (mState == AUTOINDEX)
+		responseContent += "Content-Type: text/html\r\n";
 	else
 		responseContent += "Content-Type: text/plain\r\n";
 
@@ -125,6 +127,8 @@ void GETResponse::initContentLocation()
 		mContentLocation = getLocationConfig()->getRoot() + getTargetContent() + "/" + getLocationConfig()->getIndexFile();
 	else if (mState == TARGET)
 		mContentLocation = getLocationConfig()->getRoot() + getTargetContent();
+	else if (mState == AUTOINDEX)
+		mContentLocation = getLocationConfig()->getRoot() + getTargetContent() + "/";
 	mContentLocation = web::removeConsecutiveDuplicate(mContentLocation, '/');
 }
 
@@ -139,35 +143,32 @@ std::string GETResponse::makeAutoIndexContent()
 {
 	std::string fileName;
 	std::string filePath;
-	std::string locationURI = getTarget();
 	std::string autoIndexContent;
+	std::map<std::string, std::string> requestHeader = getRequestHeader();
 	struct dirent *file = NULL;
-	DIR *directoryPointer = opendir(locationURI.c_str());
+	DIR *directoryPointer = opendir(mContentLocation.c_str());
 
 	if (directoryPointer == NULL)
 		setStatusCode(500);
 
 	autoIndexContent += "<html>";
-	autoIndexContent += "<head><title>Index of " + locationURI + "</title></head>";
+	autoIndexContent += "<head><title>Index of " + getTarget() + "</title></head>";
 	autoIndexContent += "<body bgcolor=\"white\">";
-	autoIndexContent += "<h1>Index of " + locationURI + "</h1><hr>";
-	autoIndexContent += "<pre><a href=\"../\">../</a>";
+	autoIndexContent += "<h1>Index of " + getTarget() + "</h1><hr>";
+	autoIndexContent += "<pre>";
 
 	while ((file = readdir(directoryPointer)) != NULL)
 	{
 		fileName = file->d_name;
-		filePath = locationURI + fileName;
+		filePath = "http://" + requestHeader["HOST"] + web::removeConsecutiveDuplicate(getTarget() + '/' + fileName, '/');
 
-		if (fileName != "." && fileName != "..")
-			autoIndexContent += "<a href=\"" + filePath + "\">" + fileName + "</a>";
-		else
-			autoIndexContent += "<a href=\"" + fileName + "\">" + fileName + "</a>";
+		autoIndexContent += "<a href=\"" + filePath + "\">" + fileName + "</a>";
 		for (size_t idx = 0; idx < 70 - fileName.length(); idx++)
 		{
 			autoIndexContent += " ";
 		}
 		if (fileName != "." && fileName != "..")
-			autoIndexContent += web::getFileTime(filePath);
+			autoIndexContent += web::getFileTime(mContentLocation + fileName);
 		autoIndexContent += "<br>";
 	}
 	autoIndexContent += "</pre><hr></body></html>";
