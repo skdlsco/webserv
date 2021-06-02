@@ -109,7 +109,7 @@ std::string web::getLastModifiedTime(std::string & path)
 }
 
 /* for autoindex */
-std::string web::getFileTime(std::string & path)
+std::string web::getFileTime(std::string path)
 {
 	struct stat sb;
 	char buffer[32];
