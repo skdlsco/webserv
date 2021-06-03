@@ -8,6 +8,7 @@
 #include "server/ServerComponent.hpp"
 #include "server/Request.hpp"
 #include "server/Response.hpp"
+#include "server/CGIResponse.hpp"
 #include "server/ResponseFactory.hpp"
 #include "fdmanager/FileDiscriptorListener.hpp"
 #include "config/ServerConfig.hpp"
@@ -33,14 +34,16 @@ class Connection : public ServerComponent
 		};
 	private:
 		static const int TIMEOUT = 120;
-		static const int BUFFER_SIZE = 1024;
+		static const int BUFFER_SIZE = 8192;
 		ConnectionAction mFDListener;
 		Request mRequest;
+		CGIResponse *mCGIResponse;
 		std::string *mWriteBuffer;
 		std::vector<ServerConfig *> const &mConfig;
 		struct sockaddr_in mAddr; // TODO convert type to int, string
 		int mFD;
 		long mStartTime;
+		int mWriteIdx;
 
 		Connection();
 		Connection(ServerManager &serverManager, std::vector<ServerConfig *> const &config, struct sockaddr_in addr, int fd);

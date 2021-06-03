@@ -2,32 +2,48 @@
 
 std::string const CGIResponse::TAG = "CGIResponse";
 
-CGIResponse::CGIResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig)
-: Response(serverConfig, locationConfig), mEnv(NULL)
+CGIResponse::CGIResponse(ServerManager &serverManager, const ServerConfig * serverConfig, const LocationConfig * locationConfig)
+: Response(serverConfig, locationConfig), mServerManager(serverManager), mWriteIdx(0), mIsCGIReadHeader(true),
+	mEnv(NULL), mPid(-1), mState(READY), mWriteListener(*this), mReadListener(*this)
 {
-
+	mInPipe[0] = -1;
+	mInPipe[1] = -1;
+	mOutPipe[0] = -1;
+	mOutPipe[1] = -1;
 }
 
 CGIResponse::CGIResponse(CGIResponse const & copy)
-: Response(copy)
+: Response(copy), mServerManager(copy.mServerManager), mWriteListener(*this), mReadListener(*this)
 {
 	*this = copy;
 }
 
 CGIResponse &CGIResponse::operator=(CGIResponse const & rhs)
 {
-	Response::operator=(rhs);
+	Response::operator=(rhs); // how...
 	return (*this);
 }
 
 CGIResponse::~CGIResponse()
 {
-
+	freeEnv(mEnv);
+	mEnv = NULL;
+	if (mInPipe[0] != -1)
+		mServerManager.removeFD(mInPipe[0]);
+	close(mInPipe[0]);
+	close(mInPipe[1]);
+	close(mOutPipe[0]);
+	if (mOutPipe[1] != -1)
+		mServerManager.removeFD(mOutPipe[1]);
+	close(mOutPipe[0]);
+	close(mOutPipe[1]);
 }
 
 void CGIResponse::freeEnv(char **env)
 {
-	for (size_t i = 0; i < 17; i++)
+	if (env == NULL)
+		return ;
+	for (size_t i = 0; env[i]; i++)
 	{
 		delete (env[i]);
 	}
@@ -146,29 +162,58 @@ char *CGIResponse::createCGIVariable(enum web::CGIEnv::CGIEnv cgiEnv)
 	return (strdup(result.c_str()));
 }
 
+std::string CGIResponse::dashToUnderBar(std::string str)
+{
+	for (size_t idx = 0; idx < str.length(); idx++)
+	{
+		if (str[idx] == '-')
+		str[idx] = '_';
+	}
+	return (str);
+}
+
 char **CGIResponse::createCGIEnv()
 {
-	bool isError = false;
+	char **env;;
+	std::vector<std::string> customHeaderVec;
 
-	mEnv = new char *[NUM_CGI_ENV + 1];
-	if (mEnv == NULL)
-		return (NULL);
-	bzero(mEnv, sizeof(char *) * (NUM_CGI_ENV + 1));
-	for (int i = 0; i < NUM_CGI_ENV; i++)
+	for (std::map<std::string, std::string>::const_iterator iter = getRequestHeader().begin(); iter != getRequestHeader().end(); iter++)
 	{
-		mEnv[i] = createCGIVariable(static_cast<web::CGIEnv::CGIEnv>(i));
-		if (mEnv[i] == NULL)
+		if (iter->first.find("X-") == 0)
+			customHeaderVec.push_back("HTTP_" + dashToUnderBar(iter->first) + "=" +iter->second);
+	}
+	int envSize = NUM_CGI_ENV + customHeaderVec.size();
+	env = new char *[envSize + 1];
+	if (env == NULL)
+		return (NULL);
+	bzero(env, sizeof(char *) * (envSize + 1));
+	for (int idx = 0; idx < NUM_CGI_ENV; idx++)
+	{
+		env[idx] = createCGIVariable(static_cast<web::CGIEnv::CGIEnv>(idx));
+		if (env[idx] == NULL)
 		{
-			isError = true;
-			break ;
+			freeEnv(env);
+			return (NULL);
 		}
 	}
-	if (isError)
+	std::vector<std::string>::iterator iter = customHeaderVec.begin();
+	for (int idx = NUM_CGI_ENV; idx < envSize; idx++, iter++)
 	{
-		freeEnv(mEnv);
-		mEnv = NULL;
+		try
+		{
+			env[idx] = strdup((*iter).c_str());
+		}
+		catch(const std::exception& e)
+		{
+			logger::println(TAG, e.what());
+		}
+		if (env[idx] == NULL)
+		{
+			freeEnv(env);
+			return (NULL);
+		}
 	}
-	return (mEnv);
+	return (env);
 }
 
 void CGIResponse::execveCGI()
@@ -196,35 +241,37 @@ void CGIResponse::forkCGI()
 {
 	mPid = fork();
 	if (mPid == -1)
+	{
 		setStatusCode(500);
+		mState = ERROR;
+		return ;
+	}
 	else if (mPid == 0)
 		execveCGI();
 	close(mInPipe[1]);
+	mInPipe[1] = -1;
 	close(mOutPipe[0]);
+	mOutPipe[0] = -1;
 }
 
 void CGIResponse::sendBody()
 {
-	if (getStatusCode())
+	if (getStatusCode() || (mRequestBody.length() - mWriteIdx) <= 0)
 		return ;
 
-	std::string requestBody = getRequestBody();
-	const char *buffer = requestBody.c_str();
-	size_t idx = 0;
+	const char *buffer = mRequestBody.c_str();
 	size_t bufferSize = BUFFER_SIZE;
-	ssize_t writeN;
 
-	if (bufferSize > requestBody.length() - idx)
-		bufferSize =  requestBody.length() - idx;
-	while ((writeN = write(mOutPipe[STDOUT_FILENO], buffer + idx, bufferSize)) > 0)
-	{
-		idx += writeN;
-		if (bufferSize > requestBody.length() - idx)
-			bufferSize =  requestBody.length() - idx;
-	}
+	if (bufferSize > mRequestBody.length() - mWriteIdx)
+		bufferSize =  mRequestBody.length() - mWriteIdx;
+	ssize_t writeN = write(mOutPipe[STDOUT_FILENO], buffer + mWriteIdx, bufferSize);
 	if (writeN == -1)
+	{
 		setStatusCode(500);
-	close(mOutPipe[1]);
+		mState = ERROR;
+		return ;
+	}
+	mWriteIdx += writeN;
 }
 
 bool CGIResponse::responseToHeader()
@@ -253,21 +300,27 @@ void CGIResponse::readCGI()
 {
 	if (getStatusCode())
 		return ;
-	bool isHeader = true;
 	char buffer[BUFFER_SIZE + 1];
 	ssize_t readN;
 
-	while ((readN = read(mInPipe[STDIN_FILENO], buffer, BUFFER_SIZE)) > 0)
-	{
-		buffer[readN] = 0;
-		mCGIResponse.append(buffer);
-		if (isHeader)
-			isHeader = responseToHeader();
-	}
+	readN = read(mInPipe[STDIN_FILENO], buffer, BUFFER_SIZE);
 	if (readN == -1)
 	{
 		setStatusCode(500);
+		mState = ERROR;
 		return ;
+	}
+	buffer[readN] = 0;
+	mCGIResponse.append(buffer);
+	if (mIsCGIReadHeader)
+		mIsCGIReadHeader = responseToHeader();
+	if (readN == 0)
+	{
+		mState = DONE;
+		mServerManager.removeFD(mInPipe[0]);
+		mInPipe[0] = -1;
+		mServerManager.removeFD(mOutPipe[1]);
+		mOutPipe[1] = -1;
 	}
 }
 
@@ -278,19 +331,18 @@ void CGIResponse::runCGI()
 		if (pipe(mOutPipe) == 0)
 		{
 			forkCGI();
-			sendBody();
-			readCGI();
-			close(mOutPipe[0]);
-			close(mOutPipe[1]);
-			waitpid(mPid, NULL, 0);
+			if (mState == ERROR)
+				return ;
+			logger::println(TAG, "fork success");
+			mRequestBody = getRequestBody();
+			mServerManager.addFD(mInPipe[0], mReadListener);
+			mServerManager.addFD(mOutPipe[1], mWriteListener);
+			mState = ON_WORKING;
+			return ;
 		}
-		else
-			setStatusCode(500);
-		close(mInPipe[0]);
-		close(mInPipe[1]);
 	}
-	else
-		setStatusCode(500);
+	setStatusCode(500);
+	mState = ERROR;
 }
 
 void CGIResponse::appendResponseHeader(std::string &responseContent)
@@ -335,25 +387,66 @@ std::string *CGIResponse::createResponseContent()
 	return (responseContent);
 }
 
-std::string *CGIResponse::getResponse()
+void CGIResponse::run()
 {
 	initCGIInfo();
-	if (!web::isPathExist(mScriptFileName))
-	{
-		/* 여기서 체크 해서 404 띄우는게 맞을까 */
-		setStatusCode(404);
-		return (NULL);
-	}
 	mEnv = createCGIEnv();
 	if (mEnv == NULL)
 	{
 		setStatusCode(500);
-		return (NULL);
+		mState = ERROR;
+		return ;
 	}
 	runCGI();
-	std::string *response = createResponseContent();
-	freeEnv(mEnv);
-	mEnv = NULL;
-	return (response);
 }
 
+std::string *CGIResponse::getResponse()
+{
+	if (mState != DONE)
+		return (NULL);
+	return (createResponseContent());
+}
+
+enum CGIResponse::CGIResponseState CGIResponse::getState() const
+{
+	return (mState);
+}
+
+CGIResponse::ReadListener::ReadListener(CGIResponse &response)
+: mResponse(response)
+{
+
+}
+
+CGIResponse::ReadListener::~ReadListener()
+{
+
+}
+
+void CGIResponse::ReadListener::onReadSet()
+{
+	mResponse.readCGI();
+}
+
+void CGIResponse::ReadListener::onWriteSet() { }
+
+void CGIResponse::ReadListener::onExceptSet() { }
+
+CGIResponse::WriteListener::WriteListener(CGIResponse &response)
+: mResponse(response)
+{
+
+}
+
+CGIResponse::WriteListener::~WriteListener()
+{
+
+}
+
+void CGIResponse::WriteListener::onReadSet() { }
+
+void CGIResponse::WriteListener::onWriteSet() {
+	mResponse.sendBody();
+}
+
+void CGIResponse::WriteListener::onExceptSet() { }

@@ -45,8 +45,10 @@ class ResponseFactory
 
 		static std::string *create(struct sockaddr_in clientAddr,
 												Request &request);
-		static std::string *createTimeoutResponse(struct sockaddr_in clientAddr,
-													Request &request);
+		static std::string *createErrorResponse(struct sockaddr_in clientAddr,
+														Request &request, int errorCode);
+		static CGIResponse *createCGIResponse(ServerManager &serverManager,struct sockaddr_in clientAddr,
+														Request &request);
 		ResponseFactory(struct sockaddr_in clientAddr, Request &request);
 		virtual ~ResponseFactory();
 
@@ -56,7 +58,6 @@ class ResponseFactory
 		void checkResponseType();
 
 		Response *createErrorResponse();
-		Response *createCGIResponse();
 		Response *createMethodResponse();
 
 		void initResponseValue();
