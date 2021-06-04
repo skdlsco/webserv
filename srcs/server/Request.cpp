@@ -38,6 +38,24 @@ Request &Request::operator=(Request const & rhs)
 	return (*this);
 }
 
+void Request::resetRequest()
+{
+	mAnalyzeLevel = REQUEST_LINE;
+	mServerConfig = web::getDefaultServerConfig(mConfigVec);
+	mLocationConfig = NULL;
+	mBody.clear();
+	mMethod.clear();
+	mTarget.clear();
+	mTargetContent.clear();
+	mQuery.clear();
+	mField.clear();
+	mIsCGI = false;
+	mHasBody = false;
+	mIsChunked = false;
+	mContentLength = 0;
+	mErrorCode = 0;
+}
+
 void Request::badRequest(int errorCode)
 {
 	mErrorCode = errorCode;
@@ -55,9 +73,7 @@ void Request::appendChunkedBody()
 			mBody.append(mBuffer.substr(0, mContentLength));
 			mBuffer.erase(0, mContentLength + 2);
 			if (mBody.length() > mLocationConfig->getClientMaxBodySize())
-			{
 				badRequest(413);
-			}
 			if (mContentLength == 0)
 				mAnalyzeLevel = DONE;
 			mIsReadData = false;
@@ -90,7 +106,6 @@ void Request::appendContentBody()
 		mBody.append(mBuffer);
 	if (mBody.size() >= static_cast<unsigned long>(mContentLength))
 		mAnalyzeLevel = DONE;
-	mBuffer.clear();
 }
 
 void Request::analyzeBody()
@@ -98,7 +113,6 @@ void Request::analyzeBody()
 	if (mErrorCode || !mHasBody)
 	{
 		mAnalyzeLevel = DONE;
-		mBuffer.clear();
 		return ;
 	}
 	if (mIsChunked)
@@ -248,6 +262,17 @@ void Request::checkLocationMethodList()
 		badRequest(405);
 }
 
+void Request::checkRequireContentLength()
+{
+	if (mMethod != "POST")
+		return ;
+	if (mIsChunked)
+		return ;
+	if (mField.find("CONTENT-LENGTH") != mField.end())
+		return ;
+	badRequest(411);
+}
+
 void Request::checkHeader()
 {
 	checkHost();
@@ -256,6 +281,7 @@ void Request::checkHeader()
 	checkLocationMethodList();
 	checkContentLength();
 	checkTransferEncoding();
+	checkRequireContentLength();
 }
 
 bool Request::isValidMethod(std::string method)
@@ -278,9 +304,14 @@ void Request::analyzeRequestLine(std::string line)
 	std::vector<std::string> lineElements = web::split(line, std::string(" \t"));
 
 	if (lineElements.size() != 3 || !isValidMethod(lineElements[0]) ||
-		!isValidTarget(lineElements[1])	|| lineElements[2] != HTTP_VERSION)
+		!isValidTarget(lineElements[1]))
 	{
-		badRequest(400);
+		badRequest(501);
+		return ;
+	}
+	if (lineElements[2] != HTTP_VERSION)
+	{
+		badRequest(505);
 		return ;
 	}
 	mMethod = lineElements[0];
@@ -343,8 +374,10 @@ void Request::analyzeHeader()
 	}
 }
 
-void Request::analyzeBuffer(char *buffer)
+bool Request::analyzeBuffer(char *buffer)
 {
+	if (mAnalyzeLevel == DONE)
+		resetRequest();
 	mBuffer.append(buffer);
 	if (mAnalyzeLevel == REQUEST_LINE || mAnalyzeLevel == HEADER)
 		analyzeHeader();
@@ -352,6 +385,7 @@ void Request::analyzeBuffer(char *buffer)
 		analyzeBody();
 	if (buffer[0] == '\0')
 		mAnalyzeLevel = DONE;
+	return (mAnalyzeLevel == DONE);
 }
 
 std::vector<ServerConfig *> const &Request::getConfigVec() const
