@@ -3,14 +3,6 @@
 #include "config/ConfigManager.hpp"
 #include "logger/Logger.hpp"
 
-// void sigintHandler(int sig)
-// {
-// 	sig = 0;
-
-// 	std::cerr << "test" << std::endl;
-// 	exit(0);
-// }
-
 int main(int argc, char *argv[])
 {
 	std::string filePath;
@@ -19,7 +11,6 @@ int main(int argc, char *argv[])
 
 	try
 	{
-		// signal(SIGINT, sigintHandler);
 		if (argc > 2)
 		{
 			std::cerr << "check your input." << std::endl;
