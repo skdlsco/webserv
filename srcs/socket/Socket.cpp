@@ -7,6 +7,8 @@ Socket::Socket()
 	mSocketFD = socket(PF_INET, SOCK_STREAM, 0);
 	if (mSocketFD < 0)
 		throw Socket::SocketException("socket open failed");
+	int opt = 1;
+	setsockopt(mSocketFD, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
 }
 
 Socket::~Socket()

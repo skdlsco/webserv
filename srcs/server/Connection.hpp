@@ -37,14 +37,14 @@ class Connection : public ServerComponent
 		static const int BUFFER_SIZE = 8192;
 		ConnectionAction mFDListener;
 		Request mRequest;
-		CGIResponse *mCGIResponse;
+		// CGIResponse *mCGIResponse;
 		std::string *mWriteBuffer;
 		std::vector<ServerConfig *> const &mConfig;
 		struct sockaddr_in mAddr; // TODO convert type to int, string
 		int mFD;
 		long mStartTime;
 		int mWriteIdx;
-		int mCloseResponseIdx;
+		
 		std::vector<Response *> mResponseVec;
 
 		Connection();
@@ -60,7 +60,7 @@ class Connection : public ServerComponent
 
 		virtual void onRepeat();
 		std::vector<ServerConfig *> const &getConfig() const;
-		void createResponseBuffer();
+		void addResponse();
 };
 
 #endif
