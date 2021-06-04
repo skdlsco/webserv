@@ -5,6 +5,7 @@
 #include "utils/CGI.hpp"
 #include <signal.h>
 #include <sys/wait.h>
+#include "server/ErrorResponse.hpp"
 
 class CGIResponse : public Response
 {
@@ -40,11 +41,6 @@ class CGIResponse : public Response
 				void onWriteSet();
 				void onExceptSet();
 		};
-	public:
-		enum CGIResponseState
-		{
-			READY, ON_WORKING, DONE, ERROR
-		};
 	private:
 		static const int BUFFER_SIZE = 8192;
 		CGIResponse();
@@ -67,10 +63,11 @@ class CGIResponse : public Response
 		int mInPipe[2];
 		int mOutPipe[2];
 		pid_t mPid;
-		enum CGIResponseState mState;
 		WriteListener mWriteListener;
 		ReadListener mReadListener;
 
+		void resetPipe();
+		void errorExcept();
 		void initCGIInfo();
 		std::string getCGIVariableContentType();
 		std::string getCGIVariableUserAgent();
@@ -84,8 +81,8 @@ class CGIResponse : public Response
 		void sendBody();
 		void readCGI();
 		bool responseToHeader();
-		void appendResponseHeader(std::string &responseContent);
-		std::string *createResponseContent();
+		void appendResponseHeader();
+		void createResponseContent();
 	public:
 		static std::string const TAG;
 
@@ -94,9 +91,7 @@ class CGIResponse : public Response
 		CGIResponse &operator=(CGIResponse const & rhs);
 		virtual ~CGIResponse();
 
-		std::string *getResponse();
 		void run();
-		enum CGIResponseState getState() const;
 };
 
 #endif
