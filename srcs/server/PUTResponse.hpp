@@ -20,6 +20,7 @@ class PUTResponse : public Response
 		void checkTarget();
 		void writeFile();
 		void appendResponseHeader();
+		void appendResponseBody();
 	public:
 		static std::string const TAG;
 		PUTResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);
