@@ -25,39 +25,49 @@ POSTResponse &POSTResponse::operator=(POSTResponse const & rhs)
 	return (*this);
 }
 
-std::string *POSTResponse::getResponse()
+void POSTResponse::errorExcept()
 {
-	std::string *responseContent = NULL;
+	mResponseContent = ErrorResponse::getErrorResponse(getServerConfig(), getLocationConfig(), getStatusCode());
+	setState(DONE);
+}
 
+void POSTResponse::run()
+{
 	mBody = getRequestBody();
 	checkAuthorization();
 	if (getStatusCode())
-		return (NULL);
+	{
+		errorExcept();
+		return ;
+	}
 	checkTarget();
 	if (getStatusCode())
-		return (NULL);
+	{
+		errorExcept();
+		return ;
+	}
 	try
 	{
 		writeFile();
 		/* 201 created (success) */
 		if (getStatusCode() != 201)
-			return (NULL);
-		responseContent = new std::string();
-		if (responseContent)
 		{
-			*responseContent += createResponseLine();
-			appendResponseHeader(*responseContent);
-			appendResponseBody(*responseContent);
+			setStatusCode(500);
+			errorExcept();
+			return ;
 		}
+
+		appendResponseHeader();
+		appendResponseBody();
 	}
 	catch(std::exception const &e)
 	{
 		logger::println(TAG, e.what());
+		mResponseContent.clear();
 		setStatusCode(500);
-		delete responseContent;
-		responseContent = NULL;
+		errorExcept();
 	}
-	return (responseContent);
+	setState(DONE);
 }
 
 void POSTResponse::checkAuthorization()
@@ -105,22 +115,14 @@ void POSTResponse::checkTarget()
 {
 	std::string path = getLocationConfig()->getRoot() + getTargetContent();
 
-	// logger::print(TAG) << "Root: " << getLocationConfig()->getRoot() << std::endl;
-	// logger::print(TAG) << "TargetContent: " << getTargetContent() << std::endl;
-	// logger::print(TAG) << "path: " << path << std::endl;
 	path = web::removeConsecutiveDuplicate(path, '/');
 	int lastSlashIdx = path.find_last_of("/");
 
 	std::string folder = path.substr(0, lastSlashIdx);
 	std::string file = path.substr(lastSlashIdx + 1);
 
-	/* POST가 원래 file을 그냥 생성하는 것이었는데
-	   target이 항상 폴더여야 하고, 이름을 내부에서 정하는 것으로 하는게 맞는 것 같아서 고민이 되네요 */
 	/* file.empty() : 생성할 file 이름이 없는 경우.. */
 	/* isDirectory : folder 경로가 존재하지 않는 경우 404 */
-
-	/* 06.03 그래서 추가했습니다. 파일명은 "New File + (N)" 입니다.*/
-	/* file이 empty()인 경우는 path 뒷부분이 무조건 / 이므로.. path 뒤에 붙이면 됩니다. */
 	if (file.empty())
 		path += "New File";
 	if (!web::isDirectory(folder))
@@ -153,28 +155,24 @@ void POSTResponse::writeFile()
 	close(fd);
 	if (writeN == -1)
 		setStatusCode(500);
-	 else
+	else
 		setStatusCode(201);
 }
 
-void POSTResponse::appendResponseHeader(std::string &responseContent)
+void POSTResponse::appendResponseHeader()
 {
-	std::string responseHeader;
-
-	responseContent += "Date: " + web::getDate() + "\r\n";
-	responseContent += "Server: webserv (chlee, ina)\r\n";
-	responseContent += "Connection: close\r\n";
-
+	mResponseContent += createResponseLine();
+	mResponseContent += createDefaultResponseHeader();
 	std::string location = mFileName;
 	size_t pos = location.find(getLocationConfig()->getRoot());
 	location.erase(pos, getLocationConfig()->getRoot().length());
 
-	responseContent += "Location: " + location +"\r\n";
-	responseContent += "Content-Location: " + location +"\r\n";
-	responseContent += "\r\n";
+	mResponseContent += "Location: " + location +"\r\n";
+	mResponseContent += "Content-Location: " + location +"\r\n";
+	mResponseContent += "\r\n";
 }
 
-void POSTResponse::appendResponseBody(std::string &responseContent)
+void POSTResponse::appendResponseBody()
 {
-	responseContent += "\r\n";
+	mResponseContent += "\r\n";
 }
