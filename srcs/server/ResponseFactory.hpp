@@ -6,6 +6,7 @@
 #include <netinet/in.h>
 #include <iostream>
 #include <string>
+#include "ServerManager.hpp"
 #include "logger/Logger.hpp"
 #include "config/ServerConfig.hpp"
 #include "config/LocationConfig.hpp"
@@ -34,6 +35,7 @@ class ResponseFactory
 		ResponseFactory(ResponseFactory const & copy);
 		ResponseFactory &operator=(ResponseFactory const & rhs);
 
+		ServerManager &mServerManager;
 		enum ResponseType mResponseState;
 		Request &mRequest;
 		struct sockaddr_in mClientAddr;
@@ -43,13 +45,9 @@ class ResponseFactory
 	public:
 		static std::string const TAG;
 
-		static std::string *create(struct sockaddr_in clientAddr,
+		static Response *create(ServerManager &serverManager, struct sockaddr_in clientAddr,
 												Request &request);
-		static std::string *createErrorResponse(struct sockaddr_in clientAddr,
-														Request &request, int errorCode);
-		static CGIResponse *createCGIResponse(ServerManager &serverManager,struct sockaddr_in clientAddr,
-														Request &request);
-		ResponseFactory(struct sockaddr_in clientAddr, Request &request);
+		ResponseFactory(ServerManager &serverManager, struct sockaddr_in clientAddr, Request &request);
 		virtual ~ResponseFactory();
 
 		Response *createResponse();
@@ -59,6 +57,7 @@ class ResponseFactory
 
 		Response *createErrorResponse();
 		Response *createMethodResponse();
+		Response *createCGIResponse();
 
 		void initResponseValue();
 
