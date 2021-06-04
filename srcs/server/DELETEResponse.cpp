@@ -48,7 +48,6 @@ void DELETEResponse::run()
 			return ;
 		}
 		appendResponseHeader();
-		appendResponseBody();
 	}
 	catch(const std::exception& e)
 	{
@@ -77,11 +76,6 @@ void DELETEResponse::appendResponseHeader()
 	mResponseContent += createDefaultResponseHeader();
 	mResponseContent += "Content-Language: en-US\r\n";
 	mResponseContent += "Content-Length: 0\r\n";
-	mResponseContent += "\r\n";
-}
-
-void DELETEResponse::appendResponseBody()
-{
 	mResponseContent += "\r\n";
 }
 
