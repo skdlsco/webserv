@@ -4,7 +4,7 @@ std::string const CGIResponse::TAG = "CGIResponse";
 
 CGIResponse::CGIResponse(ServerManager &serverManager, const ServerConfig * serverConfig, const LocationConfig * locationConfig)
 : Response(serverConfig, locationConfig), mServerManager(serverManager), mWriteIdx(0), mIsCGIReadHeader(true),
-	mEnv(NULL), mPid(-1), mState(READY), mWriteListener(*this), mReadListener(*this)
+	mEnv(NULL), mPid(-1), mWriteListener(*this), mReadListener(*this)
 {
 	mInPipe[0] = -1;
 	mInPipe[1] = -1;
@@ -38,6 +38,16 @@ CGIResponse::~CGIResponse()
 	close(mOutPipe[0]);
 	close(mOutPipe[1]);
 }
+
+void CGIResponse::errorExcept()
+{
+	if (mPid != -1)
+		kill(mPid, SIGKILL);
+	mPid = -1;
+	mResponseContent = ErrorResponse::getErrorResponse(getServerConfig(), getLocationConfig(), getStatusCode());
+	setState(DONE);
+}
+
 
 void CGIResponse::freeEnv(char **env)
 {
@@ -231,8 +241,7 @@ void CGIResponse::execveCGI()
 	dup2(mOutPipe[0], STDIN_FILENO);
 	dup2(mInPipe[1], STDOUT_FILENO);
 	argv[1] = NULL;
-	if (execve(getLocationConfig()->getCGIPath().c_str(), argv, mEnv) == -1)
-		setStatusCode(500);
+	execve(getLocationConfig()->getCGIPath().c_str(), argv, mEnv);
 	free(argv[0]);
 	exit(1);
 }
@@ -243,7 +252,7 @@ void CGIResponse::forkCGI()
 	if (mPid == -1)
 	{
 		setStatusCode(500);
-		mState = ERROR;
+		errorExcept();
 		return ;
 	}
 	else if (mPid == 0)
@@ -256,7 +265,7 @@ void CGIResponse::forkCGI()
 
 void CGIResponse::sendBody()
 {
-	if (getStatusCode() || (mRequestBody.length() - mWriteIdx) <= 0)
+	if (getState() == DONE || (mRequestBody.length() - mWriteIdx) <= 0)
 		return ;
 
 	const char *buffer = mRequestBody.c_str();
@@ -268,7 +277,7 @@ void CGIResponse::sendBody()
 	if (writeN == -1)
 	{
 		setStatusCode(500);
-		mState = ERROR;
+		errorExcept();
 		return ;
 	}
 	mWriteIdx += writeN;
@@ -298,7 +307,7 @@ bool CGIResponse::responseToHeader()
 
 void CGIResponse::readCGI()
 {
-	if (getStatusCode())
+	if (getState() == DONE)
 		return ;
 	char buffer[BUFFER_SIZE + 1];
 	ssize_t readN;
@@ -307,7 +316,7 @@ void CGIResponse::readCGI()
 	if (readN == -1)
 	{
 		setStatusCode(500);
-		mState = ERROR;
+		errorExcept();
 		return ;
 	}
 	buffer[readN] = 0;
@@ -321,6 +330,7 @@ void CGIResponse::readCGI()
 		mInPipe[0] = -1;
 		mServerManager.removeFD(mOutPipe[1]);
 		mOutPipe[1] = -1;
+		createResponseContent();
 	}
 }
 
@@ -331,60 +341,48 @@ void CGIResponse::runCGI()
 		if (pipe(mOutPipe) == 0)
 		{
 			forkCGI();
-			if (mState == ERROR)
+			if (mState == DONE)
 				return ;
-			logger::println(TAG, "fork success");
 			mRequestBody = getRequestBody();
 			mServerManager.addFD(mInPipe[0], mReadListener);
 			mServerManager.addFD(mOutPipe[1], mWriteListener);
-			mState = ON_WORKING;
 			return ;
 		}
 	}
-	setStatusCode(500);
-	mState = ERROR;
+	errorExcept();
 }
 
-void CGIResponse::appendResponseHeader(std::string &responseContent)
+void CGIResponse::appendResponseHeader()
 {
 	std::map<std::string, std::string>::iterator iter;
 
 	iter = mResponseHeader.find("Status");
 	if (iter == mResponseHeader.end())
 		throw std::exception();
-	responseContent += "HTTP/1.1 " + iter->second + "\r\n";
+	mResponseContent += "HTTP/1.1 " + iter->second + "\r\n";
 	mResponseHeader.erase("Status");
-	responseContent += "Date: " + web::getDate() + "\r\n";
-	responseContent += "Server: webserv (chlee, ina)\r\n";
-	responseContent += "Connection: close\r\n";
+	mResponseContent += createDefaultResponseHeader();
 	iter = mResponseHeader.find("Content-Length");
 	if (iter == mResponseHeader.end())
-		responseContent += "Content-Length: " + web::toString(mCGIResponse.length()) + "\r\n";
+		mResponseContent += "Content-Length: " + web::toString(mCGIResponse.length()) + "\r\n";
 	for (iter = mResponseHeader.begin(); iter != mResponseHeader.end(); iter++)
 	{
-		responseContent += iter->first + ": " + iter->second + "\r\n";
+		mResponseContent += iter->first + ": " + iter->second + "\r\n";
 	}
-	responseContent += "\r\n";
+	mResponseContent += "\r\n";
 }
 
-std::string *CGIResponse::createResponseContent()
+void CGIResponse::createResponseContent()
 {
-	std::string *responseContent = NULL;
-	try
-	{
-		responseContent = new std::string;
-		if (responseContent == NULL)
-			return (NULL);
-		appendResponseHeader(*responseContent);
-		*responseContent += mCGIResponse;
+	try {
+		appendResponseHeader();
+		mResponseContent += mCGIResponse;
 	}
 	catch(const std::exception& e)
 	{
 		logger::println(TAG, e.what());
-		delete (responseContent);
-		responseContent = NULL;
+		errorExcept();
 	}
-	return (responseContent);
 }
 
 void CGIResponse::run()
@@ -394,22 +392,10 @@ void CGIResponse::run()
 	if (mEnv == NULL)
 	{
 		setStatusCode(500);
-		mState = ERROR;
+		errorExcept();
 		return ;
 	}
 	runCGI();
-}
-
-std::string *CGIResponse::getResponse()
-{
-	if (mState != DONE)
-		return (NULL);
-	return (createResponseContent());
-}
-
-enum CGIResponse::CGIResponseState CGIResponse::getState() const
-{
-	return (mState);
 }
 
 CGIResponse::ReadListener::ReadListener(CGIResponse &response)
