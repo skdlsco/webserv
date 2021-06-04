@@ -160,12 +160,12 @@ void Response::setLocationConfig(const LocationConfig *config)
 	mLocationConfig = config;
 }
 
-state Response::getState() const
+enum State Response::getState() const
 {
 	return (mState);
 }
 
-void Response::setState(state state)
+void Response::setState(enum State state)
 {
 	mState = state;
 }
@@ -178,4 +178,9 @@ bool Response::isKeepAlive() const
 void Response::setIsKeepAlive(bool isKeepAlive)
 {
 	mIsKeepAlive = isKeepAlive;
+}
+
+std::string &Response::getResponse()
+{
+	return (mResponseContent);	
 }

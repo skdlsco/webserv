@@ -23,7 +23,7 @@ class DELETEResponse : public Response
 		DELETEResponse(DELETEResponse const & copy);
 		DELETEResponse &operator=(DELETEResponse const & rhs);
 		virtual ~DELETEResponse();
-		void DELETEResponse::errorExcept();
+		void errorExcept();
 
 		virtual void run();
 };

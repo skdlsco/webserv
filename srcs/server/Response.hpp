@@ -69,8 +69,8 @@ class Response
 		void setServerConfig(const ServerConfig *config);
 		const LocationConfig *getLocationConfig() const;
 		void setLocationConfig(const LocationConfig *config);
-		state getState() const;
-		void setState(enum state state);
+		enum State getState() const;
+		void setState(enum State state);
 		bool isKeepAlive() const;
 		void setIsKeepAlive(bool isKeepAlive);
 };
