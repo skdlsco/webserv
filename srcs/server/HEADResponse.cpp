@@ -42,20 +42,19 @@ void HEADResponse::run()
 	}
 	try
 	{
-		std::string responseBody;
+		if (getStatusCode() != 200)
+		{
+			errorExcept();
+			return ;
+		}
 		initContentLocation();
-		responseBody = appendResponseBody();
+		std::string responseBody = appendResponseBody();
 		if (getStatusCode() == 0)
 		{
 			setStatusCode(200);
 			setState(DONE);
 		}
 		appendResponseHeader(responseBody);
-		if (getStatusCode() != 200)
-		{
-			errorExcept();
-			return ;
-		}
 	}
 	catch(const std::exception& e)
 	{
