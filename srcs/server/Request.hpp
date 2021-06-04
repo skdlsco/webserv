@@ -44,12 +44,15 @@ class Request
 		Request(Request const & copy);
 		Request &operator=(Request const & rhs);
 
+		void resetRequest();
+
 		void badRequest(int errorCode);
 		void appendChunkedBody();
 		void appendContentBody();
 		void checkHost();
 		void checkContentLength();
 		void checkTransferEncoding();
+		void checkRequireContentLength();
 
 		/* find specific URI */
 		void checkLocationURI();
@@ -73,7 +76,7 @@ class Request
 		Request(std::vector<ServerConfig *> const & configVec);
 		virtual ~Request();
 
-		void analyzeBuffer(char * buffer);
+		bool analyzeBuffer(char *buffer);
 
 		std::vector<ServerConfig *> const &getConfigVec() const;
 		ServerConfig *getServerConfig() const;

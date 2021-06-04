@@ -5,7 +5,8 @@ std::string const Connection::TAG = "Connection";
 Connection::Connection(ServerManager &serverManager, std::vector<ServerConfig *> const &config,
 						struct sockaddr_in addr, int fd)
 : ServerComponent(serverManager), mFDListener(*this), mRequest(config), mCGIResponse(NULL),
-	mWriteBuffer(NULL), mConfig(config), mAddr(addr), mFD(fd), mStartTime(web::getNowTime()), mWriteIdx(0)
+	mWriteBuffer(NULL), mConfig(config), mAddr(addr), mFD(fd), mStartTime(web::getNowTime()), mWriteIdx(0),
+	mCloseResponseIdx(-1)
 {
 	getServerManager().addFD(fd, mFDListener);
 }
@@ -13,6 +14,10 @@ Connection::Connection(ServerManager &serverManager, std::vector<ServerConfig *>
 Connection::~Connection()
 {
 	getServerManager().removeFD(mFD);
+	for (std::vector<Response *>::iterator iter; iter != mResponseVec.end(); iter++)
+	{
+		delete *iter;
+	}
 	delete mWriteBuffer;
 	delete mCGIResponse;
 }
@@ -33,6 +38,8 @@ Connection *Connection::create(ServerManager &serverManager,
 
 void Connection::createResponseBuffer()
 {
+	if (mRequest.getErrorCode())
+		mCloseResponseIdx = mResponseVec.size();
 	if (mRequest.isCGI())
 	{
 		mCGIResponse = ResponseFactory::createCGIResponse(getServerManager(), mAddr, mRequest);
@@ -53,50 +60,9 @@ void Connection::createResponseBuffer()
 
 void Connection::onRepeat()
 {
-	try
-	{
-		/* getNowTime() - mStartTime > TIMEOUT ? ERROR */
-		if (web::getNowTime() - mStartTime > TIMEOUT)
-		{
-			delete mWriteBuffer;
-			delete mCGIResponse;
-			mCGIResponse = NULL;
-			mWriteBuffer = ResponseFactory::createErrorResponse(mAddr, mRequest, 408);
-			if (mWriteBuffer == NULL)
-				finish();
-		}
-		if (mCGIResponse)
-		{
-			if (mCGIResponse->getState() == CGIResponse::READY)
-				mCGIResponse->run();
-			if (mCGIResponse->getState() == CGIResponse::DONE)
-			{
-				mWriteBuffer = mCGIResponse->getResponse();
-				delete mCGIResponse;
-				mCGIResponse = NULL;
-				if (mWriteBuffer == NULL)
-				{
-					mWriteBuffer = ResponseFactory::createErrorResponse(mAddr, mRequest, 500);
-					if (mWriteBuffer == NULL)
-						finish();
-				}
-				return ;
-			}
-			if (mCGIResponse->getState() == CGIResponse::ERROR)
-			{
-				mWriteBuffer = ResponseFactory::createErrorResponse(mAddr, mRequest, mCGIResponse->getStatusCode());
-				delete mCGIResponse;
-				mCGIResponse = NULL;
-				if (mWriteBuffer == NULL)
-					finish();
-			}
-		}
-	}
-	catch(const std::exception& e)
-	{
-		logger::println(TAG, e.what());
+	/* getNowTime() - mStartTime > TIMEOUT ? ERROR */
+	if (web::getNowTime() - mStartTime > TIMEOUT)
 		finish();
-	}
 }
 
 std::vector<ServerConfig *> const &Connection::getConfig() const
@@ -121,8 +87,8 @@ void Connection::ConnectionAction::onReadSet()
 
 	if (mConnection.mRequest.getAnalyzeLevel() == Request::DONE)
 		return ;
-	int n = recv(mConnection.mFD, buffer, BUFFER_SIZE - 1, 0);
-	if (n == -1)
+	int n = read(mConnection.mFD, buffer, BUFFER_SIZE - 1);
+	if (n <= 0)
 	{
 		mConnection.finish();
 		return ;
@@ -130,8 +96,7 @@ void Connection::ConnectionAction::onReadSet()
 	buffer[n] = '\0';
 	try
 	{
-		mConnection.mRequest.analyzeBuffer(buffer);
-		if (mConnection.mRequest.getAnalyzeLevel() == Request::DONE)
+		if (mConnection.mRequest.analyzeBuffer(buffer))
 			mConnection.createResponseBuffer();
 	}
 	catch(const std::exception& e)
@@ -150,7 +115,7 @@ void Connection::ConnectionAction::onWriteSet()
 
 		if (BUFFER_SIZE > mConnection.mWriteBuffer->length() - mConnection.mWriteIdx)
 			bufferSize = mConnection.mWriteBuffer->length() - mConnection.mWriteIdx;
-		int writeN = send(mConnection.mFD, mConnection.mWriteBuffer->c_str() + mConnection.mWriteIdx, bufferSize, MSG_NOSIGNAL);
+		int writeN = write(mConnection.mFD, mConnection.mWriteBuffer->c_str() + mConnection.mWriteIdx, bufferSize);
 		if (writeN < 0)
 		{
 			mConnection.finish();

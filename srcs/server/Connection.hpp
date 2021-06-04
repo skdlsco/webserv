@@ -44,6 +44,8 @@ class Connection : public ServerComponent
 		int mFD;
 		long mStartTime;
 		int mWriteIdx;
+		int mCloseResponseIdx;
+		std::vector<Response *> mResponseVec;
 
 		Connection();
 		Connection(ServerManager &serverManager, std::vector<ServerConfig *> const &config, struct sockaddr_in addr, int fd);
