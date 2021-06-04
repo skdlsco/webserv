@@ -107,7 +107,9 @@ void GETResponse::initState()
 		if (contentLocation[contentLocation.length() - 1] != '/')
 			contentLocation += "/";
 		std::string indexPath = contentLocation + getLocationConfig()->getIndexFile();
-		if (web::isPathExist(indexPath.c_str()))
+
+		/* 한번 더 폴더일 가능성이 있습니다. */
+		if (web::isPathExist(indexPath.c_str()) && !isDirectory(indexPath.c_str())) 
 			mPageState = INDEX_HTML;
 		else if (getLocationConfig()->isAutoIndex())
 			mPageState = AUTOINDEX;
@@ -118,6 +120,7 @@ void GETResponse::initState()
 			mPageState = TARGET;
 	else
 		setStatusCode(404);
+
 }
 
 void GETResponse::initContentLocation()
