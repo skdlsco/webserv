@@ -70,8 +70,8 @@ void GETResponse::run()
 void GETResponse::appendResponseHeader(std::string const & responseBody)
 {
 	/* default header */
-	mResponseContent += createDefaultResponseHeader();
 	mResponseContent += createResponseLine();
+	mResponseContent += createDefaultResponseHeader();
 
 	/* content part */
 	mResponseContent += "Content-Language: en-US\r\n";
