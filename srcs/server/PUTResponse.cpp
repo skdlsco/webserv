@@ -59,6 +59,8 @@ void PUTResponse::run()
 		}
 
 		appendResponseHeader();
+		if (getStatusCode() == 201)
+			appendResponseBody();
 	}
 	catch(std::exception const &e)
 	{
@@ -156,6 +158,13 @@ void PUTResponse::appendResponseHeader()
 	size_t pos = location.find(getLocationConfig()->getRoot());
 	location.erase(pos, getLocationConfig()->getRoot().length());
 
-	mResponseContent += "Content-Location: " + location +"\r\n";
+	if (getStatusCode() == 201)
+		mResponseContent += "Content-Length: " + web::toString(mBody.size()) + "\r\n";
+	mResponseContent += "Content-Location: " + location + "\r\n";
 	mResponseContent += "\r\n";
+}
+
+void PUTResponse::appendResponseBody()
+{
+	mResponseContent += mBody;
 }
