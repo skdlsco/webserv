@@ -48,8 +48,8 @@ std::string ErrorResponse::createResponse()
 	createUserErrorPage();
 	try
 	{
-		createResponseHeader();
-		createResponseBody();
+		appendResponseHeader();
+		appendResponseBody();
 	}
 	catch(std::exception const&e)
 	{

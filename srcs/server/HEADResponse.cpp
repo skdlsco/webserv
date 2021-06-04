@@ -42,19 +42,16 @@ void HEADResponse::run()
 	}
 	try
 	{
+		initContentLocation();
+		std::string responseBody = appendResponseBody();
+		if (getStatusCode() == 0)
+			setStatusCode(200);
+		appendResponseHeader(responseBody);
 		if (getStatusCode() != 200)
 		{
 			errorExcept();
 			return ;
 		}
-		initContentLocation();
-		std::string responseBody = appendResponseBody();
-		if (getStatusCode() == 0)
-		{
-			setStatusCode(200);
-			setState(DONE);
-		}
-		appendResponseHeader(responseBody);
 	}
 	catch(const std::exception& e)
 	{
@@ -62,4 +59,5 @@ void HEADResponse::run()
 		setStatusCode(500);
 		errorExcept();
 	}
+	setState(DONE);
 }

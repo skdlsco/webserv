@@ -46,21 +46,18 @@ void GETResponse::run()
 	}
 	try
 	{
+		std::string responseBody;
+		initContentLocation();
+		responseBody = appendResponseBody();
+		if (getStatusCode() == 0)
+			setStatusCode(200);
+		appendResponseHeader(responseBody);
+		mResponseContent += responseBody;
 		if (getStatusCode() != 200)
 		{
 			errorExcept();
 			return ;
 		}
-		initContentLocation();
-		std::string responseBody = appendResponseBody();
-		if (getStatusCode() == 0)
-		{
-			setStatusCode(200);
-			setState(DONE);
-		}
-		appendResponseHeader(responseBody);
-		mResponseContent += responseBody;
-
 	}
 	catch(const std::exception& e)
 	{
@@ -68,6 +65,7 @@ void GETResponse::run()
 		setStatusCode(500);
 		errorExcept();
 	}
+	setState(DONE);
 }
 
 void GETResponse::appendResponseHeader(std::string const & responseBody)

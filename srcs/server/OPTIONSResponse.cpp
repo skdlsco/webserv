@@ -38,7 +38,6 @@ void OPTIONSResponse::run()
 		appendResponseHeader();
 		appendResponseBody();
 		setStatusCode(200);
-		setState(DONE);
 	}
 	catch(const std::exception& e)
 	{
@@ -46,6 +45,7 @@ void OPTIONSResponse::run()
 		setStatusCode(500);
 		errorExcept();
 	}
+	setState(DONE);
 }
 
 void OPTIONSResponse::appendResponseHeader()
