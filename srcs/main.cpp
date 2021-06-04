@@ -3,7 +3,7 @@
 #include "config/ConfigManager.hpp"
 #include "logger/Logger.hpp"
 
-int main(void)
+int main(int argc, char *argv[])
 {
 	std::string filePath;
 	std::vector<std::vector<ServerConfig *> >configList;
@@ -11,7 +11,16 @@ int main(void)
 
 	try
 	{
-		ConfigManager configManager("configs/test_ina.conf");
+		if (argc > 2)
+		{
+			std::cerr << "check your input." << std::endl;
+			return (-1);
+		}
+		else if (argc < 2)
+			filePath = "./configs/default_goinfre.conf";
+		else
+			filePath = argv[1];
+		ConfigManager configManager(filePath);
 		if (configManager.isConfigValidate())
 		{
 			configList = configManager.parseConfigFile();
