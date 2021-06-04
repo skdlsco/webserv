@@ -4,7 +4,7 @@ std::string const GETResponse::TAG = "GETResponse";
 
 GETResponse::GETResponse(const ServerConfig * serverConfig,
 						const LocationConfig * locationConfig)
-: Response(serverConfig, locationConfig), mState(INDEX_HTML), mContentLocation("")
+: Response(serverConfig, locationConfig), mPageState(INDEX_HTML), mContentLocation("")
 {
 
 }
