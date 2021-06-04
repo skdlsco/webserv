@@ -13,8 +13,13 @@
 #include "utils/HTTP.hpp"
 #include "logger/Logger.hpp"
 
+enum State
+{
+	START, DONE
+};
 class Response
 {
+
 	private:
 		int mStatusCode;
 		std::string mStatusMessage;
@@ -27,9 +32,13 @@ class Response
 		std::string mRequestBody;
 		const ServerConfig *mServerConfig;
 		const LocationConfig *mLocationConfig;
+		bool mIsKeepAlive;
 		Response();
 	protected:
+		enum State mState;
+		std::string mResponseContent;
 		std::string createResponseLine();
+		std::string createDefaultResponseHeader();
 	public:
 		static std::string const TAG;
 		Response(const ServerConfig * serverConfig, const LocationConfig * locationConfig);
@@ -37,7 +46,8 @@ class Response
 		Response(Response const & copy);
 		Response &operator=(Response const & rhs);
 
-		virtual std::string *getResponse() = 0;
+		std::string &getResponse();
+		virtual void run() = 0;
 
 		int getStatusCode() const;
 		void setStatusCode(int statusCode);
@@ -59,6 +69,10 @@ class Response
 		void setServerConfig(const ServerConfig *config);
 		const LocationConfig *getLocationConfig() const;
 		void setLocationConfig(const LocationConfig *config);
+		state getState() const;
+		void setState(enum state state);
+		bool isKeepAlive() const;
+		void setIsKeepAlive(bool isKeepAlive);
 };
 
 #endif

@@ -14,14 +14,14 @@
 
 class GETResponse : public Response
 {
-	enum state
+	enum PageState
 	{
 		INDEX_HTML, AUTOINDEX, TARGET
 	};
 	private:
 		GETResponse();
 	protected:
-		enum state mState;
+		enum PageState mPageState;
 		std::string mContentLocation;
 		void createResponseHeader(std::string const & responseBody, std::string & responseContent);
 		std::string createResponseBody();

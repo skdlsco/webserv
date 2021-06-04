@@ -25,30 +25,40 @@ DELETEResponse &DELETEResponse::operator=(DELETEResponse const & rhs)
 	return (*this);
 }
 
-std::string *DELETEResponse::getResponse()
+void DELETEResponse::errorExcept()
 {
-	std::string *responseContent = NULL;
+	mResponseContent = ErrorResponse::getErrorResponse(getServerConfig(), getLocationConfig(), getStatusCode());
+	setState(DONE);
+}
 
-	checkTarget();
-	if (getStatusCode())
-		return (NULL);
-	try
+void DELETEResponse::run()
+{
+	if (getState() == START)
 	{
-		deleteFile();
-		if (getStatusCode() != 204)
-			return (NULL);
-		*responseContent += createResponseLine();
-		appendResponseHeader(*responseContent);
-		appendResponseBody(*responseContent);
+		checkTarget();
+		if (getStatusCode())
+		{
+			errorExcept();
+			return ;
+		}
+		try
+		{
+			deleteFile();
+			if (getStatusCode() != 204)
+			{
+				errorExcept();
+				return ;
+			}
+			appendResponseHeader();
+			appendResponseBody();
+		}
+		catch(const std::exception& e)
+		{
+			logger::println(TAG, e.what());
+			setStatusCode(500);
+			errorExcept();
+		}
 	}
-	catch(const std::exception& e)
-	{
-		logger::println(TAG, e.what());
-		setStatusCode(500);
-		delete responseContent;
-		responseContent = NULL;
-	}
-	return (responseContent);
 }
 
 void DELETEResponse::checkTarget()
@@ -56,32 +66,26 @@ void DELETEResponse::checkTarget()
 	std::string path = getLocationConfig()->getRoot() + getTarget();
 
 	path = web::removeConsecutiveDuplicate(path, '/');
-
 	if (!web::isPathExist(path) || web::isDirectory(path))
 	{
-		/* 폴더인 경우에도 404를 띄우는게 맞을까요? */
 		setStatusCode(404);
 		return ;
 	}
 	mDeleteTarget = path;
 }
 
-void DELETEResponse::appendResponseHeader(std::string &responseContent)
+void DELETEResponse::appendResponseHeader()
 {
-	std::string responseHeader;
-
-	responseContent += "Date: " + web::getDate() + "\r\n";
-	responseContent += "Server: webserv (chlee, ina)\r\n";
-	responseContent += "Connection: close\r\n";
-
-	responseContent += "Content-Language: en-US\r\n";
-	responseContent += "Content-Length: 0\r\n";
-	responseContent += "\r\n";
+	mResponseContent += createResponseLine();
+	mResponseContent += createDefaultResponseHeader();
+	mResponseContent += "Content-Language: en-US\r\n";
+	mResponseContent += "Content-Length: 0\r\n";
+	mResponseContent += "\r\n";
 }
 
-void DELETEResponse::appendResponseBody(std::string &responseContent)
+void DELETEResponse::appendResponseBody()
 {
-	responseContent += "\r\n";
+	mResponseContent += "\r\n";
 }
 
 void DELETEResponse::deleteFile()

@@ -3,7 +3,7 @@
 std::string const Response::TAG = "Response";
 
 Response::Response(const ServerConfig * serverConfig, const LocationConfig * locationConfig)
-: mStatusCode(0), mServerConfig(serverConfig), mLocationConfig(locationConfig)
+: mStatusCode(0), mServerConfig(serverConfig), mLocationConfig(locationConfig), mState(START);
 {
 
 }
@@ -43,6 +43,20 @@ std::string Response::createResponseLine()
 	responseline += mStatusMessage;
 	responseline += "\r\n";
 	return (responseline);
+}
+
+std::string Response::createDefaultResponseHeader()
+{
+	std::string defaultResponseHeader;
+
+	defaultResponseHeader += "Date: " + web::getDate() + "\r\n";
+	defaultResponseHeader += "Server: webserv (chlee, ina)\r\n";
+	if (isKeepAlive())
+		defaultResponseHeader += "Connection: keep-alive\r\n";
+	else
+		defaultResponseHeader += "Connection: close\r\n";
+
+	return (defaultResponseHeader);
 }
 
 int Response::getStatusCode() const
@@ -144,4 +158,24 @@ const LocationConfig *Response::getLocationConfig() const
 void Response::setLocationConfig(const LocationConfig *config)
 {
 	mLocationConfig = config;
+}
+
+state Response::getState() const
+{
+	return (mState);
+}
+
+void Response::setState(state state)
+{
+	mState = state;
+}
+
+bool Response::isKeepAlive() const
+{
+	return (mIsKeepAlive);
+}
+
+void Response::setIsKeepAlive(bool isKeepAlive)
+{
+	mIsKeepAlive = isKeepAlive;
 }

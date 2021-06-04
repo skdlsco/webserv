@@ -4,26 +4,28 @@
 #include <iostream>
 #include <string>
 #include "Response.hpp"
+#include "ErrorResponse.hpp"
 #include "file/File.hpp"
 #include "utils/String.hpp"
-
 class DELETEResponse : public Response
 {
 	private:
 		DELETEResponse();
 		std::string mDeleteTarget;
+
+		void deleteFile();
+		void checkTarget();
+		void appendResponseHeader();
+		void appendResponseBody();
 	public:
 		static std::string const TAG;
 		DELETEResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);
 		DELETEResponse(DELETEResponse const & copy);
 		DELETEResponse &operator=(DELETEResponse const & rhs);
 		virtual ~DELETEResponse();
+		void DELETEResponse::errorExcept();
 
-		std::string *getResponse();
-		void deleteFile();
-		void checkTarget();
-		void appendResponseHeader(std::string &responseContent);
-		void appendResponseBody(std::string &responseContent);
+		virtual void run();
 };
 
 #endif

@@ -7,29 +7,32 @@
 #include "file/File.hpp"
 #include "utils/Time.hpp"
 #include "utils/HTTP.hpp"
-
+#include "logger/Logger.hpp"
 class ErrorResponse : public Response
 {
 	private:
 		bool mIsDefault;
 		File mFile;
 
+	private:
 		ErrorResponse();
+		ErrorResponse(ErrorResponse const & copy);
+		ErrorResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);
 
+		std::string getResponse();
 		void setErrorToDefault();
 		std::string getAllowMethod();
-		void createResponseHeader(std::string *responseContent);
-		void createResponseBody(std::string *responseContent);
+		void createResponseHeader();
+		void createResponseBody();
 		void createUserErrorPage();
+
 	public:
 		static std::string const TAG;
+		static std::string getErrorResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig, int errorCode);
 
-		ErrorResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);
-		ErrorResponse(ErrorResponse const & copy);
 		ErrorResponse &operator=(ErrorResponse const & rhs);
 		virtual ~ErrorResponse();
-
-		virtual std::string *getResponse();
+		virtual void run();
 };
 
 #endif
