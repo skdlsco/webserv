@@ -46,9 +46,8 @@ void GETResponse::run()
 	}
 	try
 	{
-		std::string responseBody;
 		initContentLocation();
-		responseBody = appendResponseBody();
+		std::string responseBody = appendResponseBody();
 		if (getStatusCode() == 0)
 			setStatusCode(200);
 		appendResponseHeader(responseBody);
