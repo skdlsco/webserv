@@ -84,6 +84,10 @@ void ResponseFactory::checkResponseType()
 Response *ResponseFactory::createErrorResponse()
 {
 	Response *response = new ErrorResponse(mServerConfig, mLocationConfig);
+	if (response)
+	{
+		response->setStatusCode(mStatusCode);
+	}
 	return (response);
 }
 

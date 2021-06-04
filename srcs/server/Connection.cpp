@@ -4,8 +4,8 @@ std::string const Connection::TAG = "Connection";
 
 Connection::Connection(ServerManager &serverManager, std::vector<ServerConfig *> const &config,
 						struct sockaddr_in addr, int fd)
-: ServerComponent(serverManager), mFDListener(*this), mRequest(config), 
-	mWriteBuffer(NULL), mConfig(config), mAddr(addr), mFD(fd), mStartTime(web::getNowTime()), 
+: ServerComponent(serverManager), mFDListener(*this), mRequest(config),
+	mWriteBuffer(NULL), mConfig(config), mAddr(addr), mFD(fd), mStartTime(web::getNowTime()),
 	mWriteIdx(0)
 {
 	getServerManager().addFD(fd, mFDListener);
@@ -14,7 +14,8 @@ Connection::Connection(ServerManager &serverManager, std::vector<ServerConfig *>
 Connection::~Connection()
 {
 	getServerManager().removeFD(mFD);
-	for (std::vector<Response *>::iterator iter; iter != mResponseVec.end(); iter++)
+
+	for (std::vector<Response *>::iterator iter = mResponseVec.begin(); iter != mResponseVec.end(); iter++)
 	{
 		delete *iter;
 	}
@@ -85,7 +86,7 @@ void Connection::ConnectionAction::onReadSet()
 	{
 		if (mConnection.mRequest.analyzeBuffer(buffer))
 			mConnection.addResponse();
-		
+
 	}
 	catch(const std::exception& e)
 	{
@@ -106,6 +107,7 @@ void Connection::ConnectionAction::onWriteSet()
 	std::string &responseContent = response->getResponse();
 	int bufferSize = BUFFER_SIZE;
 
+	logger::println(TAG, responseContent);
 	if (BUFFER_SIZE > responseContent.length() - mConnection.mWriteIdx)
 		bufferSize = responseContent.length() - mConnection.mWriteIdx;
 	int writeN = write(mConnection.mFD, responseContent.c_str() + mConnection.mWriteIdx, bufferSize);
