@@ -23,9 +23,9 @@ class DELETEResponse : public Response
 		DELETEResponse(DELETEResponse const & copy);
 		DELETEResponse &operator=(DELETEResponse const & rhs);
 		virtual ~DELETEResponse();
-		void errorExcept();
 
 		virtual void run();
+		void errorExcept();
 };
 
 #endif

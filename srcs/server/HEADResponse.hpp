@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include "Response.hpp"
 #include "GETResponse.hpp"
+#include "ErrorResponse.hpp"
 #include "file/File.hpp"
 #include "utils/Time.hpp"
 #include "logger/Logger.hpp"
@@ -17,14 +18,15 @@ class HEADResponse : public GETResponse
 {
 	private:
 		HEADResponse();
-	protected:
-		virtual std::string *getResponse();
 	public:
 		static std::string const TAG;
 		HEADResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);
 		HEADResponse(HEADResponse const & copy);
 		HEADResponse &operator=(HEADResponse const & rhs);
 		virtual ~HEADResponse();
+
+		virtual void run();
+		void errorExcept();
 };
 
 #endif

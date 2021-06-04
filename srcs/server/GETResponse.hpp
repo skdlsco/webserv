@@ -11,6 +11,7 @@
 #include "file/File.hpp"
 #include "utils/Time.hpp"
 #include "logger/Logger.hpp"
+#include "ErrorResponse.hpp"
 
 class GETResponse : public Response
 {
@@ -19,12 +20,10 @@ class GETResponse : public Response
 		INDEX_HTML, AUTOINDEX, TARGET
 	};
 	private:
-		GETResponse();
-	protected:
 		enum PageState mPageState;
 		std::string mContentLocation;
-		void createResponseHeader(std::string const & responseBody, std::string & responseContent);
-		std::string createResponseBody();
+
+		GETResponse();
 	public:
 		static std::string const TAG;
 		GETResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);
@@ -32,13 +31,17 @@ class GETResponse : public Response
 		GETResponse &operator=(GETResponse const & rhs);
 		virtual ~GETResponse();
 
+		void appendResponseHeader(std::string const & responseBody);
+		std::string appendResponseBody();
+
 		bool isDirectory(const char *target);
 		void initState();
 		void initContentLocation();
 		std::string makeAutoIndexContent();
 		std::string readContentLocation();
 
-		virtual std::string *getResponse();
+		virtual void run();
+		void errorExcept();
 };
 
 #endif

@@ -40,18 +40,16 @@ std::string ErrorResponse::getErrorResponse(const ServerConfig * serverConfig, c
 {
 	ErrorResponse errorResponse(serverConfig, locationConfig);
 	errorResponse.setStatusCode(errorCode);
-	return (errorResponse.getResponse());
+	return (errorResponse.createResponse());
 }
 
-std::string ErrorResponse::getResponse()
+std::string ErrorResponse::createResponse()
 {
-	std::string responseContent;
-
 	createUserErrorPage();
 	try
 	{
-		createResponseHeader();
-		createResponseBody();
+		appendResponseHeader();
+		appendResponseBody();
 	}
 	catch(std::exception const&e)
 	{
@@ -102,10 +100,11 @@ std::string ErrorResponse::getAllowMethod()
 	return (result);
 }
 
-void ErrorResponse::createResponseHeader()
+void ErrorResponse::appendResponseHeader()
 {
 	mResponseContent += createResponseLine();
 	mResponseContent += createDefaultResponseHeader();
+
 	mResponseContent += "Content-Type: text/html\r\n";
 
 	/* 503 timeout */
@@ -125,7 +124,7 @@ void ErrorResponse::createResponseHeader()
 	mResponseContent += "\r\n";
 }
 
-void ErrorResponse::createResponseBody()
+void ErrorResponse::appendResponseBody()
 {
 	if (mIsDefault)
 		mResponseContent += web::getErrorPage(getStatusCode());

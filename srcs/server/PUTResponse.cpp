@@ -25,39 +25,50 @@ PUTResponse &PUTResponse::operator=(PUTResponse const & rhs)
 	return (*this);
 }
 
-std::string *PUTResponse::getResponse()
-{
-	std::string *responseContent = NULL;
 
+void PUTResponse::errorExcept()
+{
+	mResponseContent = ErrorResponse::getErrorResponse(getServerConfig(), getLocationConfig(), getStatusCode());
+	setState(DONE);
+}
+
+void PUTResponse::run()
+{
 	mBody = getRequestBody();
 	checkAuthorization();
 	if (getStatusCode())
-		return (NULL);
+	{
+		errorExcept();
+		return ;
+	}
 	checkTarget();
 	if (getStatusCode())
-		return (NULL);
+	{
+		errorExcept();
+		return ;
+	}
 	try
 	{
 		writeFile();
 		/* 204 no content, 201 created (success) */
 		if (getStatusCode() / 100 != 2)
-			return (NULL);
-		responseContent = new std::string();
-		if (responseContent)
 		{
-			*responseContent += createResponseLine();
-			appendResponseHeader(*responseContent);
-			appendResponseBody(*responseContent);
+			setStatusCode(500);
+			errorExcept();
+			return ;
 		}
+
+		appendResponseHeader();
+		appendResponseBody();
 	}
 	catch(std::exception const &e)
 	{
 		logger::println(TAG, e.what());
+		mResponseContent.clear();
 		setStatusCode(500);
-		delete responseContent;
-		responseContent = NULL;
+		errorExcept();
 	}
-	return (responseContent);
+	setState(DONE);
 }
 
 void PUTResponse::checkAuthorization()
@@ -137,23 +148,20 @@ void PUTResponse::writeFile()
 		setStatusCode(201);
 }
 
-void PUTResponse::appendResponseHeader(std::string &responseContent)
+void PUTResponse::appendResponseHeader()
 {
-	std::string responseHeader;
-
-	responseContent += "Date: " + web::getDate() + "\r\n";
-	responseContent += "Server: webserv (chlee, ina)\r\n";
-	responseContent += "Connection: close\r\n";
+	mResponseContent += createResponseLine();
+	mResponseContent += createDefaultResponseHeader();
 
 	std::string location = mFileName;
 	size_t pos = location.find(getLocationConfig()->getRoot());
 	location.erase(pos, getLocationConfig()->getRoot().length());
 
-	responseContent += "Content-Location: " + location +"\r\n";
-	responseContent += "\r\n";
+	mResponseContent += "Content-Location: " + location +"\r\n";
+	mResponseContent += "\r\n";
 }
 
-void PUTResponse::appendResponseBody(std::string &responseContent)
+void PUTResponse::appendResponseBody()
 {
-	responseContent += "\r\n";
+	mResponseContent += "\r\n";
 }

@@ -20,7 +20,7 @@ GETResponse &GETResponse::operator=(GETResponse const & rhs)
 	if (this != &rhs)
 	{
 		mContentLocation = rhs.mContentLocation;
-		mState = rhs.mState;
+		mPageState = rhs.mPageState;
 	}
 	return (*this);
 }
@@ -30,67 +30,67 @@ GETResponse::~GETResponse()
 
 }
 
-std::string *GETResponse::getResponse()
+void GETResponse::errorExcept()
+{
+	mResponseContent = ErrorResponse::getErrorResponse(getServerConfig(), getLocationConfig(), getStatusCode());
+	setState(DONE);
+}
+
+void GETResponse::run()
 {
 	initState();
 	if (getStatusCode() != 0)
-		return (NULL);
-	std::string responseBody;
-	std::string *responseContent;
+	{
+		errorExcept();
+		return ;
+	}
 	try
 	{
-		responseContent = new std::string();
-		if (responseContent)
-		{
-			initContentLocation();
-			responseBody = createResponseBody();
-			if (getStatusCode() == 0)
-				setStatusCode(200);
-			*responseContent += createResponseLine();
-			createResponseHeader(responseBody, *responseContent);
-			*responseContent += responseBody;
-		}
+		initContentLocation();
+		std::string responseBody = appendResponseBody();
+		if (getStatusCode() == 0)
+			setStatusCode(200);
+		appendResponseHeader(responseBody);
+		mResponseContent += responseBody;
 		if (getStatusCode() != 200)
 		{
-			delete responseContent;
-			responseContent = NULL;
+			errorExcept();
+			return ;
 		}
 	}
 	catch(const std::exception& e)
 	{
 		logger::println(TAG, e.what());
 		setStatusCode(500);
-		delete responseContent;
-		responseContent = NULL;
+		errorExcept();
 	}
-	return (responseContent);
+	setState(DONE);
 }
 
-void GETResponse::createResponseHeader(std::string const & responseBody, std::string & responseContent)
+void GETResponse::appendResponseHeader(std::string const & responseBody)
 {
 	/* default header */
-	responseContent += "Date: " + web::getDate() + "\r\n";
-	responseContent += "Server: webserv (chlee, ina)\r\n";
-	responseContent += "Connection: close\r\n";
+	mResponseContent += createDefaultResponseHeader();
+	mResponseContent += createResponseLine();
 
 	/* content part */
-	responseContent += "Content-Language: en-US\r\n";
-	responseContent += "Content-Length: " + web::toString(responseBody.length()) + "\r\n";
+	mResponseContent += "Content-Language: en-US\r\n";
+	mResponseContent += "Content-Length: " + web::toString(responseBody.length()) + "\r\n";
 
-	if (mState != AUTOINDEX)
-		responseContent += "Content-Location: " + mContentLocation;
+	if (mPageState != AUTOINDEX)
+		mResponseContent += "Content-Location: " + mContentLocation + "\r\n";
 
 	if (mContentLocation.find_last_of('.') != std::string::npos)
-		responseContent += "Content-Type: " + web::getMIMEType(mContentLocation.substr(mContentLocation.find_last_of('.'))) + "\r\n";
-	else if (mState == AUTOINDEX)
-		responseContent += "Content-Type: text/html\r\n";
+		mResponseContent += "Content-Type: " + web::getMIMEType(mContentLocation.substr(mContentLocation.find_last_of('.'))) + "\r\n";
+	else if (mPageState == AUTOINDEX)
+		mResponseContent += "Content-Type: text/html\r\n";
 	else
-		responseContent += "Content-Type: text/plain\r\n";
+		mResponseContent += "Content-Type: text/plain\r\n";
 
-	if (mState != AUTOINDEX)
-		responseContent += "Last-Modified: " + web::getLastModifiedTime(mContentLocation) + "\r\n";
+	if (mPageState != AUTOINDEX)
+		mResponseContent += "Last-Modified: " + web::getLastModifiedTime(mContentLocation) + "\r\n";
 
-	responseContent += "\r\n";
+	mResponseContent += "\r\n";
 }
 
 void GETResponse::initState()
@@ -108,32 +108,32 @@ void GETResponse::initState()
 			contentLocation += "/";
 		std::string indexPath = contentLocation + getLocationConfig()->getIndexFile();
 		if (web::isPathExist(indexPath.c_str()))
-			mState = INDEX_HTML;
+			mPageState = INDEX_HTML;
 		else if (getLocationConfig()->isAutoIndex())
-			mState = AUTOINDEX;
+			mPageState = AUTOINDEX;
 		else
 			setStatusCode(404);
 	}
 	else if (web::isPathExist(contentLocation.c_str()))
-			mState = TARGET;
+			mPageState = TARGET;
 	else
 		setStatusCode(404);
 }
 
 void GETResponse::initContentLocation()
 {
-	if (mState == INDEX_HTML)
+	if (mPageState == INDEX_HTML)
 		mContentLocation = getLocationConfig()->getRoot() + getTargetContent() + "/" + getLocationConfig()->getIndexFile();
-	else if (mState == TARGET)
+	else if (mPageState == TARGET)
 		mContentLocation = getLocationConfig()->getRoot() + getTargetContent();
-	else if (mState == AUTOINDEX)
+	else if (mPageState == AUTOINDEX)
 		mContentLocation = getLocationConfig()->getRoot() + getTargetContent() + "/";
 	mContentLocation = web::removeConsecutiveDuplicate(mContentLocation, '/');
 }
 
-std::string GETResponse::createResponseBody()
+std::string GETResponse::appendResponseBody()
 {
-	if (mState == AUTOINDEX)
+	if (mPageState == AUTOINDEX)
 		return (makeAutoIndexContent() + "\r\n");
 	return (readContentLocation() + "\r\n");
 }

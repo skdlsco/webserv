@@ -14,18 +14,16 @@ class ErrorResponse : public Response
 		bool mIsDefault;
 		File mFile;
 
-	private:
 		ErrorResponse();
 		ErrorResponse(ErrorResponse const & copy);
 		ErrorResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);
 
-		std::string getResponse();
+		std::string createResponse();
 		void setErrorToDefault();
 		std::string getAllowMethod();
-		void createResponseHeader();
-		void createResponseBody();
+		void appendResponseHeader();
+		void appendResponseBody();
 		void createUserErrorPage();
-
 	public:
 		static std::string const TAG;
 		static std::string getErrorResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig, int errorCode);
