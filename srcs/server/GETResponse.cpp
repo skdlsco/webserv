@@ -78,7 +78,7 @@ void GETResponse::appendResponseHeader(std::string const & responseBody)
 	mResponseContent += "Content-Length: " + web::toString(responseBody.length()) + "\r\n";
 
 	if (mPageState != AUTOINDEX)
-		mResponseContent += "Content-Location: " + mContentLocation;
+		mResponseContent += "Content-Location: " + mContentLocation + "\r\n";
 
 	if (mContentLocation.find_last_of('.') != std::string::npos)
 		mResponseContent += "Content-Type: " + web::getMIMEType(mContentLocation.substr(mContentLocation.find_last_of('.'))) + "\r\n";
