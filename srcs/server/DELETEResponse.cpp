@@ -33,31 +33,28 @@ void DELETEResponse::errorExcept()
 
 void DELETEResponse::run()
 {
-	if (getState() == START)
+	checkTarget();
+	if (getStatusCode())
 	{
-		checkTarget();
-		if (getStatusCode())
+		errorExcept();
+		return ;
+	}
+	try
+	{
+		deleteFile();
+		if (getStatusCode() != 204)
 		{
 			errorExcept();
 			return ;
 		}
-		try
-		{
-			deleteFile();
-			if (getStatusCode() != 204)
-			{
-				errorExcept();
-				return ;
-			}
-			appendResponseHeader();
-			appendResponseBody();
-		}
-		catch(const std::exception& e)
-		{
-			logger::println(TAG, e.what());
-			setStatusCode(500);
-			errorExcept();
-		}
+		appendResponseHeader();
+		appendResponseBody();
+	}
+	catch(const std::exception& e)
+	{
+		logger::println(TAG, e.what());
+		setStatusCode(500);
+		errorExcept();
 	}
 }
 

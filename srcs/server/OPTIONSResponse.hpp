@@ -4,18 +4,13 @@
 #include <iostream>
 #include <string>
 #include "Response.hpp"
+#include "ErrorResponse.hpp"
 #include "utils/Time.hpp"
 
 class OPTIONSResponse : public Response
 {
 	private:
 		OPTIONSResponse();
-	protected:
-		std::string mContentLocation;
-
-		virtual std::string *getResponse();
-		void appendResponseHeader(std::string & responseContent);
-		void appendResponseBody(std::string & responseContent);
 	public:
 		static std::string const TAG;
 		OPTIONSResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);
@@ -23,6 +18,11 @@ class OPTIONSResponse : public Response
 		OPTIONSResponse &operator=(OPTIONSResponse const & rhs);
 		virtual ~OPTIONSResponse();
 
+		void appendResponseHeader();
+		void appendResponseBody();
+
+		virtual void run();
+		void errorExcept();
 };
 
 #endif

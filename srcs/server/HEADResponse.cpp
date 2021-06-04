@@ -26,39 +26,38 @@ HEADResponse::~HEADResponse()
 
 }
 
-std::string *HEADResponse::getResponse()
+void HEADResponse::errorExcept()
+{
+	mResponseContent = ErrorResponse::getErrorResponse(getServerConfig(), getLocationConfig(), getStatusCode());
+	setState(DONE);
+}
+
+void HEADResponse::run()
 {
 	initState();
 	if (getStatusCode() != 0)
-		return (NULL);
-	std::string responseBody;
-	std::string *responseContent;
+	{
+		errorExcept();
+		return ;
+	}
 	try
 	{
-		responseContent = new std::string();
-		if (responseContent)
-		{
-			initContentLocation();
-			responseBody = createResponseBody();
-			if (getStatusCode() == 0)
-				setStatusCode(200);
-			*responseContent += createResponseLine();
-			createResponseHeader(responseBody, *responseContent);
-			/* HEAD Method Response don't have body content */
-			/* *mResponseContent += createResponseBody(); */
-		}
+		initContentLocation();
+		std::string responseBody = appendResponseBody();
+		if (getStatusCode() == 0)
+			setStatusCode(200);
+		appendResponseHeader(responseBody);
 		if (getStatusCode() != 200)
 		{
-			delete responseContent;
-			responseContent = NULL;
+			errorExcept();
+			return ;
 		}
 	}
 	catch(const std::exception& e)
 	{
 		logger::println(TAG, e.what());
 		setStatusCode(500);
-		delete responseContent;
-		responseContent = NULL;
+		errorExcept();
 	}
-	return (responseContent);
+	setState(DONE);
 }

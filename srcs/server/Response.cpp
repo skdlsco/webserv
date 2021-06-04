@@ -3,7 +3,7 @@
 std::string const Response::TAG = "Response";
 
 Response::Response(const ServerConfig * serverConfig, const LocationConfig * locationConfig)
-: mStatusCode(0), mServerConfig(serverConfig), mLocationConfig(locationConfig), mState(START);
+: mStatusCode(0), mServerConfig(serverConfig), mLocationConfig(locationConfig), mState(START)
 {
 
 }

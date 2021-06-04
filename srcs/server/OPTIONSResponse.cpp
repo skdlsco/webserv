@@ -25,53 +25,50 @@ OPTIONSResponse::~OPTIONSResponse()
 
 }
 
-std::string *OPTIONSResponse::getResponse()
+void OPTIONSResponse::errorExcept()
 {
-	std::string *responseContent;
+	mResponseContent = ErrorResponse::getErrorResponse(getServerConfig(), getLocationConfig(), getStatusCode());
+	setState(DONE);
+}
 
+void OPTIONSResponse::run()
+{
 	try
 	{
-		responseContent = new std::string();
-		if (responseContent)
-		{
-			*responseContent += createResponseLine();
-			appendResponseHeader(*responseContent);
-			appendResponseBody(*responseContent);
-		}
+		appendResponseHeader();
+		appendResponseBody();
 		setStatusCode(200);
 	}
 	catch(const std::exception& e)
 	{
 		logger::println(TAG, e.what());
 		setStatusCode(500);
-		delete responseContent;
-		responseContent = NULL;
+		errorExcept();
 	}
-	return (responseContent);
+	setState(DONE);
 }
 
-void OPTIONSResponse::appendResponseHeader(std::string & responseContent)
+void OPTIONSResponse::appendResponseHeader()
 {
 	/* default header */
-	responseContent += "Date: " + web::getDate() + "\r\n";
-	responseContent += "Server: webserv (chlee, ina)\r\n";
-	responseContent += "Connection: close\r\n";
+	mResponseContent += createResponseLine();
+	mResponseContent += createDefaultResponseHeader();
 
 	/* content part */
-	responseContent += "Content-Length: 0\r\n";
-	responseContent += "Content-Language: en-US\r\n";
+	mResponseContent += "Content-Length: 0\r\n";
+	mResponseContent += "Content-Language: en-US\r\n";
 
-	responseContent += "Allow: ";
+	mResponseContent += "Allow: ";
 	for (size_t idx = 0; idx < getLocationConfig()->getAllowMethodList().size(); idx++)
 	{
-		responseContent += getLocationConfig()->getAllowMethodList()[idx];
+		mResponseContent += getLocationConfig()->getAllowMethodList()[idx];
 		if (idx < getLocationConfig()->getAllowMethodList().size() - 1)
-			responseContent += " ";
+			mResponseContent += " ";
 	}
-	responseContent += "\r\n";
+	mResponseContent += "\r\n";
 }
 
-void OPTIONSResponse::appendResponseBody(std::string & responseContent)
+void OPTIONSResponse::appendResponseBody()
 {
-	responseContent += "\r\n";
+	mResponseContent += "\r\n";
 }
