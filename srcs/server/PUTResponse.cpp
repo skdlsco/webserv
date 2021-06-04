@@ -59,7 +59,6 @@ void PUTResponse::run()
 		}
 
 		appendResponseHeader();
-		appendResponseBody();
 	}
 	catch(std::exception const &e)
 	{
@@ -158,10 +157,5 @@ void PUTResponse::appendResponseHeader()
 	location.erase(pos, getLocationConfig()->getRoot().length());
 
 	mResponseContent += "Content-Location: " + location +"\r\n";
-	mResponseContent += "\r\n";
-}
-
-void PUTResponse::appendResponseBody()
-{
 	mResponseContent += "\r\n";
 }

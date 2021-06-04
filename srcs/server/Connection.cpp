@@ -86,7 +86,6 @@ void Connection::ConnectionAction::onReadSet()
 	{
 		if (mConnection.mRequest.analyzeBuffer(buffer))
 			mConnection.addResponse();
-
 	}
 	catch(const std::exception& e)
 	{
@@ -107,7 +106,6 @@ void Connection::ConnectionAction::onWriteSet()
 	std::string &responseContent = response->getResponse();
 	int bufferSize = BUFFER_SIZE;
 
-	logger::println(TAG, responseContent);
 	if (BUFFER_SIZE > responseContent.length() - mConnection.mWriteIdx)
 		bufferSize = responseContent.length() - mConnection.mWriteIdx;
 	int writeN = write(mConnection.mFD, responseContent.c_str() + mConnection.mWriteIdx, bufferSize);

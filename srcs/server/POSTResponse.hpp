@@ -21,7 +21,6 @@ class POSTResponse : public Response
 		void checkTarget();
 		void writeFile();
 		void appendResponseHeader();
-		void appendResponseBody();
 	public:
 		static std::string const TAG;
 		POSTResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);

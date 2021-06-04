@@ -16,7 +16,6 @@ class DELETEResponse : public Response
 		void deleteFile();
 		void checkTarget();
 		void appendResponseHeader();
-		void appendResponseBody();
 	public:
 		static std::string const TAG;
 		DELETEResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);

@@ -58,7 +58,6 @@ void POSTResponse::run()
 		}
 
 		appendResponseHeader();
-		appendResponseBody();
 	}
 	catch(std::exception const &e)
 	{
@@ -67,6 +66,7 @@ void POSTResponse::run()
 		setStatusCode(500);
 		errorExcept();
 	}
+	logger::println(TAG , web::toString(getStatusCode()));
 	setState(DONE);
 }
 
@@ -169,10 +169,5 @@ void POSTResponse::appendResponseHeader()
 
 	mResponseContent += "Location: " + location +"\r\n";
 	mResponseContent += "Content-Location: " + location +"\r\n";
-	mResponseContent += "\r\n";
-}
-
-void POSTResponse::appendResponseBody()
-{
 	mResponseContent += "\r\n";
 }
