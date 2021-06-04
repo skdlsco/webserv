@@ -11,8 +11,6 @@ class OPTIONSResponse : public Response
 {
 	private:
 		OPTIONSResponse();
-
-		std::string mContentLocation;
 	public:
 		static std::string const TAG;
 		OPTIONSResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);
