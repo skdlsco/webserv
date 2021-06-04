@@ -16,7 +16,6 @@ class ErrorResponse : public Response
 
 		ErrorResponse();
 		ErrorResponse(ErrorResponse const & copy);
-		ErrorResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);
 
 		std::string createResponse();
 		void setErrorToDefault();
@@ -26,6 +25,8 @@ class ErrorResponse : public Response
 		void createUserErrorPage();
 	public:
 		static std::string const TAG;
+
+		ErrorResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig);
 		static std::string getErrorResponse(const ServerConfig * serverConfig, const LocationConfig * locationConfig, int errorCode);
 
 		ErrorResponse &operator=(ErrorResponse const & rhs);

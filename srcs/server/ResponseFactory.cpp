@@ -2,87 +2,31 @@
 
 std::string const ResponseFactory::TAG = "ResponseFactory";
 
-std::string *ResponseFactory::create(struct sockaddr_in clientAddr,
+Response *ResponseFactory::create(ServerManager &serverManager, struct sockaddr_in clientAddr,
 										Request &request)
 {
-	std::string *result = NULL;
 	Response *response = NULL;
 	try
 	{
-		ResponseFactory responseFactory(clientAddr, request);
+		ResponseFactory responseFactory(serverManager, clientAddr, request);
 		response = responseFactory.createResponse();
-		if (response)
-			result = response->getResponse();
-		if (result == NULL)
-		{
-			logger::println(TAG, "Error currentStatusCode: " + web::toString(responseFactory.mStatusCode));
-			Response *errorResponse = responseFactory.createErrorResponse();
-			if (errorResponse)
-			{
-				errorResponse->setTarget(request.getTarget());
-				errorResponse->setRequestHeader(request.getField());
-				errorResponse->setRequestBody(request.getBody());
-				if (responseFactory.mResponseState == ERROR)
-					errorResponse->setStatusCode(responseFactory.mStatusCode);
-				else if (response)
-					errorResponse->setStatusCode(response->getStatusCode());
-				else
-					errorResponse->setStatusCode(500);
-			}
-			delete response;
-			response = errorResponse;
-			result = response->getResponse();
-		}
 	}
 	catch(const std::exception& e)
 	{
 		logger::println(TAG, e.what());
 	}
 	logger::print(TAG) << response->getStatusCode() << std::endl;
-	delete response;
-	return (result);
-}
-
-std::string *ResponseFactory::createErrorResponse(struct sockaddr_in clientAddr,
-														Request &request, int errorCode)
-{
-	ResponseFactory responseFactory(clientAddr, request);
-	Response *errorResponse = responseFactory.createErrorResponse();
-	std::string *result = NULL;
-
-	logger::println(TAG, "error: " + web::toString(errorCode));
-	if (errorResponse)
-	{
-		errorResponse->setTarget(request.getTarget());
-		errorResponse->setRequestHeader(request.getField());
-		errorResponse->setRequestBody(request.getBody());
-		errorResponse->setStatusCode(errorCode);
-
-		result = errorResponse->getResponse();
-		delete errorResponse;
-	}
-	return (result);
-}
-
-CGIResponse *ResponseFactory::createCGIResponse(ServerManager &serverManager,struct sockaddr_in clientAddr,
-														Request &request)
-{
-	CGIResponse *response = new CGIResponse(serverManager, request.getServerConfig(), request.getLocationConfig());
-	if (response)
-	{
-		response->setTarget(request.getTarget());
-		response->setTargetContent(request.getTargetContent());
-		response->setRequestHeader(request.getField());
-		response->setRequestBody(request.getBody());
-		response->setQuery(request.getQuery());
-		response->setMethod(request.getMethod());
-		response->setClientAddr(clientAddr);
-	}
 	return (response);
 }
 
-ResponseFactory::ResponseFactory(struct sockaddr_in clientAddr, Request &request)
-: mResponseState(METHOD), mRequest(request), mClientAddr(clientAddr),
+Response *ResponseFactory::createCGIResponse()
+{
+	CGIResponse *response = new CGIResponse(mServerManager, mRequest.getServerConfig(), mRequest.getLocationConfig());
+	return (response);
+}
+
+ResponseFactory::ResponseFactory(ServerManager &serverManager, struct sockaddr_in clientAddr, Request &request)
+: mServerManager(serverManager), mResponseState(METHOD), mRequest(request), mClientAddr(clientAddr),
 	mServerConfig(request.getServerConfig()), mLocationConfig(request.getLocationConfig()), mStatusCode(0)
 {
 	checkResponseType();
@@ -97,9 +41,13 @@ Response *ResponseFactory::createResponse()
 {
 	Response *response = NULL;
 
-	// logger::print(TAG) << web::toAddr(mClientAddr.sin_addr.s_addr) << " " << mRequest.getMethod() << " " << mRequest.getTarget() << "?" << mRequest.getQuery() << std::endl;
+	logger::print(TAG) << web::toAddr(mClientAddr.sin_addr.s_addr) << " " << mRequest.getMethod() << " " << mRequest.getTarget() << "?" << mRequest.getQuery() << std::endl;
 	try
 	{
+		if (mResponseState == CGI)
+			response = createCGIResponse();
+		if (mResponseState == ERROR)
+			response = createErrorResponse();
 		if (mResponseState == METHOD)
 			response = createMethodResponse();
 	}
@@ -116,6 +64,7 @@ Response *ResponseFactory::createResponse()
 		response->setQuery(mRequest.getQuery());
 		response->setMethod(mRequest.getMethod());
 		response->setClientAddr(mClientAddr);
+		response->setIsKeepAlive(mRequest.getErrorCode() == 0);
 	}
 	return (response);
 }
@@ -134,7 +83,8 @@ void ResponseFactory::checkResponseType()
 
 Response *ResponseFactory::createErrorResponse()
 {
-	return (new ErrorResponse(mServerConfig, mLocationConfig));
+	Response *response = new ErrorResponse(mServerConfig, mLocationConfig);
+	return (response);
 }
 
 Response *ResponseFactory::createMethodResponse()
