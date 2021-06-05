@@ -15,7 +15,6 @@ Response *ResponseFactory::create(ServerManager &serverManager, struct sockaddr_
 	{
 		logger::println(TAG, e.what());
 	}
-	logger::print(TAG) << response->getStatusCode() << std::endl;
 	return (response);
 }
 
@@ -41,7 +40,8 @@ Response *ResponseFactory::createResponse()
 {
 	Response *response = NULL;
 
-	logger::print(TAG) << web::toAddr(mClientAddr.sin_addr.s_addr) << " " << mRequest.getMethod() << " " << mRequest.getTarget() << "?" << mRequest.getQuery() << std::endl;
+	logger::print(TAG) << web::toAddr(mClientAddr.sin_addr.s_addr) << ":" << web::toString(ntohs(mClientAddr.sin_port)) 
+						<< " " << mRequest.getMethod() << " " << mRequest.getTarget() << "?" << mRequest.getQuery() << std::endl;
 	try
 	{
 		if (mResponseState == CGI)

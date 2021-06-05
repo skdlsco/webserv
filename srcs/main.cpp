@@ -3,6 +3,17 @@
 #include "config/ConfigManager.hpp"
 #include "logger/Logger.hpp"
 
+bool checkConfigPath(int argc, char *argv[], std::string &filePath)
+{
+	if (argc > 2)
+		return (false);
+	else if (argc < 2)
+		filePath = "./configs/default_goinfre_chlee.conf";
+	else
+		filePath = argv[1];
+	return (true);
+}
+
 int main(int argc, char *argv[])
 {
 	std::string filePath;
@@ -11,15 +22,11 @@ int main(int argc, char *argv[])
 
 	try
 	{
-		if (argc > 2)
+		if (!checkConfigPath(argc, argv, filePath))
 		{
 			std::cerr << "check your input." << std::endl;
-			return (-1);
+			return (1);
 		}
-		else if (argc < 2)
-			filePath = "./configs/default_goinfre.conf";
-		else
-			filePath = argv[1];
 		ConfigManager configManager(filePath);
 		if (configManager.isConfigValidate())
 		{

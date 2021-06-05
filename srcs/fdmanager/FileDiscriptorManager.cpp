@@ -49,16 +49,23 @@ bool FileDiscriptorManager::isFDSet(int fd, fd_set * fdSet)
 void FileDiscriptorManager::add(int fd, FileDiscriptorListener &listener)
 {
 	fdSet(fd);
-	mListenerVec[fd] = &listener;
-	fcntl(fd, F_SETFL, O_NONBLOCK);
+	if (!isFDOverflow(fd))
+	{
+		mListenerVec[fd] = &listener;
+		fcntl(fd, F_SETFL, O_NONBLOCK);
+	}
 }
 
 void FileDiscriptorManager::remove(int fd)
 {
 	fdClr(fd);
-	mListenerVec[fd] = NULL;
-	close(fd);
+	if (!isFDOverflow(fd))
+	{
+		mListenerVec[fd] = NULL;
+		close(fd);
+	}
 }
+	
 
 bool FileDiscriptorManager::select()
 {

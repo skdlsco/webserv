@@ -6,6 +6,7 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include "server/ErrorResponse.hpp"
+#include "utils/Auth.hpp"
 
 class CGIResponse : public Response
 {
@@ -83,6 +84,7 @@ class CGIResponse : public Response
 		bool responseToHeader();
 		void appendResponseHeader();
 		void createResponseContent();
+		void checkAuthorization();
 	public:
 		static std::string const TAG;
 

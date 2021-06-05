@@ -85,7 +85,10 @@ void Connection::ConnectionAction::onReadSet()
 	try
 	{
 		if (mConnection.mRequest.analyzeBuffer(buffer))
+		{
+			mConnection.mStartTime = web::getNowTime();
 			mConnection.addResponse();
+		}
 	}
 	catch(const std::exception& e)
 	{
