@@ -141,11 +141,7 @@ void Request::checkContentLength()
 		if (mContentLength < 0)
 			badRequest(400);
 		else if (mLocationConfig->getClientMaxBodySize() < static_cast<unsigned long>(mContentLength))
-		{
-			logger::print(TAG) << "clientMaxBodySize(): " << mLocationConfig->getClientMaxBodySize() << std::endl;
-			logger::print(TAG) << "mContentLength(): " << mContentLength << std::endl;
 			badRequest(413);
-		}
 		mHasBody = true;
 	};
 }

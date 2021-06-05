@@ -66,8 +66,8 @@ bool ConfigValidator::isScopeMatched()
 			currentLine.find('}') != std::string::npos)
 		{
 			splitResult = web::split(currentLine, " \t");
-			if ((splitResult.size() == 2 && (splitResult.front() == "server" && splitResult.back() == "{")) || //server {
-				(splitResult.size() == 3 && (splitResult.front() == "location" && splitResult.back() == "{"))) //location [URI] {
+			if ((splitResult.size() == 2 && (splitResult.front() == "server" && splitResult.back() == "{")) ||
+				(splitResult.size() == 3 && (splitResult.front() == "location" && splitResult.back() == "{")))
 				scopeValue++;
 			else if (splitResult.size() == 1 && splitResult.front() == "}")
 				scopeValue--;

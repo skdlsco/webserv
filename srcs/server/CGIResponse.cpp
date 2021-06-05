@@ -20,7 +20,7 @@ CGIResponse::CGIResponse(CGIResponse const & copy)
 
 CGIResponse &CGIResponse::operator=(CGIResponse const & rhs)
 {
-	Response::operator=(rhs); // how...
+	Response::operator=(rhs);
 	return (*this);
 }
 
@@ -113,7 +113,8 @@ char *CGIResponse::createCGIVariable(enum web::CGIEnv::CGIEnv cgiEnv)
 	switch (cgiEnv)
 	{
 		case web::CGIEnv::AUTH_TYPE:
-			result += "";
+			if (!getLocationConfig()->getAuthUserName().empty())
+				result += "Basic";
 			break ;
 		case web::CGIEnv::CONTENT_LENGTH:
 			if (!getRequestBody().empty())
@@ -144,8 +145,8 @@ char *CGIResponse::createCGIVariable(enum web::CGIEnv::CGIEnv cgiEnv)
 			result += getCGIVariableUserAgent();
 			break ;
 		case web::CGIEnv::REMOTE_USER:
-			// if (!getLocationConfig()->getAuthUserName().empty())
-				// result += getLocationConfig()->getAuthUserName();
+			if (!getLocationConfig()->getAuthUserName().empty())
+				result += getLocationConfig()->getAuthUserName();
 			break ;
 		case web::CGIEnv::REQUEST_METHOD:
 			result += getMethod();
@@ -385,8 +386,35 @@ void CGIResponse::createResponseContent()
 	}
 }
 
+void CGIResponse::checkAuthorization()
+{
+	if (getLocationConfig()->getAuthUserName().empty() || getLocationConfig()->getAuthUserPassword().empty())
+		return ;
+	std::map<std::string, std::string> requestHeader = getRequestHeader();
+	if (requestHeader.find("Authorization") == requestHeader.end())
+	{
+		/* Unauthorized */
+		setStatusCode(401);
+		return ;
+	}
+	std::string userAuth = web::base64Decoder(requestHeader["Authorization"]);
+	std::string serverAuth = getLocationConfig()->getAuthUserName() + ":" + getLocationConfig()->getAuthUserPassword();
+	if (userAuth != serverAuth)
+	{
+		/* Forbidden */
+		setStatusCode(403);
+		return ;
+	}
+}
+
 void CGIResponse::run()
 {
+	checkAuthorization();
+	if (getStatusCode())
+	{
+		errorExcept();
+		return ;
+	}
 	initCGIInfo();
 	mEnv = createCGIEnv();
 	if (mEnv == NULL)

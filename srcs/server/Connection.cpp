@@ -85,7 +85,10 @@ void Connection::ConnectionAction::onReadSet()
 	try
 	{
 		if (mConnection.mRequest.analyzeBuffer(buffer))
+		{
+			mConnection.mStartTime = web::getNowTime();
 			mConnection.addResponse();
+		}
 	}
 	catch(const std::exception& e)
 	{
@@ -119,6 +122,7 @@ void Connection::ConnectionAction::onWriteSet()
 	{
 		mConnection.mWriteIdx = 0;
 		int isKeepAlive = response->isKeepAlive();
+		delete response;
 		mConnection.mResponseVec.erase(mConnection.mResponseVec.begin());
 		if (!isKeepAlive)
 			mConnection.finish();

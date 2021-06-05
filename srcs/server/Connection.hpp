@@ -37,10 +37,9 @@ class Connection : public ServerComponent
 		static const int BUFFER_SIZE = 8192;
 		ConnectionAction mFDListener;
 		Request mRequest;
-		// CGIResponse *mCGIResponse;
 		std::string *mWriteBuffer;
 		std::vector<ServerConfig *> const &mConfig;
-		struct sockaddr_in mAddr; // TODO convert type to int, string
+		struct sockaddr_in mAddr;
 		int mFD;
 		long mStartTime;
 		int mWriteIdx;

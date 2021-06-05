@@ -22,7 +22,7 @@ void Socket::bind(int family, int addr, int port)
 	struct sockaddr_in socketAddr;
 
 	socketAddr.sin_family = family;
-	socketAddr.sin_addr.s_addr = htons(addr); // TODO htons
+	socketAddr.sin_addr.s_addr = htons(addr);
 	socketAddr.sin_port = htons(port);
 	if (::bind(mSocketFD, (struct sockaddr *)&socketAddr, sizeof(socketAddr)) < 0)
 		throw Socket::SocketException("socket bind failed");
