@@ -32,7 +32,6 @@ class File
 		void openFile();
 		void closeFile();
 		void readFile();
-		//void writeFile();
 		std::string getLine();
 
 		int getFD() const;

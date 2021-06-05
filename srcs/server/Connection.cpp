@@ -122,6 +122,7 @@ void Connection::ConnectionAction::onWriteSet()
 	{
 		mConnection.mWriteIdx = 0;
 		int isKeepAlive = response->isKeepAlive();
+		delete response;
 		mConnection.mResponseVec.erase(mConnection.mResponseVec.begin());
 		if (!isKeepAlive)
 			mConnection.finish();

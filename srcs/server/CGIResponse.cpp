@@ -20,7 +20,7 @@ CGIResponse::CGIResponse(CGIResponse const & copy)
 
 CGIResponse &CGIResponse::operator=(CGIResponse const & rhs)
 {
-	Response::operator=(rhs); // how...
+	Response::operator=(rhs);
 	return (*this);
 }
 
